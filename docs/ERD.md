@@ -1,120 +1,244 @@
-# Intended database design
+# Implemented relational database design
 
-Conceptual release-one model, not yet a business Prisma schema. UUID primary keys; UTC `timestamptz` timestamps; monetary BIGINTs serialized as strings; integer basis points; currency SYP/USD. FKs below are mandatory unless explicitly optional. `actorId` on audits may be null for system jobs. The foundation migration only creates `SetupMetadata`; all entities below enter reviewed domain migrations in the implementation slices.
+Generated from the canonical Prisma datamodel by `npm run db:erd`. There are 72 domain models plus the unchanged legacy SetupMetadata table. All domain primary identifiers are PostgreSQL UUIDs with database-generated defaults; Country now has a UUID primary key and unique code. Money is BIGINT stored units (SYP pounds / USD cents), never floating point. LedgerJournal represents a financial transaction; PaymentAttempt represents its simulated provider result.
 
-## Identity, geography and catalog
+The schema and migration files are implemented; application against a live PostgreSQL database is a separate validation result in [database and contract report](DATABASE_CONTRACT_REPORT.md). Enum definitions and exact nullability/indexes are authoritative in `backend/prisma/schema.prisma`. PK, FK and UK below are literal datamodel constraints. Every physical relation is shown once, including references crossing diagrams.
+
+## Identity and access
 
 ```mermaid
 erDiagram
-  USER ||--o{ SESSION : authenticates
-  USER ||--o{ BUSINESS_PROFILE : owns
-  USER ||--o{ ADDRESS : saves
-  USER ||--o{ RESTRICTION : receives
-  COUNTRY ||--o{ GOVERNORATE : contains
-  GOVERNORATE ||--o{ CITY : contains
-  CITY ||--o{ AREA : contains
-  CITY ||--o{ ADDRESS : locates
-  AREA o|--o{ ADDRESS : narrows
-  BUSINESS_PROFILE ||--o{ SERVICE_AREA : serves
-  CITY ||--o{ SERVICE_AREA : covers
-  BUSINESS_PROFILE ||--o{ DRIVER_ZONE : assigned
-  GOVERNORATE ||--o{ DRIVER_ZONE : covers
-  CITY o|--o{ DRIVER_ZONE : narrows
-  BUSINESS_PROFILE ||--o{ LISTING : publishes
-  CATEGORY ||--o{ LISTING : classifies
-  BUSINESS_PROFILE ||--o| STOREFRONT : runs
-  CITY ||--o{ STOREFRONT : locates
-  STOREFRONT ||--o{ PRODUCT : sells
-  CATEGORY ||--o{ PRODUCT : classifies
-  BUSINESS_PROFILE ||--o{ PROFILE_ASSET : showcases
-  FILE_ASSET ||--o{ PROFILE_ASSET : references
-  FILE_ASSET ||--o{ PRODUCT_ASSET : references
-  PRODUCT ||--o{ PRODUCT_ASSET : displays
-  USER {
+  User {
     uuid id PK
     string email UK
     string passwordHash
-    string adminRole
+    string displayName
+    string locale
     datetime verifiedAt
+    datetime archivedAt
+    datetime createdAt
+    datetime updatedAt
   }
-  SESSION {
+  Role {
     uuid id PK
+    string code UK
+    string name
+    datetime createdAt
+    datetime updatedAt
+  }
+  User ||--o{ UserRole : user
+  Role ||--o{ UserRole : role
+  UserRole {
+    uuid id PK
+    datetime revokedAt
+    datetime createdAt
+    datetime updatedAt
     uuid userId FK
+    uuid roleId FK
+  }
+  User ||--o{ Session : user
+  Session o|--o{ Session : replacedBy
+  Session {
+    uuid id PK
     string refreshHash UK
     uuid familyId
     datetime expiresAt
     datetime revokedAt
-  }
-  BUSINESS_PROFILE {
-    uuid id PK
+    uuid replacedById FK
+    string client
+    datetime createdAt
+    datetime updatedAt
     uuid userId FK
+  }
+  User ||--o{ VerificationToken : user
+  VerificationToken {
+    uuid id PK
+    string kind
+    string tokenHash UK
+    datetime expiresAt
+    datetime consumedAt
+    datetime createdAt
+    datetime updatedAt
+    uuid userId FK
+  }
+  User ||--o{ Restriction : user
+  User ||--o{ Restriction : admin
+  Restriction {
+    uuid id PK
+    string kind
+    string reason
+    datetime expiresAt
+    datetime revokedAt
+    datetime createdAt
+    datetime updatedAt
+    uuid userId FK
+    uuid adminId FK
+  }
+```
+
+## Geography, profiles and catalog
+
+```mermaid
+erDiagram
+  Country {
+    uuid id PK
+    string code UK
+    string nameAr
+    string nameEn
+    datetime createdAt
+    datetime updatedAt
+  }
+  Country ||--o{ Governorate : country
+  Governorate {
+    uuid id PK
+    string isoCode UK
+    string nameAr
+    string nameEn
+    datetime createdAt
+    datetime updatedAt
+    uuid countryId FK
+  }
+  Governorate ||--o{ City : governorate
+  City {
+    uuid id PK
+    string nameAr
+    string nameEn
+    boolean isDistrict
+    datetime createdAt
+    datetime updatedAt
+    uuid governorateId FK
+  }
+  City ||--o{ Area : city
+  Area {
+    uuid id PK
+    string nameAr
+    string nameEn
+    datetime createdAt
+    datetime updatedAt
+    uuid cityId FK
+  }
+  User ||--o{ Address : user
+  City ||--o{ Address : city
+  Area o|--o{ Address : area
+  Address {
+    uuid id PK
+    string label
+    string details
+    string contactName
+    string contactPhone
+    datetime archivedAt
+    datetime createdAt
+    datetime updatedAt
+    uuid userId FK
+    uuid cityId FK
+    uuid areaId FK
+  }
+  User ||--o{ BusinessProfile : user
+  City o|--o{ BusinessProfile : city
+  BusinessProfile {
+    uuid id PK
     string type
     string status
     string title
     string bio
-    json skillsLanguagesTradeExperience
+    string trade
+    int experienceYears
     datetime archivedAt
-  }
-  RESTRICTION {
-    uuid id PK
+    datetime createdAt
+    datetime updatedAt
     uuid userId FK
-    uuid adminId FK
+    uuid cityId FK
+  }
+  BusinessProfile ||--o{ ProfileSkill : profile
+  ProfileSkill {
+    uuid id PK
+    string name
+    datetime createdAt
+    datetime updatedAt
+    uuid profileId FK
+  }
+  BusinessProfile ||--o{ ProfileLanguage : profile
+  ProfileLanguage {
+    uuid id PK
+    string languageCode
+    string proficiency
+    datetime createdAt
+    datetime updatedAt
+    uuid profileId FK
+  }
+  BusinessProfile ||--o{ ServiceArea : profile
+  City ||--o{ ServiceArea : city
+  Area o|--o{ ServiceArea : area
+  ServiceArea {
+    uuid id PK
+    datetime createdAt
+    datetime updatedAt
+    uuid profileId FK
+    uuid cityId FK
+    uuid areaId FK
+  }
+  BusinessProfile ||--o{ DriverZone : profile
+  Governorate ||--o{ DriverZone : governorate
+  City o|--o{ DriverZone : city
+  DriverZone {
+    uuid id PK
+    datetime createdAt
+    datetime updatedAt
+    uuid profileId FK
+    uuid governorateId FK
+    uuid cityId FK
+  }
+  User ||--o{ FileAsset : owner
+  MarketOrder o|--o{ FileAsset : order
+  CaseRecord o|--o{ FileAsset : case
+  FileAsset {
+    uuid id PK
+    string storageKey UK
+    string originalName
+    string mimeType
+    string extension
+    bigint sizeBytes
+    string sha256
+    string accessClass
+    string scanStatus
+    datetime deletedAt
+    datetime retainUntil
+    boolean legalHold
+    datetime createdAt
+    datetime updatedAt
+    uuid ownerId FK
+    uuid orderId FK
+    uuid caseId FK
+  }
+  BusinessProfile ||--o{ PortfolioItem : profile
+  FileAsset o|--o{ PortfolioItem : file
+  PortfolioItem {
+    uuid id PK
     string kind
-    string reason
-    datetime expiresAt
-  }
-  COUNTRY {
-    string code PK
-  }
-  GOVERNORATE {
-    uuid id PK
-    string countryCode FK
-    string isoCode UK
-    string nameAr
-    string nameEn
-  }
-  CITY {
-    uuid id PK
-    uuid governorateId FK
-    string nameAr
-    string nameEn
-  }
-  AREA {
-    uuid id PK
-    uuid cityId FK
-    string nameAr
-    string nameEn
-  }
-  ADDRESS {
-    uuid id PK
-    uuid userId FK
-    uuid cityId FK
-    uuid areaId FK
-    string details
-  }
-  SERVICE_AREA {
-    uuid id PK
+    string title
+    string caption
+    string url
+    int position
+    datetime createdAt
+    datetime updatedAt
     uuid profileId FK
-    uuid cityId FK
-    uuid areaId FK
+    uuid fileId FK
   }
-  DRIVER_ZONE {
+  Category o|--o{ Category : parent
+  Category {
     uuid id PK
-    uuid profileId FK
-    uuid governorateId FK
-    uuid cityId FK
-  }
-  CATEGORY {
-    uuid id PK
-    uuid parentId FK
     string workspace
     string nameAr
     string nameEn
+    boolean active
+    datetime createdAt
+    datetime updatedAt
+    uuid parentId FK
   }
-  LISTING {
+  BusinessProfile ||--o{ Listing : profile
+  Category ||--o{ Listing : category
+  Listing {
     uuid id PK
-    uuid profileId FK
-    uuid categoryId FK
     string kind
     string titleAr
     string titleEn
@@ -122,25 +246,46 @@ erDiagram
     string descriptionEn
     string currency
     bigint priceUnits
-    int durationMinutes
     int deliveryDays
+    int durationMinutes
     string status
-  }
-  STOREFRONT {
-    uuid id PK
+    datetime createdAt
+    datetime updatedAt
     uuid profileId FK
-    uuid cityId FK
-    uuid logoFileId FK
+    uuid categoryId FK
+  }
+  Listing ||--o{ ListingAsset : listing
+  FileAsset ||--o{ ListingAsset : file
+  ListingAsset {
+    uuid id PK
+    int position
+    datetime createdAt
+    datetime updatedAt
+    uuid listingId FK
+    uuid fileId FK
+  }
+  BusinessProfile ||--o| Storefront : profile
+  City ||--o{ Storefront : city
+  FileAsset o|--o{ Storefront : logo
+  Storefront {
+    uuid id PK
     string nameAr
     string nameEn
     string descriptionAr
     string descriptionEn
     string status
+    boolean supportsSellerDelivery
+    boolean supportsPlatformDelivery
+    datetime createdAt
+    datetime updatedAt
+    uuid profileId FK,UK
+    uuid cityId FK
+    uuid logoId FK
   }
-  PRODUCT {
+  Storefront ||--o{ Product : storefront
+  Category ||--o{ Product : category
+  Product {
     uuid id PK
-    uuid storefrontId FK
-    uuid categoryId FK
     string titleAr
     string titleEn
     string descriptionAr
@@ -150,60 +295,51 @@ erDiagram
     int stockOnHand
     int stockReserved
     string status
+    datetime createdAt
+    datetime updatedAt
+    uuid storefrontId FK
+    uuid categoryId FK
   }
-  PROFILE_ASSET {
+  Product ||--o{ ProductAsset : product
+  FileAsset ||--o{ ProductAsset : file
+  ProductAsset {
     uuid id PK
-    uuid profileId FK
-    uuid fileId FK
-  }
-  PRODUCT_ASSET {
-    uuid id PK
+    int position
+    datetime createdAt
+    datetime updatedAt
     uuid productId FK
     uuid fileId FK
   }
-  FILE_ASSET {
+  User ||--o{ ModerationDecision : admin
+  BusinessProfile o|--o{ ModerationDecision : profile
+  Listing o|--o{ ModerationDecision : listing
+  Storefront o|--o{ ModerationDecision : storefront
+  Product o|--o{ ModerationDecision : product
+  Review o|--o{ ModerationDecision : review
+  ModerationDecision {
     uuid id PK
-    uuid ownerUserId FK
-    string storageKey UK
-    string mimeType
-    bigint sizeBytes
-    string accessClass
-    string scanStatus
+    string outcome
+    string reason
+    datetime createdAt
+    datetime updatedAt
+    uuid adminId FK
+    uuid profileId FK
+    uuid listingId FK
+    uuid storefrontId FK
+    uuid productId FK
+    uuid reviewId FK
   }
 ```
 
-`LISTING.kind` distinguishes freelance service and professional fixed package; applicability checks require deliveryDays for freelance and durationMinutes for professional. Store logos/products/portfolio use Files; public derivatives have separate keys. Optional `areaId`, `cityId` on governorate-wide zone, refresh revocation and verification timestamps are nullable. Category parent optional. Admin FKs reference USER. Geography parent consistency is validated and protected by composite FKs where applicable.
-
-## Agreements, orders, stock, schedules and delivery
+## Orders, scheduling, quotes and inventory
 
 ```mermaid
 erDiagram
-  USER ||--o{ MARKET_ORDER : buys
-  BUSINESS_PROFILE ||--o{ MARKET_ORDER : fulfills
-  MARKET_ORDER ||--o| SERVICE_ORDER : specializes
-  MARKET_ORDER ||--o| STORE_ORDER : specializes
-  MARKET_ORDER ||--o{ ORDER_TRANSITION : records
-  SERVICE_ORDER ||--o{ MILESTONE : tracks
-  SERVICE_ORDER ||--o{ QUOTE : receives
-  QUOTE ||--|{ QUOTE_ITEM : itemizes
-  SERVICE_ORDER ||--o{ SCHEDULE_RESERVATION : reserves
-  SERVICE_ORDER ||--o{ SUBMISSION : delivers
-  FILE_ASSET ||--o{ SUBMISSION : references
-  STORE_ORDER ||--|{ ORDER_ITEM : snapshots
-  PRODUCT ||--o{ ORDER_ITEM : sourced
-  ORDER_ITEM ||--o{ STOCK_RESERVATION : reserves
-  STOCK_RESERVATION ||--o{ STOCK_RECONCILIATION : returns
-  STORE_ORDER ||--|| DELIVERY : ships
-  DELIVERY_RATE ||--o{ DELIVERY : snapshots
-  DELIVERY ||--o{ DELIVERY_TERMS_REVISION : proposes
-  DELIVERY ||--o{ DRIVER_ASSIGNMENT : assigns
-  BUSINESS_PROFILE ||--o{ DRIVER_ASSIGNMENT : drives
-  DELIVERY ||--o{ DELIVERY_EVENT : traces
-  FILE_ASSET o|--o{ DELIVERY_EVENT : proves
-  MARKET_ORDER {
+  User ||--o{ MarketOrder : buyer
+  BusinessProfile ||--o{ MarketOrder : sellerProfile
+  CommissionRate o|--o{ MarketOrder : commissionRate
+  MarketOrder {
     uuid id PK
-    uuid buyerId FK
-    uuid sellerProfileId FK
     string workspace
     string state
     string currency
@@ -211,365 +347,658 @@ erDiagram
     bigint eligibleSellerUnits
     bigint deliveryFeeUnits
     int commissionBpsSnapshot
-    json agreementAndAddressSnapshot
+    json agreementSnapshot
+    json addressSnapshot
+    datetime termsAcceptedAt
     int version
     datetime deliveredAt
     datetime reviewDeadlineAt
+    int deliveryVersion
+    boolean deliveryVerified
+    datetime buyerConfirmedAt
+    boolean paused
+    datetime workStartedAt
+    datetime completedAt
+    datetime checkoutExpiresAt
+    datetime createdAt
+    datetime updatedAt
+    uuid buyerId FK
+    uuid sellerProfileId FK
+    uuid commissionRateId FK
   }
-  SERVICE_ORDER {
-    uuid orderId PK,FK
-    uuid listingId FK
-    uuid approvedQuoteId FK
+  MarketOrder ||--o| ServiceOrder : order
+  Listing o|--o{ ServiceOrder : listing
+  Quote o|--o| ServiceOrder : approvedQuote
+  ServiceOrder {
+    uuid id PK
+    string kind
     bigint depositUnits
     bigint balanceUnits
-    string bookingState
     datetime responseDeadlineAt
     datetime depositDeadlineAt
     datetime dueAt
     datetime readyAt
+    json readinessEvidence
     datetime balanceDeadlineAt
+    datetime createdAt
+    datetime updatedAt
+    uuid orderId FK,UK
+    uuid listingId FK
+    uuid approvedQuoteId FK,UK
   }
-  STORE_ORDER {
-    uuid orderId PK,FK
-    uuid storefrontId FK
-    datetime sellerAcceptanceDeadlineAt
-  }
-  QUOTE {
+  ServiceOrder ||--o| Booking : serviceOrder
+  Booking {
     uuid id PK
-    uuid orderId FK
+    string state
+    datetime requestedStartsAt
+    datetime requestedEndsAt
+    datetime proposedStartsAt
+    datetime proposedEndsAt
+    datetime providerAcceptedAt
+    datetime buyerAcceptedAt
+    datetime createdAt
+    datetime updatedAt
+    uuid serviceOrderId FK,UK
+  }
+  ServiceOrder ||--o| InspectionRequest : serviceOrder
+  Address ||--o{ InspectionRequest : address
+  InspectionRequest {
+    uuid id PK
+    string description
+    datetime agreedAt
+    datetime startsAt
+    datetime createdAt
+    datetime updatedAt
+    uuid serviceOrderId FK,UK
+    uuid addressId FK
+  }
+  InspectionRequest ||--o{ InspectionPhoto : inspection
+  FileAsset ||--o{ InspectionPhoto : file
+  InspectionPhoto {
+    uuid id PK
+    datetime createdAt
+    datetime updatedAt
+    uuid inspectionId FK
+    uuid fileId FK
+  }
+  ServiceOrder ||--o{ Quote : serviceOrder
+  Quote {
+    uuid id PK
     int version
     string state
     string currency
     bigint totalUnits
+    string scope
+    datetime startsAt
+    datetime endsAt
+    datetime dueAt
+    datetime sentAt
     datetime responseDeadlineAt
-    json scopeAndSchedule
+    datetime approvedAt
+    datetime createdAt
+    datetime updatedAt
+    uuid serviceOrderId FK
   }
-  QUOTE_ITEM {
+  Quote ||--o{ QuoteItem : quote
+  QuoteItem {
     uuid id PK
-    uuid quoteId FK
     string description
     int quantity
     bigint unitPriceUnits
+    datetime createdAt
+    datetime updatedAt
+    uuid quoteId FK
   }
-  SCHEDULE_RESERVATION {
+  ServiceOrder ||--o{ ScheduleReservation : serviceOrder
+  BusinessProfile ||--o{ ScheduleReservation : provider
+  ScheduleReservation {
     uuid id PK
-    uuid orderId FK
-    uuid providerProfileId FK
     datetime startsAt
     datetime endsAt
     string status
+    datetime createdAt
+    datetime updatedAt
+    uuid serviceOrderId FK
+    uuid providerId FK
   }
-  MILESTONE {
+  ServiceOrder ||--o{ Milestone : serviceOrder
+  Milestone {
     uuid id PK
-    uuid orderId FK
     string description
-    string progress
+    int progress
+    int position
+    datetime createdAt
+    datetime updatedAt
+    uuid serviceOrderId FK
   }
-  SUBMISSION {
+  ServiceOrder ||--o{ Submission : serviceOrder
+  FileAsset o|--o{ Submission : file
+  User ||--o{ Submission : actor
+  Submission {
     uuid id PK
-    uuid orderId FK
-    uuid fileId FK
-    int version
     string kind
+    int version
+    json evidence
     datetime submittedAt
+    datetime createdAt
+    datetime updatedAt
+    uuid serviceOrderId FK
+    uuid fileId FK
+    uuid actorId FK
   }
-  ORDER_ITEM {
+  MarketOrder ||--o| StoreOrder : order
+  Storefront ||--o{ StoreOrder : storefront
+  StoreOrder {
     uuid id PK
-    uuid orderId FK
-    uuid productId FK
+    datetime sellerAcceptanceDeadlineAt
+    datetime acceptedAt
+    datetime createdAt
+    datetime updatedAt
+    uuid orderId FK,UK
+    uuid storefrontId FK
+  }
+  StoreOrder ||--o{ OrderItem : storeOrder
+  Product ||--o{ OrderItem : product
+  OrderItem {
+    uuid id PK
     int quantity
     bigint unitPriceUnits
+    string currency
     json productSnapshot
+    datetime createdAt
+    datetime updatedAt
+    uuid storeOrderId FK
+    uuid productId FK
   }
-  STOCK_RESERVATION {
+  OrderItem ||--o| StockReservation : orderItem
+  Product ||--o{ StockReservation : product
+  StockReservation {
     uuid id PK
-    uuid orderItemId FK
     int quantity
     string status
+    datetime createdAt
+    datetime updatedAt
+    uuid orderItemId FK,UK
+    uuid productId FK
   }
-  STOCK_RECONCILIATION {
+  StockReservation ||--o| StockReconciliation : reservation
+  User ||--o{ StockReconciliation : actor
+  StockReconciliation {
     uuid id PK
-    uuid reservationId FK
     int reusableQuantity
     int nonRestockableQuantity
     string reason
-  }
-  DELIVERY_RATE {
-    uuid id PK
-    uuid cityId FK
-    string method
-    string currency
-    bigint feeUnits
-    int version
-  }
-  DELIVERY {
-    uuid id PK
-    uuid orderId FK,UK
-    uuid rateId FK
-    string method
-    string status
-    bigint feeUnits
-    json termsSnapshot
-    datetime droppedOffAt
-  }
-  DELIVERY_TERMS_REVISION {
-    uuid id PK
-    uuid deliveryId FK
-    int version
-    json proposedTerms
-    datetime buyerApprovedAt
-  }
-  DRIVER_ASSIGNMENT {
-    uuid id PK
-    uuid deliveryId FK
-    uuid driverProfileId FK
-    string status
-    datetime acceptedAt
-    datetime endedAt
-  }
-  DELIVERY_EVENT {
-    uuid id PK
-    uuid deliveryId FK
-    uuid assignmentId FK
+    datetime createdAt
+    datetime updatedAt
+    uuid reservationId FK,UK
     uuid actorId FK
-    uuid proofFileId FK
-    string type
-    datetime occurredAt
   }
-  ORDER_TRANSITION {
+  MarketOrder ||--o{ OrderTransition : order
+  User o|--o{ OrderTransition : actor
+  OrderTransition {
     uuid id PK
-    uuid orderId FK
-    uuid actorId FK
     string fromState
     string toState
     int version
     string reason
-    datetime occurredAt
+    string operationKey UK
+    datetime createdAt
+    datetime updatedAt
+    uuid orderId FK
+    uuid actorId FK
   }
 ```
 
-Final-file SUBMISSION fileId optional for documented on-site handover with structured evidence; actual schema must distinguish evidence fields rather than silently empty submissions. Quote/listing FK optional for custom professional request. `approvedQuoteId` optional and points to an accepted version of the same order. A MARKET_ORDER has exactly one workspace specialization; triggers/checks plus creation transaction enforce it. Delivery proof reference optional deliberately represents unproven physical delivery and blocks auto-release. Delivery assignment/event association optional for seller delivery.
-
-## Money, cases and collaboration
+## Wallets, financial transactions and escrow
 
 ```mermaid
 erDiagram
-  USER ||--o{ LEDGER_ACCOUNT : owns
-  MARKET_ORDER ||--|| ESCROW : secures
-  MARKET_ORDER ||--o{ PAYMENT_ATTEMPT : funds
-  MARKET_ORDER ||--o| SETTLEMENT : settles
-  MARKET_ORDER ||--o{ CASE_RECORD : disputes
-  CASE_RECORD ||--o{ CASE_EVIDENCE : receives
-  CASE_RECORD ||--o{ RESOLUTION_PROPOSAL : proposes
-  CASE_RECORD ||--o| ADMIN_DECISION : decides
-  SETTLEMENT ||--|{ ALLOCATION : awards
-  LEDGER_JOURNAL ||--|{ LEDGER_ENTRY : balances
-  LEDGER_ACCOUNT ||--o{ LEDGER_ENTRY : posts
-  SETTLEMENT ||--|| LEDGER_JOURNAL : posts
-  PAYMENT_ATTEMPT o|--o| LEDGER_JOURNAL : posts
-  MARKET_ORDER ||--|{ CHAT_ROOM : discusses
-  CHAT_ROOM ||--o{ CHAT_MESSAGE : contains
-  CHAT_MESSAGE ||--o{ MESSAGE_ATTACHMENT : includes
-  FILE_ASSET ||--o{ MESSAGE_ATTACHMENT : references
-  FILE_ASSET ||--o{ CASE_EVIDENCE : references
-  MARKET_ORDER ||--o| REVIEW : verifies
-  REVIEW ||--|{ REVIEW_VERSION : preserves
-  USER ||--o{ NOTIFICATION : receives
-  USER ||--o{ DEVICE_TOKEN : registers
-  OUTBOX_EVENT ||--o{ NOTIFICATION : produces
-  COMMISSION_RATE {
+  User ||--o{ CommissionRate : admin
+  CommissionRate {
     uuid id PK
     string workspace
     int basisPoints
     int version
     datetime effectiveAt
+    datetime createdAt
+    datetime updatedAt
     uuid adminId FK
   }
-  ESCROW {
-    uuid orderId PK,FK
-    uuid ledgerAccountId FK,UK
-    bigint heldUnits
-    string status
-  }
-  LEDGER_ACCOUNT {
+  User o|--o{ LedgerAccount : user
+  MarketOrder o|--o{ LedgerAccount : order
+  LedgerAccount {
     uuid id PK
-    uuid userId FK
     string currency
     string kind
     bigint balanceUnits
-  }
-  PAYMENT_ATTEMPT {
-    uuid id PK
-    uuid orderId FK
-    uuid actorId FK
-    string installment
-    string status
-    string providerReference UK
-    uuid journalId FK
     datetime createdAt
+    datetime updatedAt
+    uuid userId FK
+    uuid orderId FK
   }
-  LEDGER_JOURNAL {
+  User ||--o{ Wallet : user
+  LedgerAccount ||--o| Wallet : account
+  Wallet {
+    uuid id PK
+    string currency
+    datetime createdAt
+    datetime updatedAt
+    uuid userId FK
+    uuid accountId FK,UK
+  }
+  MarketOrder ||--o| Escrow : order
+  LedgerAccount ||--o| Escrow : account
+  Escrow {
+    uuid id PK
+    string currency FK
+    bigint heldUnits
+    string status
+    datetime createdAt
+    datetime updatedAt
+    uuid orderId FK,UK
+    uuid accountId FK,UK
+  }
+  MarketOrder o|--o{ LedgerJournal : order
+  User o|--o{ LedgerJournal : actor
+  LedgerJournal {
     uuid id PK
     string operationKey UK
+    string requestHash
     string currency
     string kind
-    uuid orderId FK
+    bigint creatingTxId
     datetime postedAt
+    uuid orderId FK
+    uuid actorId FK
   }
-  LEDGER_ENTRY {
+  LedgerJournal ||--o{ LedgerEntry : journal
+  LedgerAccount ||--o{ LedgerEntry : account
+  LedgerEntry {
     uuid id PK
-    uuid journalId FK
-    uuid accountId FK
+    string currency FK
     bigint debitUnits
     bigint creditUnits
+    datetime createdAt
+    uuid journalId FK
+    uuid accountId FK
   }
-  SETTLEMENT {
+  MarketOrder ||--o{ PaymentAttempt : order
+  User ||--o{ PaymentAttempt : actor
+  LedgerJournal o|--o| PaymentAttempt : journal
+  PaymentAttempt {
     uuid id PK
-    uuid orderId FK,UK
-    uuid decisionId FK
+    string operationKey UK
+    string installment
+    int termsVersion
+    string currency FK
+    bigint units
+    string status
+    string failureCode
+    string providerReference UK
+    boolean simulated
+    datetime createdAt
+    uuid orderId FK
+    uuid actorId FK
     uuid journalId FK,UK
-    bigint heldUnits
-    datetime settledAt
   }
-  ALLOCATION {
+  MarketOrder ||--o| Settlement : order
+  LedgerJournal ||--o| Settlement : journal
+  AdminDecision o|--o| Settlement : decision
+  ResolutionProposal o|--o| Settlement : proposal
+  Settlement {
     uuid id PK
-    uuid settlementId FK
-    uuid recipientAccountId FK
+    string currency FK
+    bigint heldUnits
+    string mode
+    string reason
+    string operationKey UK
+    datetime createdAt
+    uuid orderId FK,UK
+    uuid journalId FK,UK
+    uuid decisionId FK,UK
+    uuid proposalId FK,UK
+  }
+  Settlement ||--o{ Allocation : settlement
+  LedgerAccount ||--o{ Allocation : recipient
+  Allocation {
+    uuid id PK
+    string currency FK
     string kind
     bigint units
+    uuid settlementId FK
+    uuid recipientId FK
   }
-  CASE_RECORD {
+  User ||--o{ IdempotencyRecord : actor
+  IdempotencyRecord {
     uuid id PK
+    string route
+    string key
+    string requestHash
+    json response
+    int httpStatus
+    datetime expiresAt
+    datetime createdAt
+    datetime updatedAt
+    uuid actorId FK
+  }
+```
+
+## Delivery
+
+```mermaid
+erDiagram
+  City ||--o{ DeliveryRate : city
+  User ||--o{ DeliveryRate : admin
+  DeliveryRate {
+    uuid id PK
+    string method
+    string currency
+    bigint feeUnits
+    int version
+    datetime effectiveAt
+    datetime createdAt
+    datetime updatedAt
+    uuid cityId FK
+    uuid adminId FK
+  }
+  StoreOrder ||--o| Delivery : storeOrder
+  DeliveryRate o|--o{ Delivery : rate
+  City ||--o{ Delivery : city
+  Area o|--o{ Delivery : area
+  Delivery {
+    uuid id PK
+    string method
+    string status
+    string currency
+    bigint feeUnits
+    json termsSnapshot
+    int termsVersion
+    datetime requestedAt
+    datetime droppedOffAt
+    datetime createdAt
+    datetime updatedAt
+    uuid storeOrderId FK,UK
+    uuid rateId FK
+    uuid cityId FK
+    uuid areaId FK
+  }
+  LedgerJournal o|--o| DeliveryTermsRevision : journal
+  Delivery ||--o{ DeliveryTermsRevision : delivery
+  User ||--o{ DeliveryTermsRevision : proposedBy
+  DeliveryTermsRevision {
+    uuid id PK
+    int version
+    string method
+    string currency FK
+    bigint feeUnits
+    bigint previousFeeUnits
+    uuid journalId FK,UK
+    datetime promisedAt
+    string reason
+    datetime buyerApprovedAt
+    datetime appliedAt
+    datetime createdAt
+    datetime updatedAt
+    uuid deliveryId FK
+    uuid proposedById FK
+  }
+  Delivery ||--o{ DriverAssignment : delivery
+  BusinessProfile ||--o{ DriverAssignment : driver
+  DriverAssignment {
+    uuid id PK
+    string status
+    datetime acceptedAt
+    datetime endedAt
+    datetime createdAt
+    datetime updatedAt
+    uuid deliveryId FK
+    uuid driverId FK
+  }
+  Delivery ||--o{ DeliveryEvent : delivery
+  DriverAssignment o|--o{ DeliveryEvent : assignment
+  User ||--o{ DeliveryEvent : actor
+  FileAsset o|--o{ DeliveryEvent : proof
+  DeliveryEvent {
+    uuid id PK
+    string type
+    string notes
+    boolean verified
+    datetime occurredAt
+    uuid deliveryId FK
+    uuid assignmentId FK
+    uuid actorId FK
+    uuid proofId FK
+  }
+```
+
+## Cases, chat and verified reviews
+
+```mermaid
+erDiagram
+  MarketOrder ||--o{ CaseRecord : order
+  User o|--o{ CaseRecord : opener
+  User o|--o{ CaseRecord : handlingAdmin
+  CaseRecord {
+    uuid id PK
+    string kind
+    string status
+    string reason
+    datetime evidenceDeadlineAt
+    string pausedState
+    json pausedReview
+    datetime resolvedAt
+    datetime createdAt
+    datetime updatedAt
     uuid orderId FK
     uuid openerId FK
     uuid handlingAdminId FK
-    string kind
-    string status
-    datetime evidenceDeadlineAt
-    json pausedReview
   }
-  CASE_EVIDENCE {
+  CaseRecord ||--o{ CaseParty : case
+  User ||--o{ CaseParty : user
+  CaseParty {
     uuid id PK
+    string role
+    datetime notifiedAt
+    datetime evidenceDeadlineAt
+    datetime createdAt
+    datetime updatedAt
+    uuid caseId FK
+    uuid userId FK
+  }
+  CaseRecord ||--o{ CaseEvidence : case
+  User ||--o{ CaseEvidence : submitter
+  FileAsset o|--o{ CaseEvidence : file
+  CaseEvidence {
+    uuid id PK
+    string text
+    string visibility
+    string lateReason
+    datetime createdAt
+    datetime updatedAt
     uuid caseId FK
     uuid submitterId FK
     uuid fileId FK
-    string text
-    string visibility
-    datetime submittedAt
   }
-  RESOLUTION_PROPOSAL {
+  CaseRecord ||--o{ ResolutionProposal : case
+  User ||--o{ ResolutionProposal : proposedBy
+  ResolutionProposal {
     uuid id PK
-    uuid caseId FK
-    json allocationOrRevision
-    datetime buyerAcceptedAt
-    datetime sellerAcceptedAt
+    string kind
+    int version
+    bigint sellerAwardUnits
+    bigint sellerDeliveryUnits
+    bigint driverAwardUnits
+    string reason
+    string scope
+    datetime newDueAt
     datetime agreementDeadlineAt
+    datetime createdAt
+    datetime updatedAt
+    uuid caseId FK
+    uuid proposedById FK
   }
-  ADMIN_DECISION {
+  ResolutionProposal ||--o{ ProposalApproval : proposal
+  User ||--o{ ProposalApproval : user
+  ProposalApproval {
     uuid id PK
+    string decision
+    datetime createdAt
+    datetime updatedAt
+    uuid proposalId FK
+    uuid userId FK
+  }
+  CaseRecord ||--o| AdminDecision : case
+  User ||--o{ AdminDecision : admin
+  AdminDecision {
+    uuid id PK
+    string reason
+    string substantiation
+    bigint sellerAwardUnits
+    bigint sellerDeliveryUnits
+    bigint driverAwardUnits
+    bigint buyerRefundUnits
+    bigint commissionUnits
+    string outcome
+    datetime createdAt
     uuid caseId FK,UK
     uuid adminId FK
-    string reason
-    json substantiationAndAllocations
-    datetime decidedAt
   }
-  CHAT_ROOM {
+  MarketOrder ||--o{ ChatRoom : order
+  ChatRoom {
     uuid id PK
-    uuid orderId FK
     string kind
+    datetime createdAt
+    datetime updatedAt
+    uuid orderId FK
   }
-  CHAT_MESSAGE {
+  ChatRoom ||--o{ ChatMessage : room
+  User ||--o{ ChatMessage : sender
+  ChatMessage {
     uuid id PK
-    uuid roomId FK
-    uuid senderId FK
-    string clientMessageId
+    uuid clientMessageId
     string body
     datetime createdAt
+    uuid roomId FK
+    uuid senderId FK
   }
-  MESSAGE_ATTACHMENT {
+  ChatMessage ||--o{ MessageAttachment : message
+  FileAsset ||--o{ MessageAttachment : file
+  MessageAttachment {
     uuid id PK
     uuid messageId FK
     uuid fileId FK
   }
-  REVIEW {
+  MarketOrder ||--o| Review : order
+  User ||--o{ Review : buyer
+  BusinessProfile ||--o{ Review : sellerProfile
+  Review {
     uuid id PK
+    boolean hidden
+    datetime createdAt
+    datetime updatedAt
     uuid orderId FK,UK
     uuid buyerId FK
     uuid sellerProfileId FK
-    string moderationStatus
-    datetime createdAt
   }
-  REVIEW_VERSION {
+  Review ||--o{ ReviewVersion : review
+  User ||--o{ ReviewVersion : actor
+  ReviewVersion {
     uuid id PK
-    uuid reviewId FK
     int version
     int stars
     string body
     datetime createdAt
-  }
-  IDEMPOTENCY_RECORD {
-    uuid id PK
+    uuid reviewId FK
     uuid actorId FK
-    string route
-    string key
-    string requestHash
-    string status
-    json response
-    datetime expiresAt
   }
-  AUDIT_RECORD {
+```
+
+## Notifications, jobs and audit
+
+```mermaid
+erDiagram
+  OutboxEvent {
     uuid id PK
-    uuid actorId FK
-    string action
-    string aggregateId
-    string requestId
-    json redactedMetadata
-    datetime createdAt
-  }
-  OUTBOX_EVENT {
-    uuid id PK
-    string aggregateId
+    uuid aggregateId
     int aggregateVersion
     string type
     json payload
+    string deduplicationKey UK
     datetime publishedAt
+    datetime claimedUntil
     int attempts
+    datetime createdAt
+    datetime updatedAt
   }
-  SCHEDULED_JOB {
+  MarketOrder ||--o{ ScheduledJob : order
+  CaseRecord o|--o{ ScheduledJob : case
+  ScheduledJob {
     uuid id PK
     string operationKey UK
-    uuid orderId FK
+    string kind
+    int deadlineVersion
     datetime dueAt
     datetime claimedUntil
     string status
     int attempts
+    datetime createdAt
+    datetime updatedAt
+    uuid orderId FK
+    uuid caseId FK
   }
-  NOTIFICATION {
+  User ||--o{ Notification : user
+  OutboxEvent ||--o{ Notification : event
+  Notification {
     uuid id PK
+    string channel
+    string category
+    uuid resourceId
+    datetime readAt
+    datetime createdAt
+    datetime updatedAt
     uuid userId FK
     uuid eventId FK
-    string channel
-    datetime readAt
   }
-  DEVICE_TOKEN {
+  User ||--o{ DeviceToken : user
+  DeviceToken {
     uuid id PK
-    uuid userId FK
     string token UK
     string platform
     datetime revokedAt
+    datetime createdAt
+    datetime updatedAt
+    uuid userId FK
+  }
+  Notification ||--o{ NotificationDelivery : notification
+  DeviceToken o|--o{ NotificationDelivery : device
+  NotificationDelivery {
+    uuid id PK
+    string channel
+    string status
+    int attempts
+    datetime nextAttemptAt
+    string errorCode
+    datetime createdAt
+    datetime updatedAt
+    uuid notificationId FK
+    uuid deviceId FK
+  }
+  User o|--o{ AuditRecord : actor
+  AuditRecord {
+    uuid id PK
+    string action
+    uuid aggregateId
+    string requestId
+    json metadata
+    datetime createdAt
+    uuid actorId FK
   }
 ```
 
-Nullable: LEDGER_ACCOUNT.userId for platform/escrow/clearing accounts; COMMISSION_RATE.workspace for global; commission snapshot until first successful hold; pending/failed attempt journal; admin assignment/decision until resolution; evidence file when text-only; decisionId for consensual completion; sender actor may be system only in audit, not user chat. Commission rate versions preserve changes; MARKET_ORDER snapshots the effective basis points and source version at first hold.
+## PostgreSQL invariants beyond Prisma notation
 
-## Required database constraints and indexes before business implementation
+The domain_constraints migration supplies partial unique indexes for one active business profile, one active driver assignment, successful installment/adjustment uniqueness, one unresolved financial case, platform/wallet accounts, and nullable global/city-wide scopes. It adds provider/time exclusion with btree_gist; minor-unit, stock, price, review, deadline and geographic parent checks; exact service split and itemized totals; and deferred cross-row integrity checks.
 
-- Unique normalized email; one ACTIVE BUSINESS_PROFILE per user; unique user/currency available account and order/currency escrow account; nonnegative available/held quantities. A DB migration adds partial/exclusion/deferrable constraints Prisma cannot express.
-- Orders cannot mix currencies: composite account/currency and order/currency references on financial rows. Check positive totals, legal service split and nonnegative components. No floating money. Service total == deposit+balance. Items and quoted delivery sum to agreed total.
-- Commission basis points [0,10000], rate scope/version unique; effective global/workspace lookup excludes future versions. Null scope means global, explicit zero is valid.
-- One successful hold per `(orderId, installment)` using partial unique index, except explicitly versioned store delivery adjustments; unique provider reference, journal operation key, settlement orderId and journalId. Sum of journal debits == credits per currency enforced by deferred posting validation/constraint trigger; append-only privileges prohibit edits/deletes. Settlement allocations sum exactly to escrow released, with recipient kind and currency validated.
-- `stockOnHand >= 0`, `stockReserved >= 0`, reserved <= onHand; unique reservation per order item; reconciliation total <= reservation and one final reconciliation operation. Atomic conditional stock updates; indexes on storefront/category/status/price/geography.
-- One active ASSIGNED/PICKED_UP DRIVER_ASSIGNMENT per delivery; indexes on open jobs by city/governorate and state; assigned driver must have eligible active driver profile. Exclusion on provider/time range for active reservations using `btree_gist`.
-- Quote `(orderId, version)`, delivery terms `(deliveryId, version)`, transition `(orderId, version)`, message `(roomId, senderId, clientMessageId)`, room `(orderId, kind)`, review orderId, review version, notification `(userId,eventId,channel)` unique. Stars integer 1..5. One unresolved financial case per order; post-settlement support cases are separate and cannot create another SETTLEMENT.
-- Idempotency unique `(actorId, route, key)` with request hash. Client request keys kept at least 7 days; permanent financial operation uniqueness never expires. Outbox/jobs indexed on dueAt/publishedAt/claim lease; jobs uniquely keyed by aggregate/timer version. Financial/status update and outbox persist atomically.
-- FKs use RESTRICT for order, ledger, proof, review and audit history. Archive/tombstone identity/catalog rather than cascade-delete historical evidence. File retention removes bytes only when allowed, preserving metadata references. Add buyer/seller/state/deadline, account/journal and case/status indexes.
+Ledger entries and journals are immutable and must be inserted in one transaction. Entry triggers maintain account and escrow balances; direct balance writes and late journal appends fail. Deferred checks require at least two balanced entries in one currency. Settlement uniqueness, grouped recipient credits, held-unit conservation, snapshotted commission, recipient ownership, case gating and review eligibility are checked before commit. Historical records use RESTRICT rather than cascading deletes.
+
+Database constraints do not replace authenticated backend policies. Transaction-safe financial application commands coordinate holds, inventory, cases, settlement, audit, idempotency and outbox. Cancellation negotiation, revisions, delivery changes, worker scheduling, HTTP controllers and client integration remain subsequent application slices; their contracts are specified now. See [database implementation notes](DATABASE.md) for lock ordering, privileges, migration and seed instructions.

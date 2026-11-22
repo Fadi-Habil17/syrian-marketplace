@@ -1,0 +1,654 @@
+{
+  "version": 1,
+  "authority": "../ORDER_STATE_MACHINES.md",
+  "transitions": [
+    {
+      "id": "TR-002",
+      "section": "Freelance",
+      "workspaces": ["FREELANCE"],
+      "expression": "DRAFT -> AWAITING_AGREEMENT",
+      "initiator": "Buyer",
+      "preconditions": "Published listing, snapshotted scope/total/currency/due date; not self-order",
+      "effects": "H=0; N provider"
+    },
+    {
+      "id": "TR-003",
+      "section": "Freelance",
+      "workspaces": ["FREELANCE"],
+      "expression": "AWAITING_AGREEMENT -> AWAITING_DEPOSIT",
+      "initiator": "Provider then buyer acceptance if changed",
+      "preconditions": "Both approve same scope/total; valid installments",
+      "effects": "H=0; 48h funding deadline; N buyer with amount at risk"
+    },
+    {
+      "id": "TR-004",
+      "section": "Freelance",
+      "workspaces": ["FREELANCE"],
+      "expression": "AWAITING_AGREEMENT -> REJECTED",
+      "initiator": "Either participant",
+      "preconditions": "No hold",
+      "effects": "H=0; N both"
+    },
+    {
+      "id": "TR-005",
+      "section": "Freelance",
+      "workspaces": ["FREELANCE"],
+      "expression": "AWAITING_AGREEMENT -> EXPIRED",
+      "initiator": "Worker",
+      "preconditions": "Default 72h unanswered agreement",
+      "effects": "H=0; N both"
+    },
+    {
+      "id": "TR-006",
+      "section": "Freelance",
+      "workspaces": ["FREELANCE"],
+      "expression": "AWAITING_DEPOSIT -> DEPOSIT_HELD",
+      "initiator": "Buyer",
+      "preconditions": "Within 48h; unique successful deposit; sufficient wallet",
+      "effects": "Hold rounded 1/3; snapshot commission; N both"
+    },
+    {
+      "id": "TR-007",
+      "section": "Freelance",
+      "workspaces": ["FREELANCE"],
+      "expression": "AWAITING_DEPOSIT -> EXPIRED",
+      "initiator": "Worker",
+      "preconditions": "48h elapsed and no hold",
+      "effects": "Zero charge; release any reservation; N both"
+    },
+    {
+      "id": "TR-008",
+      "section": "Freelance",
+      "workspaces": ["FREELANCE"],
+      "expression": "DEPOSIT_HELD -> IN_PROGRESS",
+      "initiator": "Freelancer",
+      "preconditions": "Deposit held, agreed due date",
+      "effects": "No movement; N buyer"
+    },
+    {
+      "id": "TR-009",
+      "section": "Freelance",
+      "workspaces": ["FREELANCE"],
+      "expression": "IN_PROGRESS -> IN_PROGRESS",
+      "initiator": "Freelancer",
+      "preconditions": "Progress/milestone update, no billing",
+      "effects": "No movement; N buyer"
+    },
+    {
+      "id": "TR-010",
+      "section": "Freelance",
+      "workspaces": ["FREELANCE"],
+      "expression": "IN_PROGRESS -> READY_FOR_FINAL_PAYMENT",
+      "initiator": "Freelancer",
+      "preconditions": "Documented readiness; no blocking case",
+      "effects": "No movement; start 72h balance timer; N buyer"
+    },
+    {
+      "id": "TR-011",
+      "section": "Freelance",
+      "workspaces": ["FREELANCE"],
+      "expression": "READY_FOR_FINAL_PAYMENT -> FULLY_FUNDED",
+      "initiator": "Buyer",
+      "preconditions": "Balance pending, within window, no blocking case",
+      "effects": "Hold exact remainder once; N provider/buyer"
+    },
+    {
+      "id": "TR-012",
+      "section": "Freelance",
+      "workspaces": ["FREELANCE"],
+      "expression": "READY_FOR_FINAL_PAYMENT -> FINAL_PAYMENT_OVERDUE",
+      "initiator": "Worker",
+      "preconditions": "72h elapsed, remainder unpaid",
+      "effects": "Keep deposit; gate finals; create one admin case; N both/admin"
+    },
+    {
+      "id": "TR-013",
+      "section": "Freelance",
+      "workspaces": ["FREELANCE"],
+      "expression": "FULLY_FUNDED -> DELIVERED",
+      "initiator": "Freelancer",
+      "preconditions": "Final files uploaded/validated; both holds committed",
+      "effects": "No movement; record deliveredAt + 72h; unlock buyer finals; N buyer"
+    },
+    {
+      "id": "TR-014",
+      "section": "Freelance",
+      "workspaces": ["FREELANCE"],
+      "expression": "DELIVERED -> COMPLETED",
+      "initiator": "Buyer or worker",
+      "preconditions": "Confirmation, or 72h elapsed after digital submission; fully funded; no case/revision",
+      "effects": "Settle once, commission on awarded service; N both"
+    },
+    {
+      "id": "TR-016",
+      "section": "Professionals: entry paths",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "DRAFT -> BOOKING_REQUESTED",
+      "initiator": "Buyer",
+      "preconditions": "Package, serviceable address and proposed slot",
+      "effects": "H=0; 72h response deadline; N professional"
+    },
+    {
+      "id": "TR-017",
+      "section": "Professionals: entry paths",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "BOOKING_REQUESTED -> AWAITING_DEPOSIT",
+      "initiator": "Professional",
+      "preconditions": "Accept request AND confirm original schedule; reserve time atomically",
+      "effects": "H=0; agreed total; 48h deposit deadline; N buyer"
+    },
+    {
+      "id": "TR-018",
+      "section": "Professionals: entry paths",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "BOOKING_REQUESTED -> SCHEDULE_PROPOSED",
+      "initiator": "Professional",
+      "preconditions": "Alternative valid slot proposed",
+      "effects": "H=0; no payment allowed; 72h buyer response; N buyer"
+    },
+    {
+      "id": "TR-019",
+      "section": "Professionals: entry paths",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "SCHEDULE_PROPOSED -> AWAITING_DEPOSIT",
+      "initiator": "Buyer",
+      "preconditions": "Explicit acceptance of alternate schedule, slot free",
+      "effects": "H=0; reserve confirmed time; 48h funding; N both"
+    },
+    {
+      "id": "TR-020",
+      "section": "Professionals: entry paths",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "BOOKING_REQUESTED/SCHEDULE_PROPOSED -> REJECTED",
+      "initiator": "Provider declines original / buyer declines proposed",
+      "preconditions": "No hold",
+      "effects": "Zero charge; release tentative time if any; N both"
+    },
+    {
+      "id": "TR-021",
+      "section": "Professionals: entry paths",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "DRAFT -> PENDING_QUOTE",
+      "initiator": "Buyer",
+      "preconditions": "Description/photos/location, eligible professional",
+      "effects": "H=0; 72h response deadline; N professional"
+    },
+    {
+      "id": "TR-022",
+      "section": "Professionals: entry paths",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "PENDING_QUOTE -> PENDING_QUOTE",
+      "initiator": "Both",
+      "preconditions": "Agree free inspection slot/response deadline explicitly",
+      "effects": "H=0; preserve inspection history; N both"
+    },
+    {
+      "id": "TR-023",
+      "section": "Professionals: entry paths",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "PENDING_QUOTE -> QUOTE_SENT",
+      "initiator": "Professional",
+      "preconditions": "Itemized quote, scope, due date, schedule, currency, sum valid",
+      "effects": "H=0; 72h approval deadline; N buyer"
+    },
+    {
+      "id": "TR-024",
+      "section": "Professionals: entry paths",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "QUOTE_SENT -> APPROVED",
+      "initiator": "Buyer",
+      "preconditions": "Approve exact immutable version, total and schedule",
+      "effects": "H=0; reserve time; N provider"
+    },
+    {
+      "id": "TR-025",
+      "section": "Professionals: entry paths",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "APPROVED -> AWAITING_DEPOSIT",
+      "initiator": "System in same approval transaction",
+      "preconditions": "Approved version and reservation valid",
+      "effects": "H=0; record APPROVED timeline; 48h funding; N buyer"
+    },
+    {
+      "id": "TR-026",
+      "section": "Professionals: entry paths",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "PENDING_QUOTE/QUOTE_SENT -> REJECTED",
+      "initiator": "Provider declines request / buyer rejects quote",
+      "preconditions": "No hold",
+      "effects": "Zero charge; release time; N both"
+    },
+    {
+      "id": "TR-027",
+      "section": "Professionals: entry paths",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "BOOKING_REQUESTED/SCHEDULE_PROPOSED/PENDING_QUOTE/QUOTE_SENT -> EXPIRED",
+      "initiator": "Worker",
+      "preconditions": "Unanswered current actionable request at 72h",
+      "effects": "Zero charge; release time; N both"
+    },
+    {
+      "id": "TR-029",
+      "section": "Professionals: funded flow",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "AWAITING_DEPOSIT -> DEPOSIT_HELD",
+      "initiator": "Buyer",
+      "preconditions": "Accepted confirmed booking or approved quote; within 48h",
+      "effects": "Hold rounded 1/3, snapshot rate; N both"
+    },
+    {
+      "id": "TR-030",
+      "section": "Professionals: funded flow",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "AWAITING_DEPOSIT -> EXPIRED",
+      "initiator": "Worker",
+      "preconditions": "48h without hold",
+      "effects": "Zero charge; release reserved slot; N both"
+    },
+    {
+      "id": "TR-031",
+      "section": "Professionals: funded flow",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "DEPOSIT_HELD -> IN_PROGRESS",
+      "initiator": "Professional",
+      "preconditions": "Deposit held and agreed work begins",
+      "effects": "No movement; keep time; N buyer"
+    },
+    {
+      "id": "TR-032",
+      "section": "Professionals: funded flow",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "IN_PROGRESS -> EN_ROUTE",
+      "initiator": "Professional",
+      "preconditions": "Traveling to service location, valid scope",
+      "effects": "No movement; N buyer"
+    },
+    {
+      "id": "TR-033",
+      "section": "Professionals: funded flow",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "IN_PROGRESS/EN_ROUTE -> ON_SITE",
+      "initiator": "Professional",
+      "preconditions": "At agreed location",
+      "effects": "No movement; N buyer"
+    },
+    {
+      "id": "TR-034",
+      "section": "Professionals: funded flow",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "IN_PROGRESS/ON_SITE -> READY_FOR_FINAL_PAYMENT",
+      "initiator": "Professional",
+      "preconditions": "Documented completed readiness",
+      "effects": "No movement; start 72h final-payment timer; N buyer"
+    },
+    {
+      "id": "TR-035",
+      "section": "Professionals: funded flow",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "READY_FOR_FINAL_PAYMENT -> FULLY_FUNDED",
+      "initiator": "Buyer",
+      "preconditions": "Remainder due, no case",
+      "effects": "Hold remainder once; N both"
+    },
+    {
+      "id": "TR-036",
+      "section": "Professionals: funded flow",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "READY_FOR_FINAL_PAYMENT -> FINAL_PAYMENT_OVERDUE",
+      "initiator": "Worker",
+      "preconditions": "72h unpaid",
+      "effects": "Keep deposit; no handover; one admin case; N both/admin"
+    },
+    {
+      "id": "TR-037",
+      "section": "Professionals: funded flow",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "FULLY_FUNDED -> DELIVERED",
+      "initiator": "Professional",
+      "preconditions": "On-site handover recorded after payment; supporting proof",
+      "effects": "No movement; deliveredAt + 72h; N buyer"
+    },
+    {
+      "id": "TR-038",
+      "section": "Professionals: funded flow",
+      "workspaces": ["PROFESSIONALS"],
+      "expression": "DELIVERED -> COMPLETED",
+      "initiator": "Buyer or worker",
+      "preconditions": "Buyer confirmation or 72h with documented handover; fully held; no case/revision",
+      "effects": "Settle once; release reservation; N both"
+    },
+    {
+      "id": "TR-040",
+      "section": "Home Store and delivery",
+      "workspaces": ["HOME_STORE"],
+      "expression": "DRAFT -> PAID_IN_ESCROW",
+      "initiator": "Buyer",
+      "preconditions": "One seller/currency, serviceable address, agreed quote/options/fee, stock and wallet sufficient",
+      "effects": "Hold full items+fee and reserve stock atomically; snapshot rate; 24h seller deadline; N seller/buyer"
+    },
+    {
+      "id": "TR-041",
+      "section": "Home Store and delivery",
+      "workspaces": ["HOME_STORE"],
+      "expression": "DRAFT -> DRAFT (failed attempt)",
+      "initiator": "Gateway/application",
+      "preconditions": "Insufficient funds or simulated failure",
+      "effects": "No hold/reservation/state advance; record failure; N buyer"
+    },
+    {
+      "id": "TR-042",
+      "section": "Home Store and delivery",
+      "workspaces": ["HOME_STORE"],
+      "expression": "PAID_IN_ESCROW -> PREPARING",
+      "initiator": "Seller",
+      "preconditions": "Accept within 24h, no cancellation already committed",
+      "effects": "H unchanged; keep reservation; N buyer"
+    },
+    {
+      "id": "TR-043",
+      "section": "Home Store and delivery",
+      "workspaces": ["HOME_STORE"],
+      "expression": "PAID_IN_ESCROW -> REJECTED",
+      "initiator": "Seller",
+      "preconditions": "Declines before acceptance",
+      "effects": "Full refund incl. delivery, release stock; N buyer"
+    },
+    {
+      "id": "TR-044",
+      "section": "Home Store and delivery",
+      "workspaces": ["HOME_STORE"],
+      "expression": "PAID_IN_ESCROW -> REFUNDED",
+      "initiator": "Buyer or worker",
+      "preconditions": "Buyer cancels before acceptance OR 24h seller timeout",
+      "effects": "Full refund incl. fee, release stock; N both"
+    },
+    {
+      "id": "TR-045",
+      "section": "Home Store and delivery",
+      "workspaces": ["HOME_STORE"],
+      "expression": "PREPARING -> READY_FOR_DELIVERY",
+      "initiator": "Seller",
+      "preconditions": "Goods ready; method and terms known",
+      "effects": "H unchanged; keep stock; N buyer, eligible drivers if platform"
+    },
+    {
+      "id": "TR-046",
+      "section": "Home Store and delivery",
+      "workspaces": ["HOME_STORE"],
+      "expression": "READY_FOR_DELIVERY -> READY_FOR_DELIVERY",
+      "initiator": "Seller",
+      "preconditions": "Seller delivers OR request platform job; buyer approves any changed terms first",
+      "effects": "Explicit delta hold/refund only if approved total changes; no silent debit; N buyer/drivers"
+    },
+    {
+      "id": "TR-047",
+      "section": "Home Store and delivery",
+      "workspaces": ["HOME_STORE"],
+      "expression": "Delivery REQUESTED -> ASSIGNED",
+      "initiator": "Eligible driver",
+      "preconditions": "Ready job, coverage, active profile; no active assignment",
+      "effects": "No movement; unique assignment; N seller/buyer/driver"
+    },
+    {
+      "id": "TR-048",
+      "section": "Home Store and delivery",
+      "workspaces": ["HOME_STORE"],
+      "expression": "Delivery ASSIGNED -> REQUESTED",
+      "initiator": "Driver/seller before pickup",
+      "preconditions": "Release assignment with reason; no custody yet",
+      "effects": "No movement; revoke grants; reoffer N eligible drivers"
+    },
+    {
+      "id": "TR-049",
+      "section": "Home Store and delivery",
+      "workspaces": ["HOME_STORE"],
+      "expression": "READY_FOR_DELIVERY -> OUT_FOR_DELIVERY; assignment -> PICKED_UP",
+      "initiator": "Assigned driver or seller for seller method",
+      "preconditions": "Pickup event recorded; seller method has seller pickup/departure record",
+      "effects": "H unchanged; reserve remains until fulfillment; N buyer/seller"
+    },
+    {
+      "id": "TR-050",
+      "section": "Home Store and delivery",
+      "workspaces": ["HOME_STORE"],
+      "expression": "OUT_FOR_DELIVERY -> DELIVERED; delivery -> DROPPED_OFF",
+      "initiator": "Assigned driver or seller",
+      "preconditions": "Recorded drop-off time/history/proof status",
+      "effects": "H unchanged; consume fulfilled reservation once; start 72h review; N buyer/seller"
+    },
+    {
+      "id": "TR-051",
+      "section": "Home Store and delivery",
+      "workspaces": ["HOME_STORE"],
+      "expression": "DELIVERED -> COMPLETED",
+      "initiator": "Buyer or worker",
+      "preconditions": "Explicit buyer confirmation OR 72h documented verified delivery; fully held; no open case/revision",
+      "effects": "Settle seller items + seller/driver fee, commission excludes fee; N all"
+    },
+    {
+      "id": "TR-052",
+      "section": "Home Store and delivery",
+      "workspaces": ["HOME_STORE"],
+      "expression": "DELIVERED -> DELIVERY_REVIEW_REQUIRED",
+      "initiator": "Worker",
+      "preconditions": "72h elapsed without proof or buyer confirmation",
+      "effects": "Freeze/hold; create admin review; no payout; N buyer/seller/admin"
+    },
+    {
+      "id": "TR-053",
+      "section": "Home Store and delivery",
+      "workspaces": ["HOME_STORE"],
+      "expression": "READY_FOR_DELIVERY -> READY_FOR_DELIVERY (exception)",
+      "initiator": "Seller/worker",
+      "preconditions": "Driver unavailable; notify/escalate at default 2h",
+      "effects": "Keep hold; offer seller same terms, buyer-approved reschedule, or full refund if unavailable; N buyer/seller"
+    },
+    {
+      "id": "TR-054",
+      "section": "Home Store and delivery",
+      "workspaces": ["HOME_STORE"],
+      "expression": "PREPARING/READY_FOR_DELIVERY/OUT_FOR_DELIVERY -> DELIVERY_EXCEPTION",
+      "initiator": "Seller/driver/buyer report",
+      "preconditions": "Delay, failed pickup/drop-off, lost goods or custody issue",
+      "effects": "Hold funds; record evidence; no automatic settlement; N all/admin when needed"
+    },
+    {
+      "id": "TR-055",
+      "section": "Home Store and delivery",
+      "workspaces": ["HOME_STORE"],
+      "expression": "DELIVERY_EXCEPTION -> READY_FOR_DELIVERY/OUT_FOR_DELIVERY",
+      "initiator": "Buyer + seller, admin for custody change",
+      "preconditions": "Approved reschedule/remedy, unchanged or explicitly approved terms",
+      "effects": "Hold unchanged unless approved adjustment; no duplicate reservation; N all"
+    },
+    {
+      "id": "TR-056",
+      "section": "Home Store and delivery",
+      "workspaces": ["HOME_STORE"],
+      "expression": "DELIVERY_EXCEPTION -> REFUNDED",
+      "initiator": "Seller or admin according to case",
+      "preconditions": "Fulfillment unavailable/seller-caused nondelivery, no governing dispute; otherwise resolve through case",
+      "effects": "Full refund default incl. fee; reconcile reusable/nonrestockable stock; N all"
+    },
+    {
+      "id": "TR-058",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "Service DEPOSIT_HELD -> CANCELLED",
+      "initiator": "Buyer or provider",
+      "preconditions": "Work not started; no existing governing case",
+      "effects": "Full H refund; release slot; N both"
+    },
+    {
+      "id": "TR-059",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "Any unfunded agreement -> CANCELLED",
+      "initiator": "Either permitted participant",
+      "preconditions": "No held funds",
+      "effects": "Zero charge; release slot; N both"
+    },
+    {
+      "id": "TR-060",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "Working service or accepted store -> CANCELLATION_PENDING",
+      "initiator": "Buyer",
+      "preconditions": "Work started or seller accepted",
+      "effects": "Freeze H; record refund proposal; 72h agreement deadline; stock remains/reconcile on outcome; N seller"
+    },
+    {
+      "id": "TR-061",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "CANCELLATION_PENDING -> CANCELLED",
+      "initiator": "Buyer AND seller",
+      "preconditions": "Same documented allocation accepted within 72h, valid held sum",
+      "effects": "Settle agreed refund/awards once; commission on eligible award only; reconcile stock/release slot; N both/driver if affected"
+    },
+    {
+      "id": "TR-062",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "CANCELLATION_PENDING -> DISPUTED",
+      "initiator": "Either rejects or worker at 72h",
+      "preconditions": "No mutual agreement",
+      "effects": "H frozen; admin case/evidence deadlines; no automatic award; N both/admin"
+    },
+    {
+      "id": "TR-063",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "Active service -> REFUNDED",
+      "initiator": "Provider",
+      "preconditions": "Provider cancels; no governing dispute/accepted settlement",
+      "effects": "Refund H in full; release time; N buyer"
+    },
+    {
+      "id": "TR-064",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "Active service -> EXTENSION_PENDING",
+      "initiator": "Either / worker flagging missed deadline",
+      "preconditions": "Agreed due date missed",
+      "effects": "Keep H; offer extension/cancel; pause unsafe release; N both"
+    },
+    {
+      "id": "TR-065",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "EXTENSION_PENDING -> prior working state",
+      "initiator": "Buyer and provider",
+      "preconditions": "Explicit new due date approved",
+      "effects": "No money; reschedule slot if needed; N both"
+    },
+    {
+      "id": "TR-066",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "EXTENSION_PENDING -> REFUNDED",
+      "initiator": "Buyer/provider",
+      "preconditions": "Cancellation uncontested",
+      "effects": "Refund H; release slot; N both"
+    },
+    {
+      "id": "TR-067",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "EXTENSION_PENDING -> DISPUTED",
+      "initiator": "Provider contests refund",
+      "preconditions": "Substantiated work/delay claim recorded",
+      "effects": "Freeze H; admin review; N both/admin"
+    },
+    {
+      "id": "TR-068",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "Accepted store -> REFUNDED",
+      "initiator": "Seller",
+      "preconditions": "Seller cancellation/nondelivery; no governing case",
+      "effects": "Full H refund default; reconcile stock incl. nonrestockable; release driver; N all"
+    },
+    {
+      "id": "TR-069",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "Any held, unsettled order -> DISPUTED",
+      "initiator": "Buyer or provider; system case for overdue",
+      "preconditions": "After hold, before committed settlement; includes delivery-review/change request",
+      "effects": "Freeze all held funds; suspend completion; preserve inventory/proof; 72h evidence for each party; N both/admin"
+    },
+    {
+      "id": "TR-070",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "DISPUTED -> REVISION_IN_PROGRESS",
+      "initiator": "Buyer and provider",
+      "preconditions": "Both approve documented revision scope/due date",
+      "effects": "Retain holds, pause timer, no duplicate service installment; N both"
+    },
+    {
+      "id": "TR-071",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "REVISION_IN_PROGRESS -> READY_FOR_FINAL_PAYMENT",
+      "initiator": "Provider",
+      "preconditions": "Documented readiness; balance still unfunded",
+      "effects": "Start new balance window per recorded agreed plan; retain deposit; N buyer"
+    },
+    {
+      "id": "TR-072",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "REVISION_IN_PROGRESS -> FULLY_FUNDED -> DELIVERED",
+      "initiator": "Provider",
+      "preconditions": "Already fully funded; resubmit validated files/handover",
+      "effects": "No new hold; fresh deliveredAt and 72h review; N buyer"
+    },
+    {
+      "id": "TR-073",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "FINAL_PAYMENT_OVERDUE -> READY_FOR_FINAL_PAYMENT",
+      "initiator": "Handling admin + participants",
+      "preconditions": "Explicit resumption/new deadline, case resolved without allocation; no settlement",
+      "effects": "Deposit retained, no forfeiture; gates remain until balance; N both"
+    },
+    {
+      "id": "TR-074",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "DISPUTED/DELIVERY_REVIEW_REQUIRED -> RESOLVED",
+      "initiator": "Handling admin",
+      "preconditions": "Each party has received its 72h evidence window; reason + substantiated allocations",
+      "effects": "One atomic refund/seller net/driver/commission journal; stock reconciliation/time release as relevant; N all"
+    },
+    {
+      "id": "TR-075",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "RESOLVED -> COMPLETED / REFUNDED / CANCELLED",
+      "initiator": "System in resolution transaction",
+      "preconditions": "Recorded resolution fulfillment outcome",
+      "effects": "Terminal outcome chosen from actual fulfillment; no second payout; N included above"
+    },
+    {
+      "id": "TR-076",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "DELIVERED -> COMPLETED",
+      "initiator": "Buyer",
+      "preconditions": "Even unproven physical delivery explicitly confirmed; no unresolved case",
+      "effects": "Eligible settlement once; no automatic bypass of open case; N all"
+    },
+    {
+      "id": "TR-077",
+      "section": "Shared interruptions and resolution",
+      "workspaces": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"],
+      "expression": "Any terminal -> same terminal + SUPPORT_CASE",
+      "initiator": "Participant",
+      "preconditions": "Already settled",
+      "effects": "Support only; no original journal replay/reversal; N handling admin"
+    }
+  ]
+}

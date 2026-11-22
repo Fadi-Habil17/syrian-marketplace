@@ -1,4 +1,4 @@
-name: Database checks
+name: Database and contract checks
 on:
   push:
   pull_request:
@@ -37,6 +37,9 @@ jobs:
       - run: npm run db:migrate
       - run: npm run db:seed
       - run: npm run db:seed
+      - run: npm run contracts:validate
+      - run: npm run contracts:check
+      - run: npm run db:erd:check
       - run: npm run typecheck
       - run: npm test
       - run: npm run db:test

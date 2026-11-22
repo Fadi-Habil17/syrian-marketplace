@@ -1,12 +1,45 @@
 {
   "info": {
-    "name": "Syrian Marketplace - Setup API",
-    "description": "Only implemented infrastructure routes. Add every business route, auth, bodies and examples with each slice. No business endpoint is implemented yet.",
+    "name": "Syrian Marketplace - Release One Contract",
+    "description": "Health is implemented. Every other request is contract-only until its backend slice is wired. Set resource IDs/token; use a new idempotencyKey per intent and reuse it on timeout. Never commit actual tokens. Example credentials are fictional seed-only, not a working login endpoint.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:4000/api/v1", "type": "string" },
-    { "key": "token", "value": "", "type": "string" }
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "idempotencyKey", "value": "", "type": "string" },
+    { "key": "orderVersion", "value": "1", "type": "string" },
+    { "key": "profileId", "value": "", "type": "string" },
+    { "key": "itemId", "value": "", "type": "string" },
+    { "key": "cityId", "value": "", "type": "string" },
+    { "key": "areaId", "value": "", "type": "string" },
+    { "key": "governorateId", "value": "", "type": "string" },
+    { "key": "addressId", "value": "", "type": "string" },
+    { "key": "categoryId", "value": "", "type": "string" },
+    { "key": "listingId", "value": "", "type": "string" },
+    { "key": "storeId", "value": "", "type": "string" },
+    { "key": "productId", "value": "", "type": "string" },
+    { "key": "providerProfileId", "value": "", "type": "string" },
+    { "key": "draftOrderId", "value": "", "type": "string" },
+    { "key": "orderId", "value": "", "type": "string" },
+    { "key": "quoteId", "value": "", "type": "string" },
+    { "key": "currency", "value": "", "type": "string" },
+    { "key": "operationId", "value": "", "type": "string" },
+    { "key": "deliveryId", "value": "", "type": "string" },
+    { "key": "revisionId", "value": "", "type": "string" },
+    { "key": "roomId", "value": "", "type": "string" },
+    { "key": "clientMessageId", "value": "", "type": "string" },
+    { "key": "fileId", "value": "", "type": "string" },
+    { "key": "caseId", "value": "", "type": "string" },
+    { "key": "proposalId", "value": "", "type": "string" },
+    { "key": "reviewId", "value": "", "type": "string" },
+    { "key": "notificationId", "value": "", "type": "string" },
+    { "key": "deviceId", "value": "", "type": "string" },
+    { "key": "driverProfileId", "value": "", "type": "string" },
+    { "key": "resourceId", "value": "", "type": "string" },
+    { "key": "userId", "value": "", "type": "string" },
+    { "key": "restrictionId", "value": "", "type": "string" },
+    { "key": "zoneId", "value": "", "type": "string" }
   ],
   "auth": {
     "type": "bearer",
@@ -17,13 +50,13 @@
       "name": "Infrastructure",
       "item": [
         {
-          "name": "Health",
+          "name": "Process liveness",
           "request": {
-            "auth": { "type": "noauth" },
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/health",
-            "description": "Process liveness; does not test PostgreSQL readiness. Simulator indicator describes the planned release."
+            "description": "implemented. Public liveness; not database readiness.",
+            "auth": { "type": "noauth" }
           },
           "response": [
             {
@@ -35,6 +68,2237 @@
               "body": "{\n  \"status\": \"ok\",\n  \"phase\": \"setup\",\n  \"simulatedPayments\": true\n}"
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/register",
+            "description": "contract-only. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
+            "auth": { "type": "noauth" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@demo.marketplace.test\",\n  \"password\": \"Marketplace123!\",\n  \"displayName\": \"Demo request\",\n  \"locale\": \"ar\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "description": "contract-only. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
+            "auth": { "type": "noauth" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@demo.marketplace.test\",\n  \"password\": \"Marketplace123!\",\n  \"client\": \"WEB\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "refreshSession",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/refresh",
+            "description": "contract-only. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
+            "auth": { "type": "noauth" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "verifyEmail",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/verify-email",
+            "description": "contract-only. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
+            "auth": { "type": "noauth" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "forgotPassword",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/forgot-password",
+            "description": "contract-only. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
+            "auth": { "type": "noauth" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@demo.marketplace.test\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "resetPassword",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/reset-password",
+            "description": "contract-only. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
+            "auth": { "type": "noauth" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"Demo request\",\n  \"password\": \"Marketplace123!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Revoke current session",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/logout",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Current authenticated identity",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/auth/me",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Profiles",
+      "item": [
+        {
+          "name": "Own profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/me",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Update own display name/locale",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/me",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Own active and archived business profiles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/business-profiles",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Create draft profile",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/business-profiles",
+            "description": "contract-only. A draft does not activate a new workspace; activation uses atomic switching checks. One active business profile per user. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"FREELANCER\",\n  \"title\": \"Demo request\",\n  \"bio\": \"Demo request\",\n  \"skills\": [],\n  \"languages\": []\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit owned active workspace profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/business-profiles/{{profileId}}",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Demo request\",\n  \"bio\": \"Demo request\",\n  \"skills\": [],\n  \"languages\": []\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Automatically switch when eligible",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/business-profiles/switch",
+            "description": "contract-only. Atomic zero active orders, open cases, pending delivery or unsettled escrow checks across buyer/provider/driver commitments. Archive previous profile; retain history. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"target\": \"FREELANCER\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reactivate owned archived profile",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/business-profiles/{{profileId}}/reactivate",
+            "description": "contract-only. Same commitment checks as switch; existing restrictions and moderation survive. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Published public profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/profiles/{{profileId}}",
+            "description": "contract-only. Public published projection; private contact/history excluded.",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Add portfolio item",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/business-profiles/{{profileId}}/portfolio",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kind\": \"LINK\",\n  \"title\": \"Demo request\",\n  \"position\": 0,\n  \"url\": \"https://example.com/demo\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove owned portfolio reference",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Idempotency-Key", "value": "{{idempotencyKey}}" }],
+            "url": "{{baseUrl}}/business-profiles/{{profileId}}/portfolio/{{itemId}}",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Owned coverage",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/business-profiles/{{profileId}}/service-areas",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Add owned seller coverage",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/business-profiles/{{profileId}}/service-areas",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cityId\": \"{{cityId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove owned coverage",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Idempotency-Key", "value": "{{idempotencyKey}}" }],
+            "url": "{{baseUrl}}/business-profiles/{{profileId}}/service-areas/{{areaId}}",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Geography",
+      "item": [
+        {
+          "name": "Shared Syrian geography",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/geography/governorates",
+            "description": "contract-only. Public; canonical hierarchy IDs.",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Shared Syrian geography",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/geography/cities?governorateId={{governorateId}}",
+            "description": "contract-only. Public; canonical hierarchy IDs.",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Shared Syrian geography",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/geography/areas?cityId={{cityId}}",
+            "description": "contract-only. Public; canonical hierarchy IDs.",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Own saved addresses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/me/addresses",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Save own address",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/me/addresses",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Demo request\",\n  \"cityId\": \"{{cityId}}\",\n  \"details\": \"Demo request\",\n  \"contactName\": \"Demo request\",\n  \"contactPhone\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update own address",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/me/addresses/{{addressId}}",
+            "description": "contract-only. Existing orders retain immutable address snapshots. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Demo request\",\n  \"cityId\": \"{{cityId}}\",\n  \"details\": \"Demo request\",\n  \"contactName\": \"Demo request\",\n  \"contactPhone\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Archive own address",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Idempotency-Key", "value": "{{idempotencyKey}}" }],
+            "url": "{{baseUrl}}/me/addresses/{{addressId}}",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Catalog",
+      "item": [
+        {
+          "name": "Workspace categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/categories",
+            "description": "contract-only. Public.",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Browse published listings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/listings",
+            "description": "contract-only. Public published records only; supported filters/sort are validated server-side.",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Create owned Listing",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/listings",
+            "description": "contract-only. Owning active workspace of matching type; verified account. Price changes validated by backend; order snapshots stay fixed.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoryId\": \"{{categoryId}}\",\n  \"kind\": \"FREELANCE\",\n  \"price\": {\n    \"currency\": \"SYP\",\n    \"units\": \"100\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Published Listing",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/listings/{{listingId}}",
+            "description": "contract-only. Public published record; inaccessible archived/hidden records return 404.",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit owned Listing",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/listings/{{listingId}}",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Publish validated owned Listing",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/listings/{{listingId}}/publish",
+            "description": "contract-only. Owning active workspace, verified account, complete bilingual content and clean assets; moderation restrictions survive archival.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate owned Listing",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/listings/{{listingId}}/deactivate",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Browse published stores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/stores",
+            "description": "contract-only. Public published records only; supported filters/sort are validated server-side.",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Create owned Store",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/stores",
+            "description": "contract-only. Owning active workspace of matching type; verified account. Price changes validated by backend; order snapshots stay fixed.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cityId\": \"{{cityId}}\",\n  \"supportsSellerDelivery\": false,\n  \"supportsPlatformDelivery\": false\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Published Store",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/stores/{{storeId}}",
+            "description": "contract-only. Public published record; inaccessible archived/hidden records return 404.",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit owned Store",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/stores/{{storeId}}",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Publish validated owned Store",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/stores/{{storeId}}/publish",
+            "description": "contract-only. Owning active workspace, verified account, complete bilingual content and clean assets; moderation restrictions survive archival.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate owned Store",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/stores/{{storeId}}/deactivate",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Browse published products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/products",
+            "description": "contract-only. Public published records only; supported filters/sort are validated server-side.",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Create owned Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/products",
+            "description": "contract-only. Owning active workspace of matching type; verified account. Price changes validated by backend; order snapshots stay fixed.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoryId\": \"{{categoryId}}\",\n  \"price\": {\n    \"currency\": \"SYP\",\n    \"units\": \"100\"\n  },\n  \"stockOnHand\": 0\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Published Product",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/products/{{productId}}",
+            "description": "contract-only. Public published record; inaccessible archived/hidden records return 404.",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit owned Product",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/products/{{productId}}",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Publish validated owned Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/products/{{productId}}/publish",
+            "description": "contract-only. Owning active workspace, verified account, complete bilingual content and clean assets; moderation restrictions survive archival.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate owned Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/products/{{productId}}/deactivate",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Set stock with reservation checks",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/products/{{productId}}/stock",
+            "description": "contract-only. Cannot reduce on-hand below reserved stock; atomic conditional update and audit. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stockOnHand\": 0,\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "createFreelanceOrder",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/freelance",
+            "description": "contract-only. Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock reservation; quote valid 15 minutes. Buyer, including a business user buying; not own seller profile.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"listingId\": \"{{listingId}}\",\n  \"description\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "createBooking",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/professional-bookings",
+            "description": "contract-only. Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock reservation; quote valid 15 minutes. Buyer, including a business user buying; not own seller profile.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"listingId\": \"{{listingId}}\",\n  \"addressId\": \"{{addressId}}\",\n  \"startsAt\": \"2026-11-25T08:00:00Z\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "requestInspectionQuote",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/inspection-requests",
+            "description": "contract-only. Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock reservation; quote valid 15 minutes. Buyer, including a business user buying; not own seller profile.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"providerProfileId\": \"{{providerProfileId}}\",\n  \"currency\": \"SYP\",\n  \"addressId\": \"{{addressId}}\",\n  \"description\": \"Demo request\",\n  \"photoIds\": []\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "previewStoreCheckout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/store-preview",
+            "description": "contract-only. Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock reservation; quote valid 15 minutes. Buyer, including a business user buying; not own seller profile.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"storeId\": \"{{storeId}}\",\n  \"addressId\": \"{{addressId}}\",\n  \"method\": \"SELLER\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 1\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Own purchase/provider orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Private order detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders/{{orderId}}",
+            "description": "contract-only. Buyer/provider or assigned handling admin; drivers use delivery projection, never service/financial details."
+          },
+          "response": []
+        },
+        {
+          "name": "Immutable order timeline",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders/{{orderId}}/timeline",
+            "description": "contract-only. Buyer/provider or handling admin. Driver delivery events are exposed through delivery detail only."
+          },
+          "response": []
+        },
+        {
+          "name": "Server-computed allowed commands",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders/{{orderId}}/actions",
+            "description": "contract-only. A hint, not authority; every command rechecks guards under lock. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "agreeOrder",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/agree",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer and provider approve identical scope/price.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scope\": \"Demo request\",\n  \"dueAt\": \"2026-11-26T08:00:00Z\",\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "acceptBooking",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/accept-booking",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning professional accepts AND confirms requested slot.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "proposeSchedule",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/propose-schedule",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning professional proposes alternate slot; no deposit yet.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startsAt\": \"2026-11-25T08:00:00Z\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "acceptSchedule",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/accept-schedule",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer explicitly accepts alternate slot before funding.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "rejectOrder",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/reject",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Provider declines request or buyer declines proposed agreement; no hold.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "startWork",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/start",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning provider; deposit held, no case.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "recordProgress",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/progress",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning provider; progress/milestones are nonfinancial.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kind\": \"UPDATE\",\n  \"note\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "markReady",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/ready",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning provider; documented readiness starts 72h balance timer; reminders at 24/48h.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Demo request\",\n  \"completedScope\": [],\n  \"previewFileIds\": []\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "deliverService",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/deliver",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning provider; both holds before final files/on-site handover.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kind\": \"DIGITAL_FINAL\",\n  \"note\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "confirmReceipt",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/confirm",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer; fully held and no case/revision, physical proof or explicit confirmation.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "cancelOrder",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/cancel",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer/provider; full refund before work/store acceptance, otherwise freeze/propose/admin.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "requestExtension",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/request-extension",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Participant; missed agreed deadline offers extension/cancel; contested refund freezes/admin.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dueAt\": \"2026-11-26T08:00:00Z\",\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "acceptExtension",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/accept-extension",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Other participant explicitly agrees new deadline.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "acceptStoreOrder",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/accept-store",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning store seller within 24h of hold.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "markStoreReady",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/ready-for-delivery",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning store seller; preparation complete.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "requestPlatformDriver",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/delivery/request-driver",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning seller; request can be recorded at checkout, offered only when ready.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add non-billing progress milestone",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/milestones",
+            "description": "contract-only. Owning freelancer; milestones never fund or release money.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Demo request\",\n  \"position\": 0\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Order progress milestones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders/{{orderId}}/milestones",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Authorized readiness and final submission files",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders/{{orderId}}/submissions",
+            "description": "contract-only. Buyer/provider or handling admin; final files omitted/gated until both holds, drivers denied."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Atomically hold total and reserve stock",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/store-checkout",
+            "description": "contract-only. One seller and one currency. Full items plus agreed delivery. No amount accepted from buyer; failure advances neither order nor stock. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"draftOrderId\": \"{{draftOrderId}}\",\n  \"termsAccepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Own SYP and USD wallets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/wallets",
+            "description": "contract-only. Own wallet only; business users retain purchasing capabilities."
+          },
+          "response": []
+        },
+        {
+          "name": "Own immutable transaction history",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/wallets/{{currency}}/transactions",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Order payment references",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders/{{orderId}}/payments",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Recorded conserved allocation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders/{{orderId}}/settlement",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Resolve unknown outcome after timeout",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/operations/{{operationId}}",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Hold deposit in simulated escrow",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/payments/deposit",
+            "description": "contract-only. Deposit is rounded one-third; balance is subtraction. Deposit deadline 48h. Balance needs readiness and 72h window; overdue creates one admin case and never forfeits deposit. Order buyer only; no client amount/rate/state accepted. Repeating a successful installment never adds another hold.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"termsAccepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Hold balance in simulated escrow",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/payments/balance",
+            "description": "contract-only. Deposit is rounded one-third; balance is subtraction. Deposit deadline 48h. Balance needs readiness and 72h window; overdue creates one admin case and never forfeits deposit. Order buyer only; no client amount/rate/state accepted. Repeating a successful installment never adds another hold.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"termsAccepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Quotes",
+      "item": [
+        {
+          "name": "Versioned itemized quotes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders/{{orderId}}/quotes",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Send itemized quote",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/quotes",
+            "description": "contract-only. Owning professional; server sums line items, fixes currency and sets 72h response deadline.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currency\": \"SYP\",\n  \"scope\": \"Demo request\",\n  \"startsAt\": \"2026-11-25T08:00:00Z\",\n  \"endsAt\": \"2026-11-25T09:00:00Z\",\n  \"dueAt\": \"2026-11-26T08:00:00Z\",\n  \"items\": [\n    {\n      \"description\": \"Demo request\",\n      \"quantity\": 1,\n      \"unitPriceUnits\": \"100\"\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Agree free inspection schedule",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/inspection-schedule",
+            "description": "contract-only. Both parties must accept same inspection version; no inspection charge; explicit revised response deadline.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startsAt\": \"2026-11-25T08:00:00Z\",\n  \"endsAt\": \"2026-11-25T09:00:00Z\",\n  \"responseDeadlineAt\": \"2026-11-25T08:00:00Z\",\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "approve itemized quote",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/quotes/{{quoteId}}/approve",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer of quote order; exact version, fixed total and schedule; rejection free.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "reject itemized quote",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/quotes/{{quoteId}}/reject",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer of quote order; exact version, fixed total and schedule; rejection free.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Delivery",
+      "item": [
+        {
+          "name": "Preview serviceability, methods and fees",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/delivery-options?storeId={{storeId}}&addressId={{addressId}}&currency=SYP",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Eligible redacted ready jobs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/driver/jobs",
+            "description": "contract-only. Active driver in assigned city/governorate; no exact address/contact until assignment."
+          },
+          "response": []
+        },
+        {
+          "name": "Own assignments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/driver/assignments",
+            "description": "contract-only. Active or historical assigned driver; completed history redacted."
+          },
+          "response": []
+        },
+        {
+          "name": "Authorized delivery projection",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/deliveries/{{deliveryId}}",
+            "description": "contract-only. Order buyer/seller/current driver/handling admin; contact/address only for fulfillment; no service files or private evidence."
+          },
+          "response": []
+        },
+        {
+          "name": "acceptDeliveryJob",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/deliveries/{{deliveryId}}/accept",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Eligible active driver; one assignment wins atomically.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "releaseDriverAssignment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/deliveries/{{deliveryId}}/release-assignment",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Current driver or seller before pickup; revoke previous grants.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "recordPickup",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/deliveries/{{deliveryId}}/pickup",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Assigned driver or seller for seller delivery; immutable pickup history.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "recordDropoff",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/deliveries/{{deliveryId}}/dropoff",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Assigned driver or seller; proof status explicit; without proof buyer confirmation/admin required.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "reportDeliveryException",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/deliveries/{{deliveryId}}/exception",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Order participant/current driver; funds held; no automatic payout or forfeiture.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kind\": \"NO_DRIVER\",\n  \"reason\": \"Demo request\",\n  \"evidenceFileIds\": []\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "chooseDeliveryFallback",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/deliveries/{{deliveryId}}/fallback",
+            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Seller proposes; buyer approves changed terms; full refund if fulfillment unavailable.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"choice\": \"SELLER_SAME_TERMS\",\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Propose changed delivery terms",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/deliveries/{{deliveryId}}/terms",
+            "description": "contract-only. Backend computes revised fee; no silent debit. Buyer approval required before applying price/method/promised-term changes. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"SELLER\",\n  \"promisedAt\": \"2026-11-25T08:00:00Z\",\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buyer approves exact revised terms",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/deliveries/{{deliveryId}}/terms/{{revisionId}}/approve",
+            "description": "contract-only. Buyer only; explicit delta hold/refund, original terms retained if funding fails.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "item": [
+        {
+          "name": "Authorized order/delivery threads",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders/{{orderId}}/chat-rooms",
+            "description": "contract-only. Buyer/provider shared thread; assigned driver delivery thread only; handling admin audited case scope."
+          },
+          "response": []
+        },
+        {
+          "name": "Immutable room messages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders/{{orderId}}/messages?roomId={{roomId}}",
+            "description": "contract-only. Room membership rechecked per request; driver cannot read shared service thread."
+          },
+          "response": []
+        },
+        {
+          "name": "Append message with deduplication",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/messages",
+            "description": "contract-only. Authorized room member; immutable text/files, at least text or attachment; dedupe sender/room/clientMessageId.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomId\": \"{{roomId}}\",\n  \"clientMessageId\": \"{{clientMessageId}}\",\n  \"text\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Files",
+      "item": [
+        {
+          "name": "Quarantine an authorized file",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Idempotency-Key", "value": "{{idempotencyKey}}" }],
+            "url": "{{baseUrl}}/files/uploads",
+            "description": "contract-only. Authenticated owner with target order/case/workspace authorization; driver delivery-only scope.",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "accessClass", "type": "text", "value": "PUBLIC_CATALOG" },
+                { "key": "file", "type": "file", "src": null }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Own/authorized scan status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/files/{{fileId}}/status",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Authorized private file stream",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/files/{{fileId}}/download",
+            "description": "contract-only. Backend reauthorizes each request. FINAL_DELIVERABLE requires full service funding. Driver limited to current delivery attachments; handling admin case-scoped."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Disputes",
+      "item": [
+        {
+          "name": "Own order cases",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders/{{orderId}}/cases",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Freeze unsettled held funds or create support case",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/cases",
+            "description": "contract-only. Buyer/provider after hold and before settlement; terminal orders allow support only. Existing case reused; both get 72h evidence.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kind\": \"DISPUTE\",\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Authorized case and evidence",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/cases/{{caseId}}",
+            "description": "contract-only. Buyer/provider or assigned handling admin; private evidence visibility filtered; driver explicitly scoped evidence contribution only."
+          },
+          "response": []
+        },
+        {
+          "name": "Append immutable evidence",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/cases/{{caseId}}/evidence",
+            "description": "contract-only. Case party during own 72h window; late evidence needs handling-admin reason; files authorized. No deadline-based automatic award.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"visibility\": \"SHARED\",\n  \"text\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Authorized paginated case evidence",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/cases/{{caseId}}/evidence",
+            "description": "contract-only. Case parties see shared and own submissions; private-admin evidence only handling admin. Drivers see only explicitly granted delivery evidence."
+          },
+          "response": []
+        },
+        {
+          "name": "Documented proposal history",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/cases/{{caseId}}/proposals",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Document cancellation split/revision",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/cases/{{caseId}}/proposals",
+            "description": "contract-only. Buyer/provider; proposal alone never moves money; source case keeps funds frozen.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kind\": \"CANCELLATION_SPLIT\",\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "accept proposal",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/cases/{{caseId}}/proposals/{{proposalId}}/accept",
+            "description": "contract-only. Participating buyer/provider, exact proposal version; both approvals needed. Rejected/72h unanswered cancellation split -> admin.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "reject proposal",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/cases/{{caseId}}/proposals/{{proposalId}}/reject",
+            "description": "contract-only. Participating buyer/provider, exact proposal version; both approvals needed. Rejected/72h unanswered cancellation split -> admin.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mutually accept recorded revision plan",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/cases/{{caseId}}/revisions/accept",
+            "description": "contract-only. Both buyer/provider approve same recorded plan; no new charge if already fully funded; fresh 72h review after resubmission.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accepted\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "Published verified reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/profiles/{{profileId}}/reviews",
+            "description": "contract-only. Public visible reviews only.",
+            "auth": { "type": "noauth" }
+          },
+          "response": []
+        },
+        {
+          "name": "Create one verified review",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/orders/{{orderId}}/review",
+            "description": "contract-only. Order buyer, COMPLETED order, not self-review; one per order.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stars\": 1\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit own review once within seven days",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/reviews/{{reviewId}}",
+            "description": "contract-only. Original buyer, one edit, immutable prior version; admin may hide but never rewrite rating/text.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stars\": 1\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Own persistent notices",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/notifications",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Mark own notice read",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/notifications/{{notificationId}}/read",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Mark own notices read",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/notifications/read-all",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Register own Expo device token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/devices",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"Demo request\",\n  \"platform\": \"IOS\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Revoke own device token",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/devices/{{deviceId}}",
+            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        },
+        {
+          "name": "Single-use browser socket ticket",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/realtime/ticket",
+            "description": "contract-only. Short-lived JWT-derived capability, 60s, current session/room membership still rechecked. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "listAuditHistory",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/admin/audit",
+            "description": "contract-only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
+          },
+          "response": []
+        },
+        {
+          "name": "listModerationQueue",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/admin/moderation",
+            "description": "contract-only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
+          },
+          "response": []
+        },
+        {
+          "name": "listAdminCases",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/admin/cases",
+            "description": "contract-only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
+          },
+          "response": []
+        },
+        {
+          "name": "listCommissionRates",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/admin/commission-rates",
+            "description": "contract-only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
+          },
+          "response": []
+        },
+        {
+          "name": "configureCommission",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/admin/commission-rates",
+            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workspace\": \"FREELANCE\",\n  \"basisPoints\": 0\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "listDeliveryRates",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/admin/delivery-rates",
+            "description": "contract-only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
+          },
+          "response": []
+        },
+        {
+          "name": "configureDeliveryRate",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/admin/delivery-rates",
+            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cityId\": \"{{cityId}}\",\n  \"method\": \"SELLER\",\n  \"currency\": \"SYP\",\n  \"feeUnits\": \"100\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "listDriverZones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/admin/driver-zones",
+            "description": "contract-only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
+          },
+          "response": []
+        },
+        {
+          "name": "assignDriverZone",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/admin/driver-zones",
+            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"driverProfileId\": \"{{driverProfileId}}\",\n  \"governorateId\": \"{{governorateId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "moderateResource",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/admin/moderation/{{resourceId}}/decision",
+            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"outcome\": \"APPROVE\",\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "restrictAccount",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/admin/users/{{userId}}/restrictions",
+            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kind\": \"SUSPENSION\",\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "assignAdminCase",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/admin/cases/{{caseId}}/assign",
+            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "resolveAdminCase",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/admin/cases/{{caseId}}/resolve",
+            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Demo request\",\n  \"substantiation\": \"Demo request\",\n  \"sellerAwardUnits\": \"100\",\n  \"sellerDeliveryUnits\": \"100\",\n  \"driverAwardUnits\": \"100\",\n  \"outcome\": \"COMPLETED\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "reassignDelivery",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/admin/deliveries/{{deliveryId}}/reassign",
+            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"driverProfileId\": \"{{driverProfileId}}\",\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "moderateReview",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/admin/reviews/{{reviewId}}/moderate",
+            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"outcome\": \"APPROVE\",\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "simulateWalletTopUp",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/admin/simulator/topups",
+            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"amount\": {\n    \"currency\": \"SYP\",\n    \"units\": \"100\"\n  },\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Revoke restriction with audit reason",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/admin/restrictions/{{restrictionId}}/revoke",
+            "description": "contract-only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove driver zone with commitment checks",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Idempotency-Key", "value": "{{idempotencyKey}}" }],
+            "url": "{{baseUrl}}/admin/driver-zones/{{zoneId}}",
+            "description": "contract-only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
+          },
+          "response": []
+        },
+        {
+          "name": "Authorize documented overdue resumption",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "If-Match", "value": "\"{{orderVersion}}\"" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/admin/cases/{{caseId}}/resume-final-payment",
+            "description": "contract-only. Must record participant agreement/new deadline and resolve case without allocation. No deposit forfeiture or automatic balance charge. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dueAt\": \"2026-11-26T08:00:00Z\",\n  \"reason\": \"Demo request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
         }
       ]
     }
