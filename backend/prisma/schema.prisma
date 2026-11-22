@@ -1,3 +1,5 @@
+// Canonical relational model. SQL-only invariants live in the subsequent
+// domain_constraints migration; do not replace migrations with db push.
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,9 +9,1723 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Infrastructure only. Implement domain models through reviewed vertical slices.
 model SetupMetadata {
   key       String   @id
   value     String
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
+}
+
+enum RoleCode {
+  CUSTOMER
+  FREELANCER
+  PROFESSIONAL
+  STORE_OWNER
+  DELIVERY_DRIVER
+  ADMIN
+}
+
+enum BusinessType {
+  FREELANCER
+  PROFESSIONAL
+  STORE_OWNER
+  DELIVERY_DRIVER
+}
+
+enum ProfileStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+  SUSPENDED
+}
+
+enum Workspace {
+  FREELANCE
+  PROFESSIONALS
+  HOME_STORE
+}
+
+enum Currency {
+  SYP
+  USD
+}
+
+enum PublicationStatus {
+  DRAFT
+  PUBLISHED
+  INACTIVE
+  HIDDEN
+}
+
+enum ListingKind {
+  FREELANCE
+  PROFESSIONAL_PACKAGE
+}
+
+enum OrderState {
+  DRAFT
+  AWAITING_AGREEMENT
+  BOOKING_REQUESTED
+  SCHEDULE_PROPOSED
+  PENDING_QUOTE
+  QUOTE_SENT
+  APPROVED
+  AWAITING_DEPOSIT
+  DEPOSIT_HELD
+  IN_PROGRESS
+  EN_ROUTE
+  ON_SITE
+  READY_FOR_FINAL_PAYMENT
+  FINAL_PAYMENT_OVERDUE
+  FULLY_FUNDED
+  PAID_IN_ESCROW
+  PREPARING
+  READY_FOR_DELIVERY
+  OUT_FOR_DELIVERY
+  DELIVERED
+  DELIVERY_EXCEPTION
+  DELIVERY_REVIEW_REQUIRED
+  CANCELLATION_PENDING
+  EXTENSION_PENDING
+  DISPUTED
+  REVISION_IN_PROGRESS
+  RESOLVED
+  COMPLETED
+  CANCELLED
+  REJECTED
+  EXPIRED
+  REFUNDED
+}
+
+enum ServiceKind {
+  FREELANCE
+  FIXED_BOOKING
+  INSPECTION_QUOTE
+}
+
+enum BookingState {
+  REQUESTED
+  COUNTER_PROPOSED
+  CONFIRMED
+  REJECTED
+  EXPIRED
+}
+
+enum QuoteState {
+  DRAFT
+  SENT
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum ReservationStatus {
+  RESERVED
+  CONSUMED
+  RELEASED
+}
+
+enum FileAccessClass {
+  PUBLIC_CATALOG
+  ORDER_SHARED
+  FINAL_DELIVERABLE
+  DELIVERY_ONLY
+  CASE_EVIDENCE
+}
+
+enum ScanStatus {
+  QUARANTINED
+  CLEAN
+  REJECTED
+  DELETED
+}
+
+enum PortfolioKind {
+  IMAGE
+  FILE
+  LINK
+}
+
+enum SubmissionKind {
+  READINESS
+  DIGITAL_FINAL
+  ONSITE_HANDOVER
+}
+
+enum AccountKind {
+  AVAILABLE
+  ESCROW
+  COMMISSION
+  SIMULATOR_CLEARING
+}
+
+enum JournalKind {
+  SIMULATED_TOPUP
+  DEPOSIT_HOLD
+  BALANCE_HOLD
+  STORE_HOLD
+  DELIVERY_ADJUSTMENT_HOLD
+  DELIVERY_ADJUSTMENT_REFUND
+  SETTLEMENT
+}
+
+enum Installment {
+  DEPOSIT
+  BALANCE
+  FULL
+  DELIVERY_ADJUSTMENT
+}
+
+enum PaymentStatus {
+  SUCCEEDED
+  FAILED
+}
+
+enum EscrowStatus {
+  OPEN
+  FROZEN
+  SETTLED
+}
+
+enum AllocationKind {
+  BUYER_REFUND
+  SELLER_NET
+  SELLER_DELIVERY
+  DRIVER_PAYOUT
+  COMMISSION
+}
+
+enum SettlementMode {
+  BUYER_CONFIRMATION
+  AUTO_COMPLETION
+  ADMIN_RESOLUTION
+  MUTUAL_CANCELLATION
+  PROVIDER_CANCEL
+  PRESTART_CANCEL
+  STORE_DECLINE
+  STORE_TIMEOUT
+  UNFULFILLABLE
+}
+
+enum DeliveryMethod {
+  SELLER
+  PLATFORM_DRIVER
+}
+
+enum DeliveryStatus {
+  PENDING
+  REQUESTED
+  ASSIGNED
+  PICKED_UP
+  DROPPED_OFF
+  EXCEPTION
+  CANCELLED
+}
+
+enum AssignmentStatus {
+  ASSIGNED
+  PICKED_UP
+  COMPLETED
+  RELEASED
+  CANCELLED
+}
+
+enum DeliveryEventType {
+  REQUESTED
+  ASSIGNED
+  RELEASED
+  PICKUP
+  DROPOFF
+  EXCEPTION
+  REASSIGNED
+}
+
+enum CaseKind {
+  DISPUTE
+  CANCELLATION
+  FINAL_PAYMENT_OVERDUE
+  DELIVERY_REVIEW
+  SUPPORT
+}
+
+enum CaseStatus {
+  OPEN
+  ADMIN_REVIEW
+  REVISION_ACCEPTED
+  RESOLVED
+}
+
+enum EvidenceVisibility {
+  SHARED
+  PRIVATE_ADMIN
+}
+
+enum ProposalKind {
+  CANCELLATION_SPLIT
+  REVISION
+  EXTENSION
+  DELIVERY_REMEDY
+}
+
+enum ApprovalDecision {
+  ACCEPT
+  REJECT
+}
+
+enum RoomKind {
+  ORDER_SHARED
+  DELIVERY
+}
+
+enum NotificationChannel {
+  IN_APP
+  PUSH
+  WEBSOCKET
+}
+
+enum DeliveryAttemptStatus {
+  PENDING
+  SENT
+  FAILED
+  DISABLED
+}
+
+enum DevicePlatform {
+  IOS
+  ANDROID
+}
+
+enum RestrictionKind {
+  SUSPENSION
+  PURCHASING
+  PUBLISHING
+  MESSAGING
+}
+
+enum VerificationKind {
+  EMAIL
+  PASSWORD_RESET
+}
+
+enum ModerationOutcome {
+  APPROVE
+  HIDE
+  REJECT
+  RESTORE
+}
+
+enum JobStatus {
+  READY
+  RUNNING
+  DONE
+  FAILED
+}
+
+enum JobKind {
+  RESPONSE_EXPIRY
+  DEPOSIT_EXPIRY
+  BALANCE_REMINDER_24
+  BALANCE_REMINDER_48
+  BALANCE_EXPIRY
+  STORE_ACCEPTANCE_EXPIRY
+  CANCELLATION_EXPIRY
+  EVIDENCE_EXPIRY
+  DELIVERY_REVIEW
+  DISPATCH_ESCALATION
+}
+
+model User {
+  id                               String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email                            String                  @unique @db.VarChar(254)
+  passwordHash                     String                  @db.VarChar(100)
+  displayName                      String                  @db.VarChar(120)
+  locale                           String                  @default("ar") @db.VarChar(2)
+  verifiedAt                       DateTime?               @db.Timestamptz(3)
+  archivedAt                       DateTime?               @db.Timestamptz(3)
+  createdAt                        DateTime                @default(now()) @db.Timestamptz(3)
+  updatedAt                        DateTime                @updatedAt @db.Timestamptz(3)
+  userRole_user                    UserRole[]              @relation("UserRole_user")
+  session_user                     Session[]               @relation("Session_user")
+  verificationToken_user           VerificationToken[]     @relation("VerificationToken_user")
+  restriction_user                 Restriction[]           @relation("Restriction_user")
+  restriction_admin                Restriction[]           @relation("Restriction_admin")
+  address_user                     Address[]               @relation("Address_user")
+  businessProfile_user             BusinessProfile[]       @relation("BusinessProfile_user")
+  fileAsset_owner                  FileAsset[]             @relation("FileAsset_owner")
+  moderationDecision_admin         ModerationDecision[]    @relation("ModerationDecision_admin")
+  commissionRate_admin             CommissionRate[]        @relation("CommissionRate_admin")
+  marketOrder_buyer                MarketOrder[]           @relation("MarketOrder_buyer")
+  submission_actor                 Submission[]            @relation("Submission_actor")
+  stockReconciliation_actor        StockReconciliation[]   @relation("StockReconciliation_actor")
+  orderTransition_actor            OrderTransition[]       @relation("OrderTransition_actor")
+  ledgerAccount_user               LedgerAccount[]         @relation("LedgerAccount_user")
+  wallet_user                      Wallet[]                @relation("Wallet_user")
+  ledgerJournal_actor              LedgerJournal[]         @relation("LedgerJournal_actor")
+  paymentAttempt_actor             PaymentAttempt[]        @relation("PaymentAttempt_actor")
+  idempotencyRecord_actor          IdempotencyRecord[]     @relation("IdempotencyRecord_actor")
+  deliveryRate_admin               DeliveryRate[]          @relation("DeliveryRate_admin")
+  deliveryTermsRevision_proposedBy DeliveryTermsRevision[] @relation("DeliveryTermsRevision_proposedBy")
+  deliveryEvent_actor              DeliveryEvent[]         @relation("DeliveryEvent_actor")
+  caseRecord_opener                CaseRecord[]            @relation("CaseRecord_opener")
+  caseRecord_handlingAdmin         CaseRecord[]            @relation("CaseRecord_handlingAdmin")
+  caseParty_user                   CaseParty[]             @relation("CaseParty_user")
+  caseEvidence_submitter           CaseEvidence[]          @relation("CaseEvidence_submitter")
+  resolutionProposal_proposedBy    ResolutionProposal[]    @relation("ResolutionProposal_proposedBy")
+  proposalApproval_user            ProposalApproval[]      @relation("ProposalApproval_user")
+  adminDecision_admin              AdminDecision[]         @relation("AdminDecision_admin")
+  chatMessage_sender               ChatMessage[]           @relation("ChatMessage_sender")
+  review_buyer                     Review[]                @relation("Review_buyer")
+  reviewVersion_actor              ReviewVersion[]         @relation("ReviewVersion_actor")
+  notification_user                Notification[]          @relation("Notification_user")
+  deviceToken_user                 DeviceToken[]           @relation("DeviceToken_user")
+  auditRecord_actor                AuditRecord[]           @relation("AuditRecord_actor")
+
+  @@index([createdAt, id])
+}
+
+model Role {
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code          RoleCode   @unique
+  name          String     @db.VarChar(80)
+  createdAt     DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime   @updatedAt @db.Timestamptz(3)
+  userRole_role UserRole[] @relation("UserRole_role")
+}
+
+model UserRole {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  revokedAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3)
+  userId    String    @db.Uuid
+  roleId    String    @db.Uuid
+  user      User      @relation("UserRole_user", fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  role      Role      @relation("UserRole_role", fields: [roleId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([userId, roleId])
+  @@index([roleId])
+}
+
+model Session {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  refreshHash  String    @unique @db.VarChar(128)
+  familyId     String    @db.Uuid
+  expiresAt    DateTime  @db.Timestamptz(3)
+  revokedAt    DateTime? @db.Timestamptz(3)
+  replacedById String?   @db.Uuid
+  client       String    @db.VarChar(16)
+  createdAt    DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime  @updatedAt @db.Timestamptz(3)
+  userId       String    @db.Uuid
+  user         User      @relation("Session_user", fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  replacedBy   Session?  @relation("SessionReplacement", fields: [replacedById], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  replaces     Session[] @relation("SessionReplacement")
+
+  @@index([userId, revokedAt])
+  @@index([familyId])
+  @@index([expiresAt])
+}
+
+model VerificationToken {
+  id         String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kind       VerificationKind
+  tokenHash  String           @unique @db.VarChar(128)
+  expiresAt  DateTime         @db.Timestamptz(3)
+  consumedAt DateTime?        @db.Timestamptz(3)
+  createdAt  DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime         @updatedAt @db.Timestamptz(3)
+  userId     String           @db.Uuid
+  user       User             @relation("VerificationToken_user", fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([userId, kind])
+  @@index([expiresAt])
+}
+
+model Restriction {
+  id        String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kind      RestrictionKind
+  reason    String          @db.Text
+  expiresAt DateTime?       @db.Timestamptz(3)
+  revokedAt DateTime?       @db.Timestamptz(3)
+  createdAt DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime        @updatedAt @db.Timestamptz(3)
+  userId    String          @db.Uuid
+  adminId   String          @db.Uuid
+  user      User            @relation("Restriction_user", fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  admin     User            @relation("Restriction_admin", fields: [adminId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([userId, revokedAt, expiresAt])
+  @@index([adminId])
+}
+
+model Country {
+  id                  String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code                String        @unique @db.VarChar(2)
+  nameAr              String
+  nameEn              String
+  createdAt           DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt           DateTime      @updatedAt @db.Timestamptz(3)
+  governorate_country Governorate[] @relation("Governorate_country")
+}
+
+model Governorate {
+  id                     String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  isoCode                String       @unique @db.VarChar(5)
+  nameAr                 String
+  nameEn                 String
+  createdAt              DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt              DateTime     @updatedAt @db.Timestamptz(3)
+  countryId              String       @db.Uuid
+  country                Country      @relation("Governorate_country", fields: [countryId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  city_governorate       City[]       @relation("City_governorate")
+  driverZone_governorate DriverZone[] @relation("DriverZone_governorate")
+
+  @@index([countryId])
+}
+
+model City {
+  id                   String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nameAr               String
+  nameEn               String
+  isDistrict           Boolean           @default(false)
+  createdAt            DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime          @updatedAt @db.Timestamptz(3)
+  governorateId        String            @db.Uuid
+  governorate          Governorate       @relation("City_governorate", fields: [governorateId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  area_city            Area[]            @relation("Area_city")
+  address_city         Address[]         @relation("Address_city")
+  businessProfile_city BusinessProfile[] @relation("BusinessProfile_city")
+  serviceArea_city     ServiceArea[]     @relation("ServiceArea_city")
+  driverZone_city      DriverZone[]      @relation("DriverZone_city")
+  storefront_city      Storefront[]      @relation("Storefront_city")
+  deliveryRate_city    DeliveryRate[]    @relation("DeliveryRate_city")
+  delivery_city        Delivery[]        @relation("Delivery_city")
+
+  @@unique([id, governorateId])
+  @@unique([governorateId, nameEn])
+}
+
+model Area {
+  id               String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nameAr           String
+  nameEn           String
+  createdAt        DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime      @updatedAt @db.Timestamptz(3)
+  cityId           String        @db.Uuid
+  city             City          @relation("Area_city", fields: [cityId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  address_area     Address[]     @relation("Address_area")
+  serviceArea_area ServiceArea[] @relation("ServiceArea_area")
+  delivery_area    Delivery[]    @relation("Delivery_area")
+
+  @@unique([id, cityId])
+  @@unique([cityId, nameEn])
+}
+
+model Address {
+  id                        String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  label                     String
+  details                   String              @db.Text
+  contactName               String
+  contactPhone              String
+  archivedAt                DateTime?           @db.Timestamptz(3)
+  createdAt                 DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt                 DateTime            @updatedAt @db.Timestamptz(3)
+  userId                    String              @db.Uuid
+  cityId                    String              @db.Uuid
+  areaId                    String?             @db.Uuid
+  user                      User                @relation("Address_user", fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  city                      City                @relation("Address_city", fields: [cityId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  area                      Area?               @relation("Address_area", fields: [areaId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  inspectionRequest_address InspectionRequest[] @relation("InspectionRequest_address")
+
+  @@index([userId, archivedAt])
+  @@index([cityId])
+  @@index([areaId])
+}
+
+model BusinessProfile {
+  id                           String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type                         BusinessType
+  status                       ProfileStatus         @default(DRAFT)
+  title                        String
+  bio                          String                @db.Text
+  trade                        String?
+  experienceYears              Int?
+  archivedAt                   DateTime?             @db.Timestamptz(3)
+  createdAt                    DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt                    DateTime              @updatedAt @db.Timestamptz(3)
+  userId                       String                @db.Uuid
+  cityId                       String?               @db.Uuid
+  user                         User                  @relation("BusinessProfile_user", fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  city                         City?                 @relation("BusinessProfile_city", fields: [cityId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  profileSkill_profile         ProfileSkill[]        @relation("ProfileSkill_profile")
+  profileLanguage_profile      ProfileLanguage[]     @relation("ProfileLanguage_profile")
+  serviceArea_profile          ServiceArea[]         @relation("ServiceArea_profile")
+  driverZone_profile           DriverZone[]          @relation("DriverZone_profile")
+  portfolioItem_profile        PortfolioItem[]       @relation("PortfolioItem_profile")
+  listing_profile              Listing[]             @relation("Listing_profile")
+  storefront_profile           Storefront?           @relation("Storefront_profile")
+  moderationDecision_profile   ModerationDecision[]  @relation("ModerationDecision_profile")
+  marketOrder_sellerProfile    MarketOrder[]         @relation("MarketOrder_sellerProfile")
+  scheduleReservation_provider ScheduleReservation[] @relation("ScheduleReservation_provider")
+  driverAssignment_driver      DriverAssignment[]    @relation("DriverAssignment_driver")
+  review_sellerProfile         Review[]              @relation("Review_sellerProfile")
+
+  @@unique([id, userId])
+  @@index([type, status, cityId])
+  @@index([userId, status])
+  @@index([cityId])
+}
+
+model ProfileSkill {
+  id        String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String          @db.VarChar(100)
+  createdAt DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime        @updatedAt @db.Timestamptz(3)
+  profileId String          @db.Uuid
+  profile   BusinessProfile @relation("ProfileSkill_profile", fields: [profileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([profileId, name])
+}
+
+model ProfileLanguage {
+  id           String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  languageCode String          @db.VarChar(10)
+  proficiency  String          @db.VarChar(40)
+  createdAt    DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime        @updatedAt @db.Timestamptz(3)
+  profileId    String          @db.Uuid
+  profile      BusinessProfile @relation("ProfileLanguage_profile", fields: [profileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([profileId, languageCode])
+}
+
+model ServiceArea {
+  id        String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime        @updatedAt @db.Timestamptz(3)
+  profileId String          @db.Uuid
+  cityId    String          @db.Uuid
+  areaId    String?         @db.Uuid
+  profile   BusinessProfile @relation("ServiceArea_profile", fields: [profileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  city      City            @relation("ServiceArea_city", fields: [cityId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  area      Area?           @relation("ServiceArea_area", fields: [areaId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([profileId, cityId, areaId])
+  @@index([cityId, areaId])
+  @@index([areaId])
+}
+
+model DriverZone {
+  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt     DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime        @updatedAt @db.Timestamptz(3)
+  profileId     String          @db.Uuid
+  governorateId String          @db.Uuid
+  cityId        String?         @db.Uuid
+  profile       BusinessProfile @relation("DriverZone_profile", fields: [profileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  governorate   Governorate     @relation("DriverZone_governorate", fields: [governorateId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  city          City?           @relation("DriverZone_city", fields: [cityId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([profileId, governorateId, cityId])
+  @@index([governorateId, cityId])
+  @@index([cityId])
+}
+
+model FileAsset {
+  id                     String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  storageKey             String              @unique
+  originalName           String              @db.VarChar(255)
+  mimeType               String              @db.VarChar(100)
+  extension              String              @db.VarChar(12)
+  sizeBytes              BigInt
+  sha256                 String?             @db.VarChar(64)
+  accessClass            FileAccessClass
+  scanStatus             ScanStatus          @default(QUARANTINED)
+  deletedAt              DateTime?           @db.Timestamptz(3)
+  retainUntil            DateTime?           @db.Timestamptz(3)
+  legalHold              Boolean             @default(false)
+  createdAt              DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt              DateTime            @updatedAt @db.Timestamptz(3)
+  ownerId                String              @db.Uuid
+  orderId                String?             @db.Uuid
+  caseId                 String?             @db.Uuid
+  owner                  User                @relation("FileAsset_owner", fields: [ownerId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  order                  MarketOrder?        @relation("FileAsset_order", fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  case                   CaseRecord?         @relation("FileAsset_case", fields: [caseId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  portfolioItem_file     PortfolioItem[]     @relation("PortfolioItem_file")
+  listingAsset_file      ListingAsset[]      @relation("ListingAsset_file")
+  storefront_logo        Storefront[]        @relation("Storefront_logo")
+  productAsset_file      ProductAsset[]      @relation("ProductAsset_file")
+  inspectionPhoto_file   InspectionPhoto[]   @relation("InspectionPhoto_file")
+  submission_file        Submission[]        @relation("Submission_file")
+  deliveryEvent_proof    DeliveryEvent[]     @relation("DeliveryEvent_proof")
+  caseEvidence_file      CaseEvidence[]      @relation("CaseEvidence_file")
+  messageAttachment_file MessageAttachment[] @relation("MessageAttachment_file")
+
+  @@index([ownerId, createdAt])
+  @@index([orderId, accessClass])
+  @@index([scanStatus])
+  @@index([retainUntil])
+  @@index([caseId])
+}
+
+model PortfolioItem {
+  id        String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kind      PortfolioKind
+  title     String
+  caption   String?
+  url       String?
+  position  Int             @default(0)
+  createdAt DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime        @updatedAt @db.Timestamptz(3)
+  profileId String          @db.Uuid
+  fileId    String?         @db.Uuid
+  profile   BusinessProfile @relation("PortfolioItem_profile", fields: [profileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  file      FileAsset?      @relation("PortfolioItem_file", fields: [fileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([profileId, position])
+  @@index([fileId])
+}
+
+model Category {
+  id               String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspace        Workspace
+  nameAr           String
+  nameEn           String
+  active           Boolean    @default(true)
+  createdAt        DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime   @updatedAt @db.Timestamptz(3)
+  parentId         String?    @db.Uuid
+  parent           Category?  @relation("Category_parent", fields: [parentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  category_parent  Category[] @relation("Category_parent")
+  listing_category Listing[]  @relation("Listing_category")
+  product_category Product[]  @relation("Product_category")
+
+  @@index([workspace, active])
+  @@index([parentId])
+}
+
+model Listing {
+  id                         String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kind                       ListingKind
+  titleAr                    String
+  titleEn                    String
+  descriptionAr              String               @db.Text
+  descriptionEn              String               @db.Text
+  currency                   Currency
+  priceUnits                 BigInt
+  deliveryDays               Int?
+  durationMinutes            Int?
+  status                     PublicationStatus    @default(DRAFT)
+  createdAt                  DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt                  DateTime             @updatedAt @db.Timestamptz(3)
+  profileId                  String               @db.Uuid
+  categoryId                 String               @db.Uuid
+  profile                    BusinessProfile      @relation("Listing_profile", fields: [profileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  category                   Category             @relation("Listing_category", fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  listingAsset_listing       ListingAsset[]       @relation("ListingAsset_listing")
+  moderationDecision_listing ModerationDecision[] @relation("ModerationDecision_listing")
+  serviceOrder_listing       ServiceOrder[]       @relation("ServiceOrder_listing")
+
+  @@index([categoryId, status, currency, priceUnits])
+  @@index([profileId, status])
+  @@index([kind, status, deliveryDays])
+}
+
+model ListingAsset {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  position  Int       @default(0)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3)
+  listingId String    @db.Uuid
+  fileId    String    @db.Uuid
+  listing   Listing   @relation("ListingAsset_listing", fields: [listingId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  file      FileAsset @relation("ListingAsset_file", fields: [fileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([listingId, fileId])
+  @@index([fileId])
+}
+
+model Storefront {
+  id                            String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nameAr                        String
+  nameEn                        String
+  descriptionAr                 String               @db.Text
+  descriptionEn                 String               @db.Text
+  status                        PublicationStatus    @default(DRAFT)
+  supportsSellerDelivery        Boolean              @default(true)
+  supportsPlatformDelivery      Boolean              @default(true)
+  createdAt                     DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt                     DateTime             @updatedAt @db.Timestamptz(3)
+  profileId                     String               @unique @db.Uuid
+  cityId                        String               @db.Uuid
+  logoId                        String?              @db.Uuid
+  profile                       BusinessProfile      @relation("Storefront_profile", fields: [profileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  city                          City                 @relation("Storefront_city", fields: [cityId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  logo                          FileAsset?           @relation("Storefront_logo", fields: [logoId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  product_storefront            Product[]            @relation("Product_storefront")
+  moderationDecision_storefront ModerationDecision[] @relation("ModerationDecision_storefront")
+  storeOrder_storefront         StoreOrder[]         @relation("StoreOrder_storefront")
+
+  @@index([cityId, status])
+  @@index([logoId])
+}
+
+model Product {
+  id                         String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  titleAr                    String
+  titleEn                    String
+  descriptionAr              String               @db.Text
+  descriptionEn              String               @db.Text
+  currency                   Currency
+  priceUnits                 BigInt
+  stockOnHand                Int                  @default(0)
+  stockReserved              Int                  @default(0)
+  status                     PublicationStatus    @default(DRAFT)
+  createdAt                  DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt                  DateTime             @updatedAt @db.Timestamptz(3)
+  storefrontId               String               @db.Uuid
+  categoryId                 String               @db.Uuid
+  storefront                 Storefront           @relation("Product_storefront", fields: [storefrontId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  category                   Category             @relation("Product_category", fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  productAsset_product       ProductAsset[]       @relation("ProductAsset_product")
+  moderationDecision_product ModerationDecision[] @relation("ModerationDecision_product")
+  orderItem_product          OrderItem[]          @relation("OrderItem_product")
+  stockReservation_product   StockReservation[]   @relation("StockReservation_product")
+
+  @@index([storefrontId, status])
+  @@index([categoryId, status, currency, priceUnits])
+}
+
+model ProductAsset {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  position  Int       @default(0)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3)
+  productId String    @db.Uuid
+  fileId    String    @db.Uuid
+  product   Product   @relation("ProductAsset_product", fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  file      FileAsset @relation("ProductAsset_file", fields: [fileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([productId, fileId])
+  @@index([fileId])
+}
+
+model ModerationDecision {
+  id           String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  outcome      ModerationOutcome
+  reason       String            @db.Text
+  createdAt    DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime          @updatedAt @db.Timestamptz(3)
+  adminId      String            @db.Uuid
+  profileId    String?           @db.Uuid
+  listingId    String?           @db.Uuid
+  storefrontId String?           @db.Uuid
+  productId    String?           @db.Uuid
+  reviewId     String?           @db.Uuid
+  admin        User              @relation("ModerationDecision_admin", fields: [adminId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  profile      BusinessProfile?  @relation("ModerationDecision_profile", fields: [profileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  listing      Listing?          @relation("ModerationDecision_listing", fields: [listingId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  storefront   Storefront?       @relation("ModerationDecision_storefront", fields: [storefrontId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  product      Product?          @relation("ModerationDecision_product", fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  review       Review?           @relation("ModerationDecision_review", fields: [reviewId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([createdAt, id])
+  @@index([adminId])
+  @@index([profileId])
+  @@index([listingId])
+  @@index([storefrontId])
+  @@index([productId])
+  @@index([reviewId])
+}
+
+model CommissionRate {
+  id                         String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspace                  Workspace?
+  basisPoints                Int           @default(0)
+  version                    Int
+  effectiveAt                DateTime      @default(now()) @db.Timestamptz(3)
+  createdAt                  DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt                  DateTime      @updatedAt @db.Timestamptz(3)
+  adminId                    String        @db.Uuid
+  admin                      User          @relation("CommissionRate_admin", fields: [adminId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  marketOrder_commissionRate MarketOrder[] @relation("MarketOrder_commissionRate")
+
+  @@unique([workspace, version])
+  @@index([workspace, effectiveAt, version])
+  @@index([adminId])
+}
+
+model MarketOrder {
+  id                    String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspace             Workspace
+  state                 OrderState        @default(DRAFT)
+  currency              Currency
+  agreedTotalUnits      BigInt?
+  eligibleSellerUnits   BigInt?
+  deliveryFeeUnits      BigInt            @default(0)
+  commissionBpsSnapshot Int?
+  agreementSnapshot     Json
+  addressSnapshot       Json?
+  termsAcceptedAt       DateTime?         @db.Timestamptz(3)
+  version               Int               @default(1)
+  deliveredAt           DateTime?         @db.Timestamptz(3)
+  reviewDeadlineAt      DateTime?         @db.Timestamptz(3)
+  deliveryVersion       Int               @default(0)
+  deliveryVerified      Boolean           @default(false)
+  buyerConfirmedAt      DateTime?         @db.Timestamptz(3)
+  paused                Boolean           @default(false)
+  workStartedAt         DateTime?         @db.Timestamptz(3)
+  completedAt           DateTime?         @db.Timestamptz(3)
+  checkoutExpiresAt     DateTime?         @db.Timestamptz(3)
+  createdAt             DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime          @updatedAt @db.Timestamptz(3)
+  buyerId               String            @db.Uuid
+  sellerProfileId       String            @db.Uuid
+  commissionRateId      String?           @db.Uuid
+  fileAsset_order       FileAsset[]       @relation("FileAsset_order")
+  buyer                 User              @relation("MarketOrder_buyer", fields: [buyerId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  sellerProfile         BusinessProfile   @relation("MarketOrder_sellerProfile", fields: [sellerProfileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  commissionRate        CommissionRate?   @relation("MarketOrder_commissionRate", fields: [commissionRateId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  serviceOrder_order    ServiceOrder?     @relation("ServiceOrder_order")
+  storeOrder_order      StoreOrder?       @relation("StoreOrder_order")
+  orderTransition_order OrderTransition[] @relation("OrderTransition_order")
+  ledgerAccount_order   LedgerAccount[]   @relation("LedgerAccount_order")
+  escrow_order          Escrow?           @relation("Escrow_order")
+  ledgerJournal_order   LedgerJournal[]   @relation("LedgerJournal_order")
+  paymentAttempt_order  PaymentAttempt[]  @relation("PaymentAttempt_order")
+  settlement_order      Settlement?       @relation("Settlement_order")
+  caseRecord_order      CaseRecord[]      @relation("CaseRecord_order")
+  chatRoom_order        ChatRoom[]        @relation("ChatRoom_order")
+  review_order          Review?           @relation("Review_order")
+  scheduledJob_order    ScheduledJob[]    @relation("ScheduledJob_order")
+
+  @@unique([id, currency])
+  @@index([buyerId, createdAt, id])
+  @@index([sellerProfileId, state, createdAt])
+  @@index([state, reviewDeadlineAt])
+  @@index([commissionRateId])
+}
+
+model ServiceOrder {
+  id                               String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kind                             ServiceKind
+  depositUnits                     BigInt?
+  balanceUnits                     BigInt?
+  responseDeadlineAt               DateTime?             @db.Timestamptz(3)
+  depositDeadlineAt                DateTime?             @db.Timestamptz(3)
+  dueAt                            DateTime?             @db.Timestamptz(3)
+  readyAt                          DateTime?             @db.Timestamptz(3)
+  readinessEvidence                Json?
+  balanceDeadlineAt                DateTime?             @db.Timestamptz(3)
+  createdAt                        DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt                        DateTime              @updatedAt @db.Timestamptz(3)
+  orderId                          String                @unique @db.Uuid
+  listingId                        String?               @db.Uuid
+  approvedQuoteId                  String?               @unique @db.Uuid
+  order                            MarketOrder           @relation("ServiceOrder_order", fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  listing                          Listing?              @relation("ServiceOrder_listing", fields: [listingId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  approvedQuote                    Quote?                @relation("ServiceOrder_approvedQuote", fields: [approvedQuoteId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  booking_serviceOrder             Booking?              @relation("Booking_serviceOrder")
+  inspectionRequest_serviceOrder   InspectionRequest?    @relation("InspectionRequest_serviceOrder")
+  quote_serviceOrder               Quote[]               @relation("Quote_serviceOrder")
+  scheduleReservation_serviceOrder ScheduleReservation[] @relation("ScheduleReservation_serviceOrder")
+  milestone_serviceOrder           Milestone[]           @relation("Milestone_serviceOrder")
+  submission_serviceOrder          Submission[]          @relation("Submission_serviceOrder")
+
+  @@index([depositDeadlineAt])
+  @@index([balanceDeadlineAt])
+  @@index([responseDeadlineAt])
+  @@index([listingId])
+}
+
+model Booking {
+  id                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  state              BookingState @default(REQUESTED)
+  requestedStartsAt  DateTime     @db.Timestamptz(3)
+  requestedEndsAt    DateTime     @db.Timestamptz(3)
+  proposedStartsAt   DateTime?    @db.Timestamptz(3)
+  proposedEndsAt     DateTime?    @db.Timestamptz(3)
+  providerAcceptedAt DateTime?    @db.Timestamptz(3)
+  buyerAcceptedAt    DateTime?    @db.Timestamptz(3)
+  createdAt          DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime     @updatedAt @db.Timestamptz(3)
+  serviceOrderId     String       @unique @db.Uuid
+  serviceOrder       ServiceOrder @relation("Booking_serviceOrder", fields: [serviceOrderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+}
+
+model InspectionRequest {
+  id                         String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  description                String            @db.Text
+  agreedAt                   DateTime?         @db.Timestamptz(3)
+  startsAt                   DateTime?         @db.Timestamptz(3)
+  createdAt                  DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt                  DateTime          @updatedAt @db.Timestamptz(3)
+  serviceOrderId             String            @unique @db.Uuid
+  addressId                  String            @db.Uuid
+  serviceOrder               ServiceOrder      @relation("InspectionRequest_serviceOrder", fields: [serviceOrderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  address                    Address           @relation("InspectionRequest_address", fields: [addressId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  inspectionPhoto_inspection InspectionPhoto[] @relation("InspectionPhoto_inspection")
+
+  @@index([addressId])
+}
+
+model InspectionPhoto {
+  id           String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt    DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime          @updatedAt @db.Timestamptz(3)
+  inspectionId String            @db.Uuid
+  fileId       String            @db.Uuid
+  inspection   InspectionRequest @relation("InspectionPhoto_inspection", fields: [inspectionId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  file         FileAsset         @relation("InspectionPhoto_file", fields: [fileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([inspectionId, fileId])
+  @@index([fileId])
+}
+
+model Quote {
+  id                         String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  version                    Int
+  state                      QuoteState    @default(DRAFT)
+  currency                   Currency
+  totalUnits                 BigInt
+  scope                      String        @db.Text
+  startsAt                   DateTime      @db.Timestamptz(3)
+  endsAt                     DateTime      @db.Timestamptz(3)
+  dueAt                      DateTime      @db.Timestamptz(3)
+  sentAt                     DateTime?     @db.Timestamptz(3)
+  responseDeadlineAt         DateTime?     @db.Timestamptz(3)
+  approvedAt                 DateTime?     @db.Timestamptz(3)
+  createdAt                  DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt                  DateTime      @updatedAt @db.Timestamptz(3)
+  serviceOrderId             String        @db.Uuid
+  serviceOrder_approvedQuote ServiceOrder? @relation("ServiceOrder_approvedQuote")
+  serviceOrder               ServiceOrder  @relation("Quote_serviceOrder", fields: [serviceOrderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  quoteItem_quote            QuoteItem[]   @relation("QuoteItem_quote")
+
+  @@unique([serviceOrderId, version])
+  @@index([state, responseDeadlineAt])
+}
+
+model QuoteItem {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  description    String
+  quantity       Int
+  unitPriceUnits BigInt
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(3)
+  quoteId        String   @db.Uuid
+  quote          Quote    @relation("QuoteItem_quote", fields: [quoteId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([quoteId])
+}
+
+model ScheduleReservation {
+  id             String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  startsAt       DateTime          @db.Timestamptz(3)
+  endsAt         DateTime          @db.Timestamptz(3)
+  status         ReservationStatus @default(RESERVED)
+  createdAt      DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime          @updatedAt @db.Timestamptz(3)
+  serviceOrderId String            @db.Uuid
+  providerId     String            @db.Uuid
+  serviceOrder   ServiceOrder      @relation("ScheduleReservation_serviceOrder", fields: [serviceOrderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  provider       BusinessProfile   @relation("ScheduleReservation_provider", fields: [providerId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([providerId, startsAt])
+  @@index([serviceOrderId, status])
+}
+
+model Milestone {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  description    String
+  progress       Int          @default(0)
+  position       Int          @default(0)
+  createdAt      DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(3)
+  serviceOrderId String       @db.Uuid
+  serviceOrder   ServiceOrder @relation("Milestone_serviceOrder", fields: [serviceOrderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([serviceOrderId, position])
+}
+
+model Submission {
+  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kind           SubmissionKind
+  version        Int
+  evidence       Json?
+  submittedAt    DateTime       @default(now()) @db.Timestamptz(3)
+  createdAt      DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime       @updatedAt @db.Timestamptz(3)
+  serviceOrderId String         @db.Uuid
+  fileId         String?        @db.Uuid
+  actorId        String         @db.Uuid
+  serviceOrder   ServiceOrder   @relation("Submission_serviceOrder", fields: [serviceOrderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  file           FileAsset?     @relation("Submission_file", fields: [fileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  actor          User           @relation("Submission_actor", fields: [actorId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([serviceOrderId, kind, version])
+  @@index([fileId])
+  @@index([actorId])
+}
+
+model StoreOrder {
+  id                         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sellerAcceptanceDeadlineAt DateTime?   @db.Timestamptz(3)
+  acceptedAt                 DateTime?   @db.Timestamptz(3)
+  createdAt                  DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt                  DateTime    @updatedAt @db.Timestamptz(3)
+  orderId                    String      @unique @db.Uuid
+  storefrontId               String      @db.Uuid
+  order                      MarketOrder @relation("StoreOrder_order", fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  storefront                 Storefront  @relation("StoreOrder_storefront", fields: [storefrontId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  orderItem_storeOrder       OrderItem[] @relation("OrderItem_storeOrder")
+  delivery_storeOrder        Delivery?   @relation("Delivery_storeOrder")
+
+  @@index([sellerAcceptanceDeadlineAt])
+  @@index([storefrontId])
+}
+
+model OrderItem {
+  id                         String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quantity                   Int
+  unitPriceUnits             BigInt
+  currency                   Currency
+  productSnapshot            Json
+  createdAt                  DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt                  DateTime          @updatedAt @db.Timestamptz(3)
+  storeOrderId               String            @db.Uuid
+  productId                  String            @db.Uuid
+  storeOrder                 StoreOrder        @relation("OrderItem_storeOrder", fields: [storeOrderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  product                    Product           @relation("OrderItem_product", fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  stockReservation_orderItem StockReservation? @relation("StockReservation_orderItem")
+
+  @@unique([storeOrderId, productId])
+  @@index([productId])
+}
+
+model StockReservation {
+  id                              String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quantity                        Int
+  status                          ReservationStatus    @default(RESERVED)
+  createdAt                       DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt                       DateTime             @updatedAt @db.Timestamptz(3)
+  orderItemId                     String               @unique @db.Uuid
+  productId                       String               @db.Uuid
+  orderItem                       OrderItem            @relation("StockReservation_orderItem", fields: [orderItemId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  product                         Product              @relation("StockReservation_product", fields: [productId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  stockReconciliation_reservation StockReconciliation? @relation("StockReconciliation_reservation")
+
+  @@index([productId, status])
+}
+
+model StockReconciliation {
+  id                     String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  reusableQuantity       Int
+  nonRestockableQuantity Int
+  reason                 String           @db.Text
+  createdAt              DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt              DateTime         @updatedAt @db.Timestamptz(3)
+  reservationId          String           @unique @db.Uuid
+  actorId                String           @db.Uuid
+  reservation            StockReservation @relation("StockReconciliation_reservation", fields: [reservationId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  actor                  User             @relation("StockReconciliation_actor", fields: [actorId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([actorId])
+}
+
+model OrderTransition {
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fromState    OrderState
+  toState      OrderState
+  version      Int
+  reason       String
+  operationKey String      @unique
+  createdAt    DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime    @updatedAt @db.Timestamptz(3)
+  orderId      String      @db.Uuid
+  actorId      String?     @db.Uuid
+  order        MarketOrder @relation("OrderTransition_order", fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  actor        User?       @relation("OrderTransition_actor", fields: [actorId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([orderId, version])
+  @@index([orderId, createdAt, id])
+  @@index([actorId])
+}
+
+model LedgerAccount {
+  id                   String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  currency             Currency
+  kind                 AccountKind
+  balanceUnits         BigInt        @default(0)
+  createdAt            DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime      @updatedAt @db.Timestamptz(3)
+  userId               String?       @db.Uuid
+  orderId              String?       @db.Uuid
+  user                 User?         @relation("LedgerAccount_user", fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  order                MarketOrder?  @relation("LedgerAccount_order", fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  wallet_account       Wallet?       @relation("Wallet_account")
+  escrow_account       Escrow?       @relation("Escrow_account")
+  ledgerEntry_account  LedgerEntry[] @relation("LedgerEntry_account")
+  allocation_recipient Allocation[]  @relation("Allocation_recipient")
+
+  @@unique([id, currency])
+  @@index([userId, currency])
+  @@index([orderId])
+}
+
+model Wallet {
+  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  currency  Currency
+  createdAt DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime      @updatedAt @db.Timestamptz(3)
+  userId    String        @db.Uuid
+  accountId String        @unique @db.Uuid
+  user      User          @relation("Wallet_user", fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  account   LedgerAccount @relation("Wallet_account", fields: [accountId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([userId, currency])
+}
+
+model Escrow {
+  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  currency  Currency
+  heldUnits BigInt        @default(0)
+  status    EscrowStatus  @default(OPEN)
+  createdAt DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime      @updatedAt @db.Timestamptz(3)
+  orderId   String        @unique @db.Uuid
+  accountId String        @unique @db.Uuid
+  order     MarketOrder   @relation("Escrow_order", fields: [orderId, currency], references: [id, currency], onDelete: Restrict, onUpdate: Restrict)
+  account   LedgerAccount @relation("Escrow_account", fields: [accountId, currency], references: [id, currency], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([orderId, currency])
+  @@unique([accountId, currency])
+}
+
+model LedgerJournal {
+  id                     String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  operationKey           String                 @unique
+  requestHash            String                 @db.VarChar(64)
+  currency               Currency
+  kind                   JournalKind
+  creatingTxId           BigInt                 @default(dbgenerated("txid_current()"))
+  postedAt               DateTime               @default(now()) @db.Timestamptz(3)
+  orderId                String?                @db.Uuid
+  actorId                String?                @db.Uuid
+  order                  MarketOrder?           @relation("LedgerJournal_order", fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  actor                  User?                  @relation("LedgerJournal_actor", fields: [actorId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  ledgerEntry_journal    LedgerEntry[]          @relation("LedgerEntry_journal")
+  paymentAttempt_journal PaymentAttempt?        @relation("PaymentAttempt_journal")
+  settlement_journal     Settlement?            @relation("Settlement_journal")
+  deliveryTerms_journal  DeliveryTermsRevision? @relation("DeliveryTermsRevision_journal")
+
+  @@unique([id, currency])
+  @@index([orderId, postedAt, id])
+  @@index([actorId])
+}
+
+model LedgerEntry {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  currency    Currency
+  debitUnits  BigInt        @default(0)
+  creditUnits BigInt        @default(0)
+  createdAt   DateTime      @default(now()) @db.Timestamptz(3)
+  journalId   String        @db.Uuid
+  accountId   String        @db.Uuid
+  journal     LedgerJournal @relation("LedgerEntry_journal", fields: [journalId, currency], references: [id, currency], onDelete: Restrict, onUpdate: Restrict)
+  account     LedgerAccount @relation("LedgerEntry_account", fields: [accountId, currency], references: [id, currency], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([accountId, createdAt, id])
+  @@index([journalId])
+}
+
+model PaymentAttempt {
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  operationKey      String         @unique
+  installment       Installment
+  termsVersion      Int            @default(0)
+  currency          Currency
+  units             BigInt
+  status            PaymentStatus
+  failureCode       String?
+  providerReference String         @unique
+  simulated         Boolean        @default(true)
+  createdAt         DateTime       @default(now()) @db.Timestamptz(3)
+  orderId           String         @db.Uuid
+  actorId           String         @db.Uuid
+  journalId         String?        @unique @db.Uuid
+  order             MarketOrder    @relation("PaymentAttempt_order", fields: [orderId, currency], references: [id, currency], onDelete: Restrict, onUpdate: Restrict)
+  actor             User           @relation("PaymentAttempt_actor", fields: [actorId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  journal           LedgerJournal? @relation("PaymentAttempt_journal", fields: [journalId, currency], references: [id, currency], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([journalId, currency])
+  @@index([orderId, createdAt, id])
+  @@index([actorId])
+}
+
+model Settlement {
+  id                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  currency              Currency
+  heldUnits             BigInt
+  mode                  SettlementMode
+  reason                String              @db.Text
+  operationKey          String              @unique
+  createdAt             DateTime            @default(now()) @db.Timestamptz(3)
+  orderId               String              @unique @db.Uuid
+  journalId             String              @unique @db.Uuid
+  decisionId            String?             @unique @db.Uuid
+  proposalId            String?             @unique @db.Uuid
+  order                 MarketOrder         @relation("Settlement_order", fields: [orderId, currency], references: [id, currency], onDelete: Restrict, onUpdate: Restrict)
+  journal               LedgerJournal       @relation("Settlement_journal", fields: [journalId, currency], references: [id, currency], onDelete: Restrict, onUpdate: Restrict)
+  decision              AdminDecision?      @relation("Settlement_decision", fields: [decisionId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  proposal              ResolutionProposal? @relation("Settlement_proposal", fields: [proposalId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  allocation_settlement Allocation[]        @relation("Allocation_settlement")
+
+  @@unique([orderId, currency])
+  @@unique([journalId, currency])
+}
+
+model Allocation {
+  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  currency     Currency
+  kind         AllocationKind
+  units        BigInt
+  settlementId String         @db.Uuid
+  recipientId  String         @db.Uuid
+  settlement   Settlement     @relation("Allocation_settlement", fields: [settlementId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  recipient    LedgerAccount  @relation("Allocation_recipient", fields: [recipientId, currency], references: [id, currency], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([settlementId, kind])
+  @@index([recipientId])
+}
+
+model IdempotencyRecord {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  route       String
+  key         String   @db.VarChar(128)
+  requestHash String   @db.VarChar(64)
+  response    Json
+  httpStatus  Int
+  expiresAt   DateTime @db.Timestamptz(3)
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+  actorId     String   @db.Uuid
+  actor       User     @relation("IdempotencyRecord_actor", fields: [actorId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([actorId, route, key])
+  @@index([expiresAt])
+}
+
+model DeliveryRate {
+  id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  method        DeliveryMethod
+  currency      Currency
+  feeUnits      BigInt
+  version       Int
+  effectiveAt   DateTime       @default(now()) @db.Timestamptz(3)
+  createdAt     DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime       @updatedAt @db.Timestamptz(3)
+  cityId        String         @db.Uuid
+  adminId       String         @db.Uuid
+  city          City           @relation("DeliveryRate_city", fields: [cityId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  admin         User           @relation("DeliveryRate_admin", fields: [adminId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  delivery_rate Delivery[]     @relation("Delivery_rate")
+
+  @@unique([cityId, method, currency, version])
+  @@index([cityId, method, currency, effectiveAt])
+  @@index([adminId])
+}
+
+model Delivery {
+  id                             String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  method                         DeliveryMethod
+  status                         DeliveryStatus          @default(PENDING)
+  currency                       Currency
+  feeUnits                       BigInt
+  termsSnapshot                  Json
+  termsVersion                   Int                     @default(1)
+  requestedAt                    DateTime?               @db.Timestamptz(3)
+  droppedOffAt                   DateTime?               @db.Timestamptz(3)
+  createdAt                      DateTime                @default(now()) @db.Timestamptz(3)
+  updatedAt                      DateTime                @updatedAt @db.Timestamptz(3)
+  storeOrderId                   String                  @unique @db.Uuid
+  rateId                         String?                 @db.Uuid
+  cityId                         String                  @db.Uuid
+  areaId                         String?                 @db.Uuid
+  storeOrder                     StoreOrder              @relation("Delivery_storeOrder", fields: [storeOrderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  rate                           DeliveryRate?           @relation("Delivery_rate", fields: [rateId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  city                           City                    @relation("Delivery_city", fields: [cityId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  area                           Area?                   @relation("Delivery_area", fields: [areaId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  deliveryTermsRevision_delivery DeliveryTermsRevision[] @relation("DeliveryTermsRevision_delivery")
+  driverAssignment_delivery      DriverAssignment[]      @relation("DriverAssignment_delivery")
+  deliveryEvent_delivery         DeliveryEvent[]         @relation("DeliveryEvent_delivery")
+
+  @@index([cityId, status, createdAt])
+  @@index([rateId])
+  @@index([areaId])
+}
+
+model DeliveryTermsRevision {
+  id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  version          Int
+  method           DeliveryMethod
+  currency         Currency
+  feeUnits         BigInt
+  previousFeeUnits BigInt
+  journalId        String?        @unique @db.Uuid
+  journal          LedgerJournal? @relation("DeliveryTermsRevision_journal", fields: [journalId, currency], references: [id, currency], onDelete: Restrict, onUpdate: Restrict)
+  promisedAt       DateTime       @db.Timestamptz(3)
+  reason           String
+  buyerApprovedAt  DateTime?      @db.Timestamptz(3)
+  appliedAt        DateTime?      @db.Timestamptz(3)
+  createdAt        DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime       @updatedAt @db.Timestamptz(3)
+  deliveryId       String         @db.Uuid
+  proposedById     String         @db.Uuid
+  delivery         Delivery       @relation("DeliveryTermsRevision_delivery", fields: [deliveryId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  proposedBy       User           @relation("DeliveryTermsRevision_proposedBy", fields: [proposedById], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([deliveryId, version])
+  @@unique([journalId, currency])
+  @@index([proposedById])
+}
+
+model DriverAssignment {
+  id                       String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  status                   AssignmentStatus @default(ASSIGNED)
+  acceptedAt               DateTime         @default(now()) @db.Timestamptz(3)
+  endedAt                  DateTime?        @db.Timestamptz(3)
+  createdAt                DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt                DateTime         @updatedAt @db.Timestamptz(3)
+  deliveryId               String           @db.Uuid
+  driverId                 String           @db.Uuid
+  delivery                 Delivery         @relation("DriverAssignment_delivery", fields: [deliveryId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  driver                   BusinessProfile  @relation("DriverAssignment_driver", fields: [driverId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  deliveryEvent_assignment DeliveryEvent[]  @relation("DeliveryEvent_assignment")
+
+  @@index([driverId, status])
+  @@index([deliveryId, status])
+}
+
+model DeliveryEvent {
+  id           String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type         DeliveryEventType
+  notes        String?
+  verified     Boolean           @default(false)
+  occurredAt   DateTime          @default(now()) @db.Timestamptz(3)
+  deliveryId   String            @db.Uuid
+  assignmentId String?           @db.Uuid
+  actorId      String            @db.Uuid
+  proofId      String?           @db.Uuid
+  delivery     Delivery          @relation("DeliveryEvent_delivery", fields: [deliveryId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  assignment   DriverAssignment? @relation("DeliveryEvent_assignment", fields: [assignmentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  actor        User              @relation("DeliveryEvent_actor", fields: [actorId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  proof        FileAsset?        @relation("DeliveryEvent_proof", fields: [proofId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([deliveryId, occurredAt, id])
+  @@index([assignmentId])
+  @@index([actorId])
+  @@index([proofId])
+}
+
+model CaseRecord {
+  id                      String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kind                    CaseKind
+  status                  CaseStatus           @default(OPEN)
+  reason                  String               @db.Text
+  evidenceDeadlineAt      DateTime             @db.Timestamptz(3)
+  pausedState             OrderState?
+  pausedReview            Json?
+  resolvedAt              DateTime?            @db.Timestamptz(3)
+  createdAt               DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt               DateTime             @updatedAt @db.Timestamptz(3)
+  orderId                 String               @db.Uuid
+  openerId                String?              @db.Uuid
+  handlingAdminId         String?              @db.Uuid
+  fileAsset_case          FileAsset[]          @relation("FileAsset_case")
+  order                   MarketOrder          @relation("CaseRecord_order", fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  opener                  User?                @relation("CaseRecord_opener", fields: [openerId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  handlingAdmin           User?                @relation("CaseRecord_handlingAdmin", fields: [handlingAdminId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  caseParty_case          CaseParty[]          @relation("CaseParty_case")
+  caseEvidence_case       CaseEvidence[]       @relation("CaseEvidence_case")
+  resolutionProposal_case ResolutionProposal[] @relation("ResolutionProposal_case")
+  adminDecision_case      AdminDecision?       @relation("AdminDecision_case")
+  scheduledJob_case       ScheduledJob[]       @relation("ScheduledJob_case")
+
+  @@index([status, evidenceDeadlineAt])
+  @@index([orderId, createdAt])
+  @@index([openerId])
+  @@index([handlingAdminId])
+}
+
+model CaseParty {
+  id                 String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  role               String     @db.VarChar(10)
+  notifiedAt         DateTime   @db.Timestamptz(3)
+  evidenceDeadlineAt DateTime   @db.Timestamptz(3)
+  createdAt          DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime   @updatedAt @db.Timestamptz(3)
+  caseId             String     @db.Uuid
+  userId             String     @db.Uuid
+  case               CaseRecord @relation("CaseParty_case", fields: [caseId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  user               User       @relation("CaseParty_user", fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([caseId, userId])
+  @@unique([caseId, role])
+  @@index([userId])
+}
+
+model CaseEvidence {
+  id          String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  text        String?            @db.Text
+  visibility  EvidenceVisibility @default(SHARED)
+  lateReason  String?
+  createdAt   DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime           @updatedAt @db.Timestamptz(3)
+  caseId      String             @db.Uuid
+  submitterId String             @db.Uuid
+  fileId      String?            @db.Uuid
+  case        CaseRecord         @relation("CaseEvidence_case", fields: [caseId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  submitter   User               @relation("CaseEvidence_submitter", fields: [submitterId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  file        FileAsset?         @relation("CaseEvidence_file", fields: [fileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([caseId, createdAt, id])
+  @@index([submitterId])
+  @@index([fileId])
+}
+
+model ResolutionProposal {
+  id                        String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kind                      ProposalKind
+  version                   Int
+  sellerAwardUnits          BigInt             @default(0)
+  sellerDeliveryUnits       BigInt             @default(0)
+  driverAwardUnits          BigInt             @default(0)
+  reason                    String             @db.Text
+  scope                     String?            @db.Text
+  newDueAt                  DateTime?          @db.Timestamptz(3)
+  agreementDeadlineAt       DateTime           @db.Timestamptz(3)
+  createdAt                 DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt                 DateTime           @updatedAt @db.Timestamptz(3)
+  caseId                    String             @db.Uuid
+  proposedById              String             @db.Uuid
+  settlement_proposal       Settlement?        @relation("Settlement_proposal")
+  case                      CaseRecord         @relation("ResolutionProposal_case", fields: [caseId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  proposedBy                User               @relation("ResolutionProposal_proposedBy", fields: [proposedById], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  proposalApproval_proposal ProposalApproval[] @relation("ProposalApproval_proposal")
+
+  @@unique([caseId, version])
+  @@index([proposedById])
+}
+
+model ProposalApproval {
+  id         String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  decision   ApprovalDecision
+  createdAt  DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime           @updatedAt @db.Timestamptz(3)
+  proposalId String             @db.Uuid
+  userId     String             @db.Uuid
+  proposal   ResolutionProposal @relation("ProposalApproval_proposal", fields: [proposalId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  user       User               @relation("ProposalApproval_user", fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([proposalId, userId])
+  @@index([userId])
+}
+
+model AdminDecision {
+  id                  String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  reason              String      @db.Text
+  substantiation      String      @db.Text
+  sellerAwardUnits    BigInt
+  sellerDeliveryUnits BigInt
+  driverAwardUnits    BigInt
+  buyerRefundUnits    BigInt
+  commissionUnits     BigInt
+  outcome             OrderState
+  createdAt           DateTime    @default(now()) @db.Timestamptz(3)
+  caseId              String      @unique @db.Uuid
+  adminId             String      @db.Uuid
+  settlement_decision Settlement? @relation("Settlement_decision")
+  case                CaseRecord  @relation("AdminDecision_case", fields: [caseId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  admin               User        @relation("AdminDecision_admin", fields: [adminId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([adminId])
+}
+
+model ChatRoom {
+  id               String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kind             RoomKind
+  createdAt        DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime      @updatedAt @db.Timestamptz(3)
+  orderId          String        @db.Uuid
+  order            MarketOrder   @relation("ChatRoom_order", fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  chatMessage_room ChatMessage[] @relation("ChatMessage_room")
+
+  @@unique([orderId, kind])
+}
+
+model ChatMessage {
+  id                        String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  clientMessageId           String              @db.Uuid
+  body                      String?             @db.Text
+  createdAt                 DateTime            @default(now()) @db.Timestamptz(3)
+  roomId                    String              @db.Uuid
+  senderId                  String              @db.Uuid
+  room                      ChatRoom            @relation("ChatMessage_room", fields: [roomId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  sender                    User                @relation("ChatMessage_sender", fields: [senderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  messageAttachment_message MessageAttachment[] @relation("MessageAttachment_message")
+
+  @@unique([roomId, senderId, clientMessageId])
+  @@index([roomId, createdAt, id])
+  @@index([senderId])
+}
+
+model MessageAttachment {
+  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  messageId String      @db.Uuid
+  fileId    String      @db.Uuid
+  message   ChatMessage @relation("MessageAttachment_message", fields: [messageId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  file      FileAsset   @relation("MessageAttachment_file", fields: [fileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([messageId, fileId])
+  @@index([fileId])
+}
+
+model Review {
+  id                        String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  hidden                    Boolean              @default(false)
+  createdAt                 DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt                 DateTime             @updatedAt @db.Timestamptz(3)
+  orderId                   String               @unique @db.Uuid
+  buyerId                   String               @db.Uuid
+  sellerProfileId           String               @db.Uuid
+  moderationDecision_review ModerationDecision[] @relation("ModerationDecision_review")
+  order                     MarketOrder          @relation("Review_order", fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  buyer                     User                 @relation("Review_buyer", fields: [buyerId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  sellerProfile             BusinessProfile      @relation("Review_sellerProfile", fields: [sellerProfileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  reviewVersion_review      ReviewVersion[]      @relation("ReviewVersion_review")
+
+  @@index([sellerProfileId, hidden, createdAt, id])
+  @@index([buyerId])
+}
+
+model ReviewVersion {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  version   Int
+  stars     Int
+  body      String?  @db.Text
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  reviewId  String   @db.Uuid
+  actorId   String   @db.Uuid
+  review    Review   @relation("ReviewVersion_review", fields: [reviewId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  actor     User     @relation("ReviewVersion_actor", fields: [actorId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([reviewId, version])
+  @@index([actorId])
+}
+
+model OutboxEvent {
+  id                 String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  aggregateId        String         @db.Uuid
+  aggregateVersion   Int
+  type               String         @db.VarChar(100)
+  payload            Json
+  deduplicationKey   String         @unique
+  publishedAt        DateTime?      @db.Timestamptz(3)
+  claimedUntil       DateTime?      @db.Timestamptz(3)
+  attempts           Int            @default(0)
+  createdAt          DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime       @updatedAt @db.Timestamptz(3)
+  notification_event Notification[] @relation("Notification_event")
+
+  @@index([publishedAt, claimedUntil, createdAt])
+}
+
+model ScheduledJob {
+  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  operationKey    String      @unique
+  kind            JobKind
+  deadlineVersion Int
+  dueAt           DateTime    @db.Timestamptz(3)
+  claimedUntil    DateTime?   @db.Timestamptz(3)
+  status          JobStatus   @default(READY)
+  attempts        Int         @default(0)
+  createdAt       DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime    @updatedAt @db.Timestamptz(3)
+  orderId         String      @db.Uuid
+  caseId          String?     @db.Uuid
+  order           MarketOrder @relation("ScheduledJob_order", fields: [orderId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  case            CaseRecord? @relation("ScheduledJob_case", fields: [caseId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([status, dueAt, claimedUntil])
+  @@index([orderId])
+  @@index([caseId])
+}
+
+model Notification {
+  id                                String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  channel                           NotificationChannel
+  category                          String
+  resourceId                        String                 @db.Uuid
+  readAt                            DateTime?              @db.Timestamptz(3)
+  createdAt                         DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt                         DateTime               @updatedAt @db.Timestamptz(3)
+  userId                            String                 @db.Uuid
+  eventId                           String                 @db.Uuid
+  user                              User                   @relation("Notification_user", fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  event                             OutboxEvent            @relation("Notification_event", fields: [eventId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  notificationDelivery_notification NotificationDelivery[] @relation("NotificationDelivery_notification")
+
+  @@unique([userId, eventId, channel])
+  @@index([userId, readAt, createdAt, id])
+  @@index([eventId])
+}
+
+model DeviceToken {
+  id                          String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  token                       String                 @unique
+  platform                    DevicePlatform
+  revokedAt                   DateTime?              @db.Timestamptz(3)
+  createdAt                   DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt                   DateTime               @updatedAt @db.Timestamptz(3)
+  userId                      String                 @db.Uuid
+  user                        User                   @relation("DeviceToken_user", fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  notificationDelivery_device NotificationDelivery[] @relation("NotificationDelivery_device")
+
+  @@index([userId, revokedAt])
+}
+
+model NotificationDelivery {
+  id             String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  channel        NotificationChannel
+  status         DeliveryAttemptStatus @default(PENDING)
+  attempts       Int                   @default(0)
+  nextAttemptAt  DateTime              @default(now()) @db.Timestamptz(3)
+  errorCode      String?
+  createdAt      DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime              @updatedAt @db.Timestamptz(3)
+  notificationId String                @db.Uuid
+  deviceId       String?               @db.Uuid
+  notification   Notification          @relation("NotificationDelivery_notification", fields: [notificationId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  device         DeviceToken?          @relation("NotificationDelivery_device", fields: [deviceId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([notificationId, channel, deviceId])
+  @@index([status, nextAttemptAt])
+  @@index([deviceId])
+}
+
+model AuditRecord {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  action      String
+  aggregateId String   @db.Uuid
+  requestId   String
+  metadata    Json
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  actorId     String?  @db.Uuid
+  actor       User?    @relation("AuditRecord_actor", fields: [actorId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([aggregateId, createdAt, id])
+  @@index([actorId, createdAt])
+  @@index([action, createdAt])
 }

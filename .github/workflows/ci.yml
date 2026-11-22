@@ -1,4 +1,4 @@
-name: Foundation checks
+name: Database checks
 on:
   push:
   pull_request:
@@ -21,6 +21,8 @@ jobs:
           --health-interval 5s --health-timeout 3s --health-retries 10
     env:
       DATABASE_URL: postgresql://marketplace_ci:ci-test-only@localhost:5432/marketplace_ci?schema=public
+      DATABASE_TEST_URL: postgresql://marketplace_ci:ci-test-only@localhost:5432/marketplace_ci?schema=public
+      ALLOW_DEMO_SEED: 'true'
       NEXT_TELEMETRY_DISABLED: '1'
     steps:
       - uses: actions/checkout@v4
@@ -34,6 +36,8 @@ jobs:
       - run: npm run db:validate --workspace backend
       - run: npm run db:migrate
       - run: npm run db:seed
+      - run: npm run db:seed
       - run: npm run typecheck
       - run: npm test
+      - run: npm run db:test
       - run: npm run build

@@ -1,19 +1,33 @@
-// Domain port only: no local gateway implementation or business feature yet.
-// All methods receive the SAME unit of work as their order/ledger command.
+// Backend-only port. All postings join the caller's existing transaction.
 export const PAYMENT_GATEWAY_PROVIDER = Symbol('PaymentGatewayProvider');
 export type GatewayCurrency = 'SYP' | 'USD';
+export type GatewayJournalKind =
+  | 'SIMULATED_TOPUP'
+  | 'DEPOSIT_HOLD'
+  | 'BALANCE_HOLD'
+  | 'STORE_HOLD'
+  | 'DELIVERY_ADJUSTMENT_HOLD'
+  | 'DELIVERY_ADJUSTMENT_REFUND'
+  | 'SETTLEMENT';
+export interface GatewayPosting {
+  accountId: string;
+  debitUnits: bigint;
+  creditUnits: bigint;
+}
 
 export interface GatewayCommand {
   operationKey: string;
-  orderId: string;
+  requestHash: string;
+  orderId: string | null;
+  actorId: string | null;
   currency: GatewayCurrency;
-  units: bigint;
-  sourceAccountId: string;
-  destinationAccountId: string;
+  kind: GatewayJournalKind;
+  postings: readonly GatewayPosting[];
+  simulateFailure?: boolean;
 }
 
 export type GatewayResult =
-  | { status: 'succeeded'; reference: string; simulated: true }
+  | { status: 'succeeded'; journalId: string; reference: string; simulated: true }
   | {
       status: 'failed';
       code: 'INSUFFICIENT_FUNDS' | 'SIMULATED_FAILURE';
