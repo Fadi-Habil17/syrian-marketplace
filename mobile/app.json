@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "name": "Syrian Marketplace",
+    "slug": "syrian-marketplace",
+    "version": "0.1.0",
+    "platforms": ["ios", "android"],
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "experiments": { "autolinkingModuleResolution": true },
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.syrianmarketplace.app" },
+    "android": { "package": "com.syrianmarketplace.app" },
+    "extra": { "supportsRTL": true }
+  }
+}

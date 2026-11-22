@@ -1,0 +1,12 @@
+node_modules
+package-lock.json
+dist
+build
+.next
+.expo
+.npm-cache
+coverage
+tmp
+output
+MARKETPLACE_REQUIREMENTS.md
+B4F_HACKATHON_RULES.pdf

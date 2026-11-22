@@ -1,0 +1,50 @@
+# Implementation plan and release gates
+
+Phase 0 is the current task: repository, permanent rules, complete requirements analysis and design. No business feature implementation is authorized in this increment. Status words: **setup** = files/configuration, **designed** = policy/model specified, **pending** = code or release verification remains. The checklist is the acceptance ledger, not a marketing checklist.
+
+| Phase                                  | Work and dependencies                                                                                                                                                                                                                                                                       | Exit evidence                                                                                                                                                              |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0 - Foundation                         | Read both source files; inspect available reference; exact roots; AGENTS; design/checklist; environment templates; npm workspaces; PostgreSQL/MinIO development configuration; health and client shells; current-author initial commit                                                      | Setup structural checks; install/typecheck/build results explicitly recorded; no fake business claims                                                                      |
+| 1 - Identity and catalog               | Freeze OpenAPI DTO/errors and socket auth conventions; migrate user/session/profile/geography/catalog/files; bcrypt + Passport JWT rotation; role/ownership/active-workspace guards; verification adapter; bilingual search/catalog and profile lifecycle; web/mobile UI                    | Real auth/permission tests, archived profile switching races, all roles/currencies seeded, Arabic/English parity; no clients wired before contract review                  |
+| 2 - Agreements and financial core      | Contract review first; service totals/rounding, professional booking confirmation and alternate-slot consent, free inspection/itemized quotes, schedules; local gateway/wallets/double-entry ledger; escrow snapshots/idempotency; two holds/final-file gating; store checkout atomic stock | PostgreSQL integration tests for insufficient funds, rollback, split limits, no repeated holds, 0% override, rate snapshot, two-client happy paths                         |
+| 3 - Fulfillment and delivery           | Professional en-route/on-site; freelance progress/milestones; store accept/prepare; both delivery methods; rates/serviceability; unique assignments/proof/history; buyer-approved changed terms and fallbacks; inventory returns                                                            | Race: two drivers accept; oversell prevention; wrong coverage denied; verified/unproven delivery; seller decline/timeout; full demo flow on both clients                   |
+| 4 - Cases and automation               | 48h/24h/72h server deadlines; reminders; overdue admin case; cancellation splits; provider cancellation/missed deadline; revisions; evidence; admin reason/allocations; auto-completion worker/outbox                                                                                       | Injected-clock boundary tests; dispute vs completion concurrency; once-only settlement/payout; conservation including seller delivery and driver fee; no forfeited deposit |
+| 5 - Shared features and complete admin | Private order/delivery chat and files; verified reviews/edit history; in-app/socket and mobile push; moderation/store/profile/product restrictions; commission/audit/dispute/rates admin on web AND mobile                                                                                  | Unauthorized order/socket/download denied; driver attachment restrictions; real-device push; full admin action parity; accessibility and RTL/LTR                           |
+| 6 - Operational release and B4F        | Clean database migrations/seed, Swagger schemas/errors/auth, all-route Postman examples, deployment, Expo review link/APK, demo accounts, roster, bilingual Word briefs/analysis, reviewer access                                                                                           | Acceptance scenarios all verified, fresh-clone setup, backup restore, security review, reviewer package complete by 2026-11-24 16:00 Asia/Damascus                         |
+
+## Minimum acceptance scenarios (requirements section 10)
+
+| ID  | Scenario and evidence to capture                                                                    | Planned phase |
+| --- | --------------------------------------------------------------------------------------------------- | ------------- |
+| A01 | Fixed professional package and separate approved custom quote converge on same funded state machine | 2             |
+| A02 | Two holds start work/gate finals; repeated requests never duplicate holds                           | 2             |
+| A03 | Insufficient balance leaves ledger/order unchanged                                                  | 2             |
+| A04 | Single-seller checkout, seller and platform-driver tracking on web/mobile                           | 3             |
+| A05 | Simultaneous driver accept: at most one succeeds in PostgreSQL                                      | 3             |
+| A06 | Review-window dispute freezes funds while racing completion cannot settle                           | 4             |
+| A07 | No buyer action after 72h verified delivery settles once across job retries                         | 4             |
+| A08 | Switch blocked by active commitments; allowed switch preserves complete history                     | 1/4           |
+| A09 | Another account denied private chat/finals via REST, sockets and download                           | 1/5           |
+| A10 | Final-payment expiry: no extra charge/forfeiture, deposit retained, one admin case                  | 4             |
+| A11 | Declined professional booking closes free and cannot be funded                                      | 2             |
+| A12 | Partial refund allocations equal held amount; one journal incl. driver/commission                   | 4             |
+| A13 | Admin rate change after first hold leaves snapshotted order rate intact                             | 2/4           |
+| A14 | Arabic/English direction and order/currency agree across both clients                               | 5             |
+
+## Required additional verification
+
+Exercise half-up units and smallest valid service amount, USD/SYP isolation, explicit workspace 0%, seller delivery fee exclusion, refund-only cases, failed holds with key reuse, competing idempotency keys, order creation versus switch, checkout versus stock edits, acceptance versus preaccept cancellation, deadline exactly at server time, physical proof missing, permission revocation, revision timer reset, provider contested refund, evidence deadline with no response, driver unavailable and changed-terms consent. Seed a dispute and an overdue order for the admin demo. Use real PostgreSQL transactions and multiple independent connections for races, not mocked repositories. Record tests with meaningful outcomes; do not write tests that only mirror scaffolding text.
+
+## Database, seed and worker handoff
+
+Foundation migration creates setup metadata only. Subsequent slices add domain schemas and reviewed SQL constraints from ERD; use `npm run db:migrate:dev --workspace backend -- --name <slice>` locally, `db:migrate:deploy` for review/deploy, `db:seed` for repeatable fictional data. Final seed must create customer, freelancer, professional, store owner, delivery driver and admin; bilingual listings/store, both currencies, service booking and quote paths, delivery paths, dispute and review-ready orders. Print demo-only logins and publish actual seeded passwords in README after implementation; never imply the foundation seed creates accounts.
+
+Worker starts with `npm run worker:dev` or compiled `npm run worker --workspace backend`. Initial worker only logs infrastructure heartbeat; phase 4 must register actual durable jobs and transaction-aware domain commands before automatic completion can be considered implemented. Do not use process-local timers as the only record of a financial deadline.
+
+## Contract gate and definition of done
+
+For each slice: approve state/DTO/error/event examples; update OpenAPI/Postman; generate contract types; migrate with constraints; implement server policies; then connect web/mobile; add meaningful domain/integration/permission tests; update checklist implementation and verification independently. A feature is done only with same business behavior on both clients, authorized admin access where required, both locales, audit/outbox and retry-safe effects. A submission is done only when the separate B4F deliverable checklist is complete.
+
+## Decisions and unresolved input
+
+Technology is owner-selected. Scheduling, geography source policy, sign-in/verification, archived reactivation, bilingual publishing, upload/retention and notification channels have explicit defaults D01-D19 in `BUSINESS_RULES.md`; no product-policy blocker remains for design. Real team name/roster/GitHub usernames, public repository or reviewer collaboration access, deployment URL and mobile artifact are pending later input/work, per owner direction. Do not fabricate any of them. Git commit uses only the current contributor identity.

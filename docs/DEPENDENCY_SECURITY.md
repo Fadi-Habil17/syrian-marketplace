@@ -1,0 +1,31 @@
+# Dependency security handoff
+
+This setup preserves the owner's NestJS **10**, Next.js **15**, React **19** and Expo/React Native choices. It is not a deployment security approval. Dependency advisories are separate from business-feature acceptance. The initial `npm audit --omit=dev` reported 33 affected dependency nodes (15 high, 18 moderate, zero critical); counts include inherited package chains, not 33 independently exposed application exploits. Final locked-tree counts are recorded in `SETUP_REPORT.md`.
+
+## Compatible updates
+
+Root `package.json` overrides pin same-major updates rather than upgrading the requested frameworks or running `npm audit fix --force`. The lockfile must actually resolve these versions; declaring an override alone is insufficient. A fresh dependency-tree resolution was necessary after npm retained old installed versions during an incremental install.
+
+| Dependency         | Selected version | Advisory / reason                                                                                                                           |
+| ------------------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| body-parser        | 1.20.9           | [Compressed-body denial of service](https://github.com/advisories/GHSA-27r3-jxmh-p828)                                                      |
+| qs                 | 6.17.1           | [Stringification denial of service](https://github.com/advisories/GHSA-6pq8-jhm2-2vcw)                                                      |
+| multer             | 2.5.0            | [Pending file-filter cleanup](https://github.com/advisories/GHSA-q7qp-rjg7-q26m)                                                            |
+| postcss            | 8.5.33           | [Untrusted source-map loading](https://github.com/advisories/GHSA-fxqj-rqcc-2cmp); includes Next/Expo nested copies                         |
+| lodash             | 4.18.1           | [Template injection](https://github.com/advisories/GHSA-r5fr-rjxr-66jc)                                                                     |
+| js-yaml            | 4.3.2            | [Merge processing resource exhaustion](https://github.com/advisories/GHSA-2883-xcg3-v3hh)                                                   |
+| effect             | 3.22.5           | [Template-literal schema regular expressions](https://github.com/advisories/GHSA-7589-6fvf-x4pw)                                            |
+| picomatch 4.x only | 4.0.7            | [Extglob regular-expression denial of service](https://github.com/advisories/GHSA-c2c7-rcm5-vvqj); retain separate compatible 2.x consumers |
+
+After changing these pins, run type checks, Jest, web/backend builds, Prisma validation, API/Swagger smoke tests and both native JavaScript bundles. Do not upgrade a transitive dependency across a major version without testing the consuming API.
+
+## Remaining review before production
+
+- Nest 10 core is covered by an [SSE output injection advisory](https://github.com/advisories/GHSA-36xv-jgw5-4q75), patched upstream in Nest 11.1.18. Changing to Nest 11/12 would violate the currently requested Nest 10 major. This project uses REST and Socket.IO, with no SSE routes. Do not introduce SSE while this finding remains unresolved; obtain a compatible backport or owner-approved framework change before using that surface.
+- Nest's `file-type` dependency has [malformed-file parsing](https://github.com/advisories/GHSA-j47w-4g3g-c36v) findings. No upload endpoints exist in the setup. Before Files implementation, select and verify a patched detection/scan adapter; do not expose the affected parser to untrusted uploads.
+- Expo SDK 54 tooling includes `image-size`, `glob` and `minimatch` versions covered by parsing/traversal/resource-exhaustion advisories. Their patched lines require major dependency changes relative to current consumers. Do not blindly force those major changes into the SDK; verify an upstream-compatible SDK/tooling update and regenerate native bundles/builds before release.
+- Prisma 6 configuration tooling includes `deepmerge-ts` covered by [recursive merge exhaustion](https://github.com/advisories/GHSA-ggr8-5vv4-36mx). Treat configuration as trusted source, never accept executable/untrusted Prisma configuration from an API. Validate a supported upstream fix before production tooling approval.
+
+Reachability assessment (inference from this shell's route inventory): only health and documentation are exposed; no SSE, uploads, user-supplied build assets, financial commands or dynamic Prisma configuration are accepted. That limits currently exposed paths but does not remove the dependency findings. Feature implementation and deployment must revisit reachability rather than suppress audit failures or label the project vulnerability-free. Development-only deprecated CLI dependencies are also not a clean security bill.
+
+Run `npm audit --omit=dev --json` against the committed lockfile to refresh evidence. Keep any local JSON report outside Git if it contains environment-specific information; no credentials are needed for public-package advisory lookup. The remaining security gate does not prevent the requested local architecture/setup commit, but prevents calling this scaffold a production-approved release.

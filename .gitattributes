@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.pdf binary
+MARKETPLACE_REQUIREMENTS.md -text
+*.docx binary
+*.png binary

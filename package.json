@@ -1,0 +1,47 @@
+{
+  "name": "syrian-marketplace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "B4F Syrian Marketplace: architecture and setup increment",
+  "workspaces": [
+    "backend",
+    "frontend",
+    "mobile",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22.13.0 <25",
+    "npm": ">=10 <12"
+  },
+  "packageManager": "npm@11.6.2",
+  "scripts": {
+    "verify:setup": "node scripts/verify-setup.mjs",
+    "build:packages": "npm run build --workspace @syrian-marketplace/contracts --workspace @syrian-marketplace/i18n",
+    "typecheck": "npm run build:packages && npm run typecheck --workspaces --if-present",
+    "build": "npm run build:packages && npm run build --workspace backend --workspace frontend",
+    "test": "npm run test --workspace backend -- --runInBand",
+    "dev:backend": "npm run start:dev --workspace backend",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "dev:mobile": "npm run start --workspace mobile",
+    "worker:dev": "npm run worker:dev --workspace backend",
+    "db:generate": "npm run db:generate --workspace backend",
+    "db:migrate": "npm run db:migrate:deploy --workspace backend",
+    "db:seed": "npm run db:seed --workspace backend",
+    "format:check": "prettier --check .",
+    "format": "prettier --write ."
+  },
+  "overrides": {
+    "body-parser": "1.20.9",
+    "qs": "6.17.1",
+    "multer": "2.5.0",
+    "postcss": "8.5.33",
+    "lodash": "4.18.1",
+    "js-yaml": "4.3.2",
+    "effect": "3.22.5",
+    "picomatch@^4.0.0": "4.0.7"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "typescript": "~5.9.3"
+  }
+}

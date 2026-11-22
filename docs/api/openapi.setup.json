@@ -1,0 +1,63 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "operationId": "HealthController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Process liveness; not database readiness.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Infrastructure"]
+      }
+    }
+  },
+  "info": {
+    "title": "Syrian Marketplace API",
+    "description": "Setup shell only. All payments in the intended first release are simulated.",
+    "version": "0.1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "ok",
+            "enum": ["ok"]
+          },
+          "phase": {
+            "type": "string",
+            "example": "setup",
+            "enum": ["setup"]
+          },
+          "simulatedPayments": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": ["status", "phase", "simulatedPayments"]
+      }
+    }
+  }
+}

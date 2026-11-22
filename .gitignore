@@ -1,0 +1,42 @@
+# Dependencies and generated output
+node_modules/
+dist/
+build/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+.expo/
+.turbo/
+.npm-cache/
+tmp/
+output/
+*.log
+
+# Secrets and local data; environment templates are intentionally tracked
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p12
+*.keystore
+*.jks
+uploads/
+.local-data/
+*.db
+*.db-journal
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Native generated builds (Expo managed workflow)
+mobile/android/
+mobile/ios/
+*.apk
+*.aab
+*.ipa
