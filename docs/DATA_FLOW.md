@@ -1,6 +1,6 @@
 # Data flow and transaction design
 
-All flows are intended implementation contracts. A successful HTTP response identifies the committed aggregate version and operation. An event is emitted only from a committed outbox row. Clients refetch authorized state after events; a notification is not proof of payment.
+These are full workflow contracts. Holds, dispute opening/freezing, eligible completion and admin financial resolution now have internal transaction-scoped persistence code; HTTP orchestration and other flow commands are not wired. A successful HTTP response identifies the committed aggregate version and operation. An event is emitted only from a committed outbox row. Clients refetch authorized state after events; a notification is not proof of payment.
 
 ## Agreement and two service holds
 

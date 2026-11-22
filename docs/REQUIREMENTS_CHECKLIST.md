@@ -208,3 +208,25 @@ All pending executable feature verification. See PLAN A01-A14 for test approach.
 | T10 | After completion list every created file and unresolved blockers                                        | SETUP_REPORT plus final response | S   |
 
 Live funds and official ShamCash Sandbox: **X** per requirements §7. Optional video/use-case diagram/analysis business-rule section are never excuses to omit required code, admin surfaces, delivery methods, core diagrams or four Word files at final submission.
+
+## Database and API contract increment (23 November 2026)
+
+These are source/contract implementation statuses, not end-to-end release acceptance. Product rows above stay D/P until complete backend/client behavior and live PostgreSQL tests pass.
+
+| ID    | Deliverable                                                                                                           | Status                                                                                          |
+| ----- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| DB01  | 72 domain Prisma models / UUID identifiers / complete role and workspace relationships                                | Implemented; Prisma schema/client checked                                                       |
+| DB02  | BIGINT currency-safe money, order specializations, financial journal/entry/escrow/allocation relationships            | Implemented; migrations applied on PostgreSQL 16.16                                             |
+| DB03  | FK/query indexes, partial uniqueness, schedule exclusion, stock/geography/quote/review constraints                    | Applied; selected guards covered by real DB tests                                               |
+| DB04  | Immutable balanced ledger, controlled balance updates, installment/settlement/adjustment uniqueness                   | Implemented; seven real PostgreSQL tests passed                                                 |
+| DB05  | Atomic holds, failed-attempt idempotency, store reservations, freeze/dispute, completion and admin partial resolution | Internal commands implemented; selected financial/race tests passed; HTTP orchestration pending |
+| DB06  | Nonproduction idempotent six-role/two-currency seed and README credentials                                            | Executed twice per dev/test DB; no duplicate topups observed                                    |
+| DB07  | ERD generated from complete Prisma model                                                                              | Generated; drift command provided                                                               |
+| API01 | OpenAPI 3.1, JWT, all release-one operations/DTOs/error schemas                                                       | Implemented and schema validated                                                                |
+| API02 | Pagination/filter/sort, If-Match and Idempotency-Key conventions                                                      | Defined per operation                                                                           |
+| API03 | Every source transition actor/guards/effects and per-operation permissions                                            | 72 transition rows linked to canonical state tables                                             |
+| API04 | WebSocket event/command/ack and room/push/replay policy                                                               | Documented and typed in canonical contract                                                      |
+| API05 | Generated HTTP/WebSocket types shared by web/mobile, drift checks                                                     | Implemented; clients remain unconnected to contract-only endpoints                              |
+| API06 | Matching-domain Postman v2.1 for every target operation                                                               | Generated; only health is implemented at runtime                                                |
+
+Actual results and untested boundaries are in [database/contract report](DATABASE_CONTRACT_REPORT.md).

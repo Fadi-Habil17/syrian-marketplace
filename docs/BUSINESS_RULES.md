@@ -75,3 +75,9 @@ Settlement conservation for **held** amount H: buyer refund + seller service/ite
 ## Default operational targets
 
 **D19:** 95th percentile ordinary API reads <500 ms locally with 50 concurrent demo users; listing pagination <=100 records; all input mutations rate limited by actor/IP, financial commands separately. API liveness is not database readiness. UTC clock injectable for tests; worker polls every 30s, handles due jobs using locks and durable deadlines; late polling never makes an ineligible order eligible. PostgreSQL outbox avoids a new mandatory broker. Daily database backups and private object backups with a demonstrated restore before deployment; structured request IDs, redacted logs and metrics for held balance, overdue jobs, failed push, rejected settlement. These are acceptance targets to measure, not achieved performance claims.
+
+## Additional technical defaults for the database/contract increment
+
+**D20 - store preview:** an unfunded DRAFT preview expires after 15 minutes, with no stock reservation or hold. The buyer sees the authoritative total/options/address/fee first; checkout validates its version and atomically funds/reserves. This does not replace the required full checkout hold or change any 24/48/72h policy.
+
+**D21 - explicit publishing:** valid price/category/type are required for a catalog draft; language fields may initially be empty. Publish commands validate both languages, owner verification/active workspace and clean assets. PATCH merges supplied fields only and never changes existing order snapshots. These are technical catalog/contract defaults, not new payment policies.

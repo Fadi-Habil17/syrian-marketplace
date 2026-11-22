@@ -1,4 +1,6 @@
-# Setup completion report
+# Historical foundation setup report
+
+This records the original setup increment. Current database/contract work and its limits are in [database/contract report](DATABASE_CONTRACT_REPORT.md).
 
 Verified on **23 November 2026 (Asia/Damascus)**. Scope is architecture and repository setup; full business features are intentionally not implemented. The source requirements and all nine B4F PDF pages were read completely. The available reference README, Nest composition and web manifest were inspected; direct Git access and some source paths were unavailable.
 

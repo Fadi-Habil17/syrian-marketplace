@@ -1,6 +1,6 @@
 # System design
 
-Status: setup and design only. Business modules, contracts and domain database migrations are planned. Required release scope comes from requirements revision 1.2; submission requirements come from all nine PDF pages. Stack selected by the owner overrides the source's open technology decision.
+Status: database schema, migration files, seed and API contracts are now implemented in source; financial persistence commands are internal. Business HTTP/WebSocket handlers, worker scheduling and clients remain future slices. Live database execution evidence is separate. Required release scope comes from requirements revision 1.2; submission requirements come from all nine PDF pages. Stack selected by the owner overrides the source's open technology decision.
 
 ## Overview and boundaries
 
@@ -37,7 +37,7 @@ Inspected the [reference README](https://github.com/b4f-cohort8-salamiyah/b4f-bo
 
 Each backend feature will contain transport/DTOs, application commands/queries, domain policies and persistence/adapters as complexity warrants. Avoid empty classes and speculative generic repositories. `common/` contains transport/security primitives only; `infrastructure/` contains config, database, telemetry and storage. Modules export narrow application capabilities. See `MODULE_BOUNDARIES.md` for ownership.
 
-The initial executable shells expose only API health and documentation, a nonprocessing worker heartbeat, and web/mobile setup pages. They do not accept payment, connect real identities or populate fake admin dashboards. `packages/contracts` contains only shared infrastructure and money representation types; the simulator port stays in its owning backend feature. Business contracts will be frozen per slice before client integration. Prisma foundation metadata proves the migration path without prematurely implementing the ERD.
+The executable shells expose API health and documentation, a nonprocessing worker heartbeat, and web/mobile setup pages. The current database increment adds the full Prisma model, migration files, development seed, internal simulated financial commands and canonical OpenAPI/WebSocket types in `packages/contracts`. The simulator port stays in its owning backend feature. Business HTTP controllers and client flows are not wired; migrations and seed require a running PostgreSQL server. Contracts are frozen before each client integration slice.
 
 ## Three use cases
 
@@ -60,7 +60,7 @@ Access token TTL 15 minutes, refresh 30 days; refresh tokens stored hashed with 
 
 ## Data and race handling
 
-See `ERD.md` for intended entities/constraints and `DATA_FLOW.md` for transactions. Lock order first, then escrow and wallet accounts in sorted ID order; acquire inventory/assignment records consistently. Use SERIALIZABLE and bounded retries with a stable operation key. Acceptance of dispute and settlement have a single serialization point on the order row. Persist the new order version, financial journal, immutable timeline/audit, idempotency outcome and outbox together. A worker only claims work, then rechecks all conditions under the same domain command transaction. Gateway simulation is local and transaction-aware; a future external provider would require a reservation/reconciliation design and is outside this release.
+See `ERD.md` for intended entities/constraints and `DATA_FLOW.md` for transactions. Lock participant User rows in sorted UUID order, then the order, then inventory/delivery/schedule resources, then ledger accounts in sorted UUID order; acquire inventory/assignment records consistently. Use SERIALIZABLE and bounded retries with a stable operation key. Acceptance of dispute and settlement have a single serialization point on the order row. Persist the new order version, financial journal, immutable timeline/audit, idempotency outcome and outbox together. A worker only claims work, then rechecks all conditions under the same domain command transaction. Gateway simulation is local and transaction-aware; a future external provider would require a reservation/reconciliation design and is outside this release.
 
 ## Configuration and release strategy
 

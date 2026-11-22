@@ -1,6 +1,6 @@
 # Module boundaries
 
-Planned feature modules; the initial code only registers infrastructure/health. Read an exported query or invoke an exported command across a boundary. No cross-module direct table writes or client-computed policy. Within one database transaction, a coordinator passes a typed unit-of-work context to participants; participants own their invariants and repositories.
+Feature ownership remains as below. Database/contracts and internal financial persistence now exist; the runtime AppModule still registers only infrastructure/health. Read an exported query or invoke an exported command across a boundary. No cross-module direct table writes or client-computed policy. Within one database transaction, a coordinator passes a typed unit-of-work context to participants; participants own their invariants and repositories.
 
 | Module           | Owns                                                                                                                          | Exports / allowed consumers                                              |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |

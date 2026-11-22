@@ -1,6 +1,6 @@
 # Syrian Marketplace | السوق السوري
 
-A B4F hackathon project for Syrian freelance services, local professional bookings/quotes and home-produced goods, with shared web/mobile contracts and simulated wallet/escrow payments. **Current increment: production-structured repository setup and design only.** Health/Swagger, worker heartbeat, bilingual setup screens and a metadata migration are available; business features are planned, not implemented.
+A B4F hackathon project for Syrian freelance services, local professional bookings/quotes and home-produced goods, with shared web/mobile contracts and simulated wallet/escrow payments. **Current increment: database schema, migrations, fictional development seed and API contracts.** There are 72 domain models, guarded financial persistence and a complete OpenAPI 3.1 target contract. Only health/Swagger, the heartbeat worker and bilingual setup screens are wired; business HTTP/WebSocket handlers and client flows remain implementation work. See [current validation report](docs/DATABASE_CONTRACT_REPORT.md).
 
 ## Team members
 
@@ -19,7 +19,7 @@ These are required deliverables, not a list of working features. All exact polic
 
 ## Tech stack and architecture
 
-Backend: NestJS 10, strict TypeScript, PostgreSQL 16, Prisma 6, JWT/Passport/bcrypt, class-validator, Swagger, Jest, Socket.IO. Frontend: Next.js 15, React 19, Tailwind CSS, Redux Toolkit. Mobile: React Native 0.81 / Expo SDK 54 / React 19.1 / TypeScript. Modular monolith with SOLID feature ownership; no live funds or official ShamCash Sandbox. PaymentGatewayProvider is a domain port prepared for a local simulator in the payment slice.
+Backend: NestJS 10, strict TypeScript, PostgreSQL 16, Prisma 6, JWT/Passport/bcrypt, class-validator, Swagger, Jest, Socket.IO. Frontend: Next.js 15, React 19, Tailwind CSS, Redux Toolkit. Mobile: React Native 0.81 / Expo SDK 54 / React 19.1 / TypeScript. Modular monolith with SOLID feature ownership; no live funds or official ShamCash Sandbox. PaymentGatewayProvider has a local transaction-scoped simulator adapter; it performs no network or real-money payment.
 
 The [reference project](https://github.com/b4f-cohort8-salamiyah/b4f-board-final) informs module composition and server-only API access; its business logic is not copied. Inspection limitations and adaptations are in [system design](docs/SYSTEM_DESIGN.md).
 
@@ -27,7 +27,7 @@ The [reference project](https://github.com/b4f-cohort8-salamiyah/b4f-board-final
 
 ```text
 syrian-marketplace/
-  backend/       Nest API, separate worker entry, Prisma foundation
+  backend/       Nest API, separate worker entry, Prisma schema/migrations/seed
   frontend/      Next App Router web and future admin
   mobile/        Expo iOS/Android and future admin
   docs/          Design, checklist, API collection, submission handoff
@@ -91,13 +91,18 @@ npm run db:migrate
 npm run db:seed
 ```
 
-Migration deployment uses `prisma migrate deploy`; seed is idempotent and writes only `SetupMetadata.phase=setup`. It does **not** create business users, wallets, orders or review logins. Full all-role/both-currency seed is a mandatory later release gate.
+Migration deployment uses `prisma migrate deploy`. Set `ALLOW_DEMO_SEED=true` in backend/.env only for a dedicated nonproduction database before `db:seed`. The seed creates all roles, both currencies, wallets funded through balanced simulator journals and bilingual sample catalog/order requests. Stable operation keys prevent repeated seed topups. The four migrations and seed twice have now succeeded locally on isolated PostgreSQL 16.16 development/test databases; all seven real PostgreSQL tests passed. Migration SQL generation/Prisma validation alone are not deployment evidence. See [database notes](docs/DATABASE.md).
 
 For future local schema development:
 
 ```powershell
 npm run db:migrate:dev --workspace backend -- --name descriptive_change
 npm run db:validate --workspace backend
+npm run contracts:validate
+npm run contracts:check
+npm run db:erd:check
+# With explicit isolated DATABASE_TEST_URL:
+npm run db:test
 ```
 
 Commit generated migration SQL and schema together. Do not use `db push` as deployment history. Bind local database/storage ports to loopback as Compose does; avoid destructive volume removal when data matters.
@@ -138,7 +143,7 @@ Separate root terminal: `npm run worker:dev`. Compiled: `npm run worker --worksp
 | -------------- | -------------------- | -------------- | ----------------------------------------------------- |
 | Infrastructure | GET `/api/v1/health` | Public         | Process liveness, phase=setup, simulatedPayments=true |
 
-Swagger routes are documentation infrastructure, not business resources. Future domains and all planned methods/paths are explicitly listed in [API conventions](docs/API_CONVENTIONS.md): Auth, Profiles, Geography, Catalog, Orders, Quotes, Payments, Delivery, Chat, Files, Disputes, Reviews, Notifications, Admin. No listed planned route is exposed now.
+Swagger routes are documentation infrastructure, not business resources. Future domains and all planned methods/paths are explicitly listed in [API conventions](docs/API_CONVENTIONS.md): Auth, Profiles, Geography, Catalog, Orders, Quotes, Payments, Delivery, Chat, Files, Disputes, Reviews, Notifications, Admin. Only the health route is exposed now; the complete [OpenAPI 3.1 contract](docs/api/openapi.yaml) is the specification for the next slices.
 
 ### Swagger documentation
 
@@ -146,7 +151,7 @@ Swagger routes are documentation infrastructure, not business resources. Future 
 
 ### Postman collection
 
-Import [Postman Collection v2.1](docs/postman/syrian-marketplace.postman_collection.json). It covers every currently implemented REST resource (health), with an example response, `{{baseUrl}}` and blank `{{token}}`. Health is noauth; later authenticated examples inherit bearer auth. Add every new endpoint to its README-matching domain folder when implemented. No real token is committed.
+Import [Postman Collection v2.1](docs/postman/syrian-marketplace.postman_collection.json). It covers all 145 target operations in matching domain folders. Health is implemented/noauth; other requests are clearly labelled contract-only. Set `{{baseUrl}}`, blank `{{token}}`, resource IDs, `{{orderVersion}}` and `{{idempotencyKey}}` for a running slice. Reuse an idempotency key on timeout. Examples use fictional seed data; no real token is committed. Regenerate with `npm run contracts:postman`.
 
 ## Verification
 
@@ -156,23 +161,43 @@ npm run typecheck
 npm test
 npm run build
 npm run db:validate --workspace backend
+npm run contracts:validate
+npm run contracts:check
+npm run db:erd:check
+# With explicit isolated DATABASE_TEST_URL:
+npm run db:test
 ```
 
-Prisma validation requires DATABASE_URL from the backend template or local environment. CI uses an isolated test PostgreSQL database and applies the foundation migration/seed. Current Jest tests validate configuration safety, not missing domain features. Actual performed checks and limitations are recorded in [setup report](docs/SETUP_REPORT.md).
+Prisma validation requires DATABASE_URL from the backend template or local environment. CI is configured with isolated PostgreSQL, applies all migrations, runs seed twice, and runs real PostgreSQL invariant/concurrency tests. This remote CI has not been claimed as run. Local unit tests check configuration and minor-unit arithmetic; database tests require DATABASE_TEST_URL and never count a missing database as success. Actual evidence is in the [current report](docs/DATABASE_CONTRACT_REPORT.md); the [setup report](docs/SETUP_REPORT.md) records the historical foundation.
 
 ## Demo accounts
 
-None yet: authentication and all-role demo seed are not implemented. Final submission must list **actual review-only usernames/passwords** for Customer, Freelancer, Professional, Store Owner, Delivery Driver and Admin, reproducible by the seed, including both currencies/scenarios. Never put production credentials here.
+Seed-defined fictional review accounts below all use **Marketplace123!** (bcrypt hashed in the database). Apply migrations and run the explicitly enabled seed first. They have been created in the isolated local marketplace_dev database. API login is not implemented; these are not currently working HTTP logins. Never use these credentials for production. Every account receives SYP and USD simulated wallets.
+
+| Role            | Seed email                              |
+| --------------- | --------------------------------------- |
+| Customer        | `customer@demo.marketplace.test`        |
+| Freelancer      | `freelancer@demo.marketplace.test`      |
+| Professional    | `professional@demo.marketplace.test`    |
+| Store Owner     | `store_owner@demo.marketplace.test`     |
+| Delivery Driver | `delivery_driver@demo.marketplace.test` |
+| Admin           | `admin@demo.marketplace.test`           |
 
 ## Demo URL and mobile APK / Expo link
 
-No hosted demo, public repository URL, APK or Expo review link has been created in this local setup increment. They remain required submission work as applicable; track them in [submission guide](docs/SUBMISSION_GUIDE.md). Do not submit the project with these placeholders.
+Repository: [Fadi-Habil17/syrian-marketplace](https://github.com/Fadi-Habil17/syrian-marketplace). No hosted demo, APK or Expo review link has been created. They remain required submission work as applicable; track them in [submission guide](docs/SUBMISSION_GUIDE.md). Do not submit the project with these placeholders.
 
 ## Known limitations and design navigation
 
-No business features, live payment, login, admin, chat, push, domain migrations, full seed or automatic completion yet. Shell RTL is not proof of full future app parity. Database/containers/native runtime checks depend on local tools; SETUP_REPORT distinguishes performed and pending verification. Four bilingual Word deliverables are pending the actual team/final product; Markdown designs do not replace them. Remaining upstream dependency advisories and compatible security overrides are documented in [dependency security](docs/DEPENDENCY_SECURITY.md); this scaffold is not approved for production deployment.
+Domain schema, migrations, seed and internal financial persistence are implemented. Local migrations, seed reruns and the seven PostgreSQL integration tests passed; see the current validation report for coverage limits. No business HTTP/client features, live payment, login, admin UI, chat/push transport or automatic-completion scheduling are wired yet. Shell RTL is not proof of full future app parity. Database/containers/native runtime checks depend on local tools; SETUP_REPORT distinguishes performed and pending verification. Four bilingual Word deliverables are pending the actual team/final product; Markdown designs do not replace them. Remaining upstream dependency advisories and compatible security overrides are documented in [dependency security](docs/DEPENDENCY_SECURITY.md); this scaffold is not approved for production deployment.
 
 - [Requirements checklist](docs/REQUIREMENTS_CHECKLIST.md), [business rules/defaults](docs/BUSINESS_RULES.md), [system design](docs/SYSTEM_DESIGN.md), [module boundaries](docs/MODULE_BOUNDARIES.md)
 - [Data flow](docs/DATA_FLOW.md), [permissions](docs/PERMISSIONS_MATRIX.md), [order transitions](docs/ORDER_STATE_MACHINES.md), [ERD](docs/ERD.md)
 - [API conventions](docs/API_CONVENTIONS.md), [implementation plan](docs/IMPLEMENTATION_PLAN.md), [submission guide](docs/SUBMISSION_GUIDE.md)
 - [Permanent engineering rules](AGENTS.md), [all created files and verification](docs/SETUP_REPORT.md)
+
+Database-only variables: `ALLOW_DEMO_SEED` (false by default, true explicitly for development seed), `DATABASE_TEST_URL` (separate test/CI database). See backend/.env.example. Use `npm run contracts:generate` before shared package builds if the contract changes.
+
+## Validated local PostgreSQL instance
+
+The follow-up environment check found native PostgreSQL 18 running and Docker available outside the sandbox. Validation used a separate PostgreSQL 16.16 container, `syrian-marketplace-validation`, on `127.0.0.1:15432`, with isolated `marketplace_dev` and `marketplace_test` databases. Existing native databases were not changed. Local credentials/URLs are configured only in ignored `backend/.env`; the named Docker volume retains this project's data. With Docker Desktop running, use `docker start syrian-marketplace-validation` if the container is stopped, then `npm run db:test` to run the dedicated database tests. This workstation setup does not replace the fresh-clone environment/Compose instructions above.

@@ -4,7 +4,7 @@
 
 1. Read `MARKETPLACE_REQUIREMENTS.md` completely and `B4F_HACKATHON_RULES.pdf` completely before changing product scope or submission policy. The requirements revision 1.2 controls simulated payments; the owner's specified stack resolves the technology decision. Never replace an explicit rule with a default.
 2. Consult `docs/REQUIREMENTS_CHECKLIST.md`, `docs/BUSINESS_RULES.md`, and `docs/ORDER_STATE_MACHINES.md` before implementation. Mark requirements designed, implemented, and verified separately; a document or scaffold is not a delivered feature.
-3. This initial increment is architecture and setup only. Do not claim authentication, payments, business workflows, admin, notifications, or submission artifacts are implemented by placeholders.
+3. The foundation increment was setup only. The currently authorized increment implements database schema/migrations/seeds, transaction-safe financial persistence and API/WebSocket contracts. HTTP business controllers, authentication and client flows remain separate implementation slices. Never claim a contract or seed is a working endpoint.
 4. Keep the exact root names `backend/`, `frontend/`, `mobile/`, `docs/`, `packages/`. Do not copy the reference repository's `api/` and `web/` names or its business logic.
 
 ## Architecture
