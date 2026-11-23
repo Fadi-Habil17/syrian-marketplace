@@ -1,10 +1,13 @@
 import { api, unwrap } from '../src/api/client';
+import { useState } from 'react';
 import { useLoad } from '../src/use-load';
 import { useSession } from '../src/state/session';
 import { Page, Copy, Card, Button, Busy, Failure } from '../src/ui';
 export default function Notifications() {
   const { user, locale } = useSession();
   const ar = locale === 'ar';
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
   const result = useLoad(
     async () => (user ? unwrap(await api.GET('/api/v1/notifications')) : null),
     [user?.id],
@@ -12,6 +15,7 @@ export default function Notifications() {
   return (
     <Page title={ar ? 'الإشعارات' : 'Notifications'}>
       {result.loading && <Busy />}
+      {error && <Failure message={error} />}
       {result.error && <Failure message={result.error} retry={() => void result.reload()} />}
       {result.data?.items.length === 0 && (
         <Copy>{ar ? 'لا توجد إشعارات' : 'No notifications'}</Copy>
@@ -23,13 +27,18 @@ export default function Notifications() {
           {!item.readAt && (
             <Button
               title={ar ? 'تعليم كمقروء' : 'Mark read'}
+              disabled={busy}
               onPress={() => {
+                setBusy(true);
+                setError('');
                 void api
                   .POST('/api/v1/notifications/{notificationId}/read', {
                     params: { path: { notificationId: item.id } },
                   })
                   .then(unwrap)
-                  .then(() => result.reload());
+                  .then(() => result.reload())
+                  .catch((e) => setError(String(e)))
+                  .finally(() => setBusy(false));
               }}
             />
           )}

@@ -58,7 +58,7 @@ export default function Listing() {
           <Copy>{money(item.price)}</Copy>
           {'storeId' in item && (
             <Button
-              title={ar ? '??? ?????' : 'Add to cart'}
+              title={ar ? 'أضف للسلة' : 'Add to cart'}
               onPress={() => {
                 try {
                   cart.add(item);
@@ -71,7 +71,7 @@ export default function Listing() {
           )}
           {'kind' in item && item.kind === 'PROFESSIONAL_PACKAGE' && (
             <Button
-              title={ar ? '???? ??????' : 'Book service'}
+              title={ar ? 'احجز الخدمة' : 'Book service'}
               onPress={() => router.push({ pathname: '/booking', params: { id } })}
             />
           )}

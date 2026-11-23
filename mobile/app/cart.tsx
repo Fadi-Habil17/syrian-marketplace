@@ -1,9 +1,15 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Alert } from 'react-native';
 import { router } from 'expo-router';
 import * as Crypto from 'expo-crypto';
 import type { ApiSchemas } from '../src/api/contracts';
-import { api, unwrap } from '../src/api/client';
+import { api, isDefinitiveFailure, unwrap } from '../src/api/client';
+import {
+  beginCheckout,
+  finishCheckout,
+  readCheckoutIntent,
+  type CheckoutIntent,
+} from '../src/checkout-intent';
 import { useCart } from '../src/state/cart';
 import { useSession } from '../src/state/session';
 import { useLoad } from '../src/use-load';
@@ -18,13 +24,35 @@ export default function Cart() {
   const [preview, setPreview] = useState<ApiSchemas['StorePreview'] | null>(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const key = useRef<string | null>(null);
+  const pending = useRef<CheckoutIntent | null>(null);
+  const [paymentPending, setPaymentPending] = useState(false);
+  const [checkingPayment, setCheckingPayment] = useState(true);
+  const cartFingerprint = JSON.stringify(lines.map((line) => [line.product.id, line.quantity]));
+  useEffect(() => {
+    setPreview(null);
+  }, [cartFingerprint]);
+  useEffect(() => {
+    let active = true;
+    readCheckoutIntent(user?.id ?? 'signed-out')
+      .then((intent) => {
+        if (!active) return;
+        pending.current = intent;
+        setPaymentPending(!!intent);
+        setCheckingPayment(false);
+      })
+      .catch((e) => {
+        if (active) setError(String(e));
+      });
+    return () => {
+      active = false;
+    };
+  }, [user?.id]);
   const addresses = useLoad(
     async () => (user ? unwrap(await api.GET('/api/v1/me/addresses')) : null),
     [user?.id],
   );
   async function review() {
-    if (!lines[0]) return;
+    if (!user || !lines[0] || pending.current || checkingPayment || busy) return;
     setBusy(true);
     setError('');
     try {
@@ -41,7 +69,6 @@ export default function Cart() {
           }),
         ),
       );
-      key.current = null;
     } catch (e) {
       setError(String(e));
     } finally {
@@ -49,22 +76,39 @@ export default function Cart() {
     }
   }
   async function checkout() {
-    if (!preview) return;
+    if (!user || busy || (!preview && !pending.current)) return;
     setBusy(true);
     setError('');
-    key.current ??= Crypto.randomUUID();
     try {
+      const intent =
+        pending.current ??
+        (await beginCheckout(user.id, preview!.order.id, preview!.order.version));
+      pending.current = intent;
+      setPaymentPending(true);
       const result = unwrap(
         await api.POST('/api/v1/orders/store-checkout', {
-          body: { draftOrderId: preview.order.id, termsAccepted: true },
+          body: { draftOrderId: intent.draftOrderId, termsAccepted: true },
           params: {
-            header: { 'If-Match': `"${preview.order.version}"`, 'Idempotency-Key': key.current! },
+            header: { 'If-Match': `"${intent.version}"`, 'Idempotency-Key': intent.key },
           },
         }),
       );
+      await finishCheckout(intent);
+      pending.current = null;
+      setPaymentPending(false);
       clear();
       router.replace({ pathname: '/order', params: { id: result.order.id } });
     } catch (e) {
+      if (isDefinitiveFailure(e) && pending.current) {
+        try {
+          await finishCheckout(pending.current);
+          pending.current = null;
+          setPaymentPending(false);
+          setPreview(null);
+        } catch {
+          /* Retain the durable key if local deletion fails. */
+        }
+      }
       setError(String(e));
     } finally {
       setBusy(false);
@@ -74,6 +118,20 @@ export default function Cart() {
     <Page title={ar ? 'السلة' : 'Cart'}>
       {(error || addresses.error) && <Failure message={error || addresses.error} />}
       {busy && <Busy />}
+      {paymentPending && (
+        <Card>
+          <Copy>
+            {ar
+              ? 'نتيجة دفع سابق لم تتأكد. أعد التحقق قبل بدء طلب جديد.'
+              : 'A previous payment outcome is pending. Check it before starting another order.'}
+          </Copy>
+          <Button
+            title={ar ? 'التحقق من الدفع السابق' : 'Check previous payment'}
+            disabled={busy}
+            onPress={() => void checkout()}
+          />
+        </Card>
+      )}
       {!lines.length && <Copy>{ar ? 'السلة فارغة' : 'Cart is empty'}</Copy>}
       {lines.map((line) => (
         <Card key={line.product.id}>
@@ -82,7 +140,7 @@ export default function Cart() {
           </Copy>
           <Button
             title={ar ? 'إزالة' : 'Remove'}
-            disabled={busy}
+            disabled={busy || paymentPending || checkingPayment}
             onPress={() => {
               remove(line.product.id);
               setPreview(null);
@@ -93,6 +151,7 @@ export default function Cart() {
       {addresses.data?.items.map((address) => (
         <Button
           key={address.id}
+          disabled={busy || paymentPending || checkingPayment}
           title={`${address.id === addressId ? '✓ ' : ''}${address.label} · ${address.details}`}
           onPress={() => {
             setAddress(address.id);
@@ -103,6 +162,7 @@ export default function Cart() {
       {(['SELLER', 'PLATFORM_DRIVER'] as const).map((value) => (
         <Button
           key={value}
+          disabled={busy || paymentPending || checkingPayment}
           title={
             value === 'SELLER'
               ? ar
@@ -120,10 +180,10 @@ export default function Cart() {
       ))}
       <Button
         title={ar ? 'مراجعة السعر والتوصيل' : 'Review price and delivery'}
-        disabled={!addressId || !lines.length || busy}
+        disabled={!user || !addressId || !lines.length || busy || paymentPending || checkingPayment}
         onPress={() => void review()}
       />
-      {preview && (
+      {preview && !paymentPending && (
         <Card>
           <Copy>{money(preview.order.total)}</Copy>
           <Copy>{money(preview.order.deliveryFee)}</Copy>

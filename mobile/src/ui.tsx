@@ -9,6 +9,7 @@ import {
   type TextInputProps,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { useSession } from './state/session';
 export const colors = {
@@ -27,6 +28,10 @@ export function Page({ title, children }: { title: string; children: ReactNode }
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={[s.page, { direction: locale === 'ar' ? 'rtl' : 'ltr' }]}
       >
+        <Button
+          title={locale === 'ar' ? 'رجوع' : 'Back'}
+          onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+        />
         <Text accessibilityRole="header" style={s.title}>
           {title}
         </Text>

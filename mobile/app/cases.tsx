@@ -23,6 +23,9 @@ export default function Cases() {
     }),
     [id, user?.id],
   );
+  const supportOnly =
+    result.data &&
+    ['COMPLETED', 'CANCELLED', 'REJECTED', 'EXPIRED', 'REFUNDED'].includes(result.data.order.state);
   async function submit() {
     if (!result.data) return;
     setBusy(true);
@@ -37,7 +40,7 @@ export default function Cases() {
               'If-Match': `"${result.data.order.version}"`,
             },
           },
-          body: { kind: 'DISPUTE', reason },
+          body: { kind: supportOnly ? 'SUPPORT' : 'DISPUTE', reason },
         }),
       );
       setReason('');
@@ -65,14 +68,24 @@ export default function Cases() {
         </Card>
       ))}
       <Field
-        label={ar ? 'سبب النزاع' : 'Dispute reason'}
+        label={
+          supportOnly
+            ? ar
+              ? 'سبب طلب الدعم'
+              : 'Support reason'
+            : ar
+              ? 'سبب النزاع'
+              : 'Dispute reason'
+        }
         multiline
         value={reason}
         onChangeText={setReason}
       />
       <Button
-        title={ar ? 'فتح نزاع' : 'Open dispute'}
-        disabled={busy || !reason.trim()}
+        title={
+          supportOnly ? (ar ? 'طلب دعم' : 'Request support') : ar ? 'فتح نزاع' : 'Open dispute'
+        }
+        disabled={busy || !result.data || !reason.trim()}
         onPress={() => void submit()}
       />
     </Page>

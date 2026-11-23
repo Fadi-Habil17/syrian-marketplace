@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { api, unwrap } from './api/client';
+import { api, isDefinitiveFailure, unwrap } from './api/client';
 import type { ApiSchemas } from './api/contracts';
 import { useIntent } from './intent';
 import { useSession } from './state/session';
@@ -134,6 +134,7 @@ export function OrderActions({
       setNote('');
       await reload();
     } catch (e) {
+      if (isDefinitiveFailure(e)) intent.done();
       setError(String(e));
     } finally {
       setBusy(false);

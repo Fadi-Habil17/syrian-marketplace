@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { Fragment, createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { Platform } from 'react-native';
 import type { ApiSchemas } from '../api/contracts';
 import {
@@ -60,13 +60,16 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     try {
       if (refreshToken) unwrap(await api.POST('/api/v1/auth/logout', { body: { refreshToken } }));
     } finally {
-      await clearSession();
-      setUser(null);
+      try {
+        await clearSession();
+      } finally {
+        setUser(null);
+      }
     }
   }
   return (
     <Context.Provider value={{ user, ready, error, locale, setLocale, login, logout, reload }}>
-      {children}
+      <Fragment key={user?.id ?? 'signed-out'}>{children}</Fragment>
     </Context.Provider>
   );
 }

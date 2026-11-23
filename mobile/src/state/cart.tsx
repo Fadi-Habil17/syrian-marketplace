@@ -15,6 +15,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setLines([]);
   }, [user?.id]);
   function add(product: ApiSchemas['Product']) {
+    if (
+      lines.some(
+        (line) =>
+          line.product.storeId !== product.storeId ||
+          line.product.price.currency !== product.price.currency,
+      )
+    )
+      throw new Error('ابدأ سلة جديدة لهذا المتجر / Start a new cart for this store');
     setLines((current) => {
       if (
         current.some(
@@ -23,7 +31,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             line.product.price.currency !== product.price.currency,
         )
       )
-        throw new Error('ابدأ سلة جديدة لهذا المتجر / Start a new cart for this store');
+        return current;
       const found = current.find((line) => line.product.id === product.id);
       return found
         ? current.map((line) =>

@@ -3,6 +3,8 @@ import type { RealtimeEvent } from './api/contracts';
 import { getAccessToken, restoreSession } from './api/client';
 import { apiConfig } from './api/config';
 export function watchOrder(orderId: string, refresh: () => void) {
+  let disposed = false;
+  let refreshedForConnection = false;
   const socket = io(apiConfig.socketUrl, {
     autoConnect: false,
     auth: (callback) => {
@@ -11,6 +13,7 @@ export function watchOrder(orderId: string, refresh: () => void) {
   });
   const seen = new Set<string>();
   socket.on('connect', () => {
+    refreshedForConnection = false;
     socket.emit('command', { type: 'order.subscribe', data: { orderId, lastSeenVersion: 0 } }, () =>
       refresh(),
     );
@@ -26,15 +29,18 @@ export function watchOrder(orderId: string, refresh: () => void) {
     }
     refresh();
   });
-  socket.on('connect_error', () => {
+  socket.on('connect_error', (error: Error) => {
+    if (disposed || error.message !== 'AUTH_REQUIRED' || refreshedForConnection) return;
+    refreshedForConnection = true;
     void restoreSession()
       .then((pair) => {
-        if (pair) socket.connect();
+        if (pair && !disposed) socket.connect();
       })
       .catch(() => {});
   });
   socket.connect();
   return () => {
+    disposed = true;
     socket.removeAllListeners();
     socket.disconnect();
   };

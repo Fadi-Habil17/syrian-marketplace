@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import * as Crypto from 'expo-crypto';
 import { api, unwrap } from '../src/api/client';
@@ -47,7 +47,7 @@ export default function Delivery() {
   }
   const delivery = result.data;
   return (
-    <Page title={ar ? 'Ø§Ù„ØªÙˆØµÙŠÙ„' : 'Delivery'}>
+    <Page title={ar ? 'التوصيل' : 'Delivery'}>
       {(error || result.error) && (
         <Failure message={error || result.error} retry={() => void result.reload()} />
       )}
@@ -59,26 +59,26 @@ export default function Delivery() {
             <Copy>{delivery.address.details}</Copy>
             {delivery.events.map((event) => (
               <Copy key={event.id}>
-                {event.type} Â· {new Date(event.occurredAt).toLocaleString(locale)}
+                {event.type} · {new Date(event.occurredAt).toLocaleString(locale)}
               </Copy>
             ))}
           </Card>
           {user?.roles.includes('DELIVERY_DRIVER') && (
             <>
               <Field
-                label={ar ? 'Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ø§Ù„ØªØ³Ù„ÙŠÙ…' : 'Delivery notes'}
+                label={ar ? 'ملاحظات التسليم' : 'Delivery notes'}
                 multiline
                 value={notes}
                 onChangeText={setNotes}
               />
               <Button
-                title={ar ? 'ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø§Ø³ØªÙ„Ø§Ù…' : 'Record pickup'}
-                disabled={busy || !notes.trim()}
+                title={ar ? 'تسجيل الاستلام' : 'Record pickup'}
+                disabled={busy || !notes.trim() || delivery.status !== 'ASSIGNED'}
                 onPress={() => void record('pickup')}
               />
               <Button
-                title={ar ? 'ØªØ³Ø¬ÙŠÙ„ Ø§Ù„ØªØ³Ù„ÙŠÙ…' : 'Record drop-off'}
-                disabled={busy || !notes.trim()}
+                title={ar ? 'تسجيل التسليم' : 'Record drop-off'}
+                disabled={busy || !notes.trim() || delivery.status !== 'PICKED_UP'}
                 onPress={() => void record('dropoff')}
               />
             </>

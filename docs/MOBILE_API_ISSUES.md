@@ -1,6 +1,6 @@
 ﻿# Mobile API integration issues and remaining work
 
-This is a partial mobile implementation on `feature/mobile`, not the complete requested mobile release. Backend and frontend source, Prisma models, migrations and shared contracts are unchanged.
+This is a partial mobile implementation originating on `feature/mobile`, reviewed for merge into main; it is not the complete requested mobile release. See [review fixes and current verification](MOBILE_MERGE_REVIEW.md). Backend and frontend source, Prisma models, migrations and shared contracts are unchanged.
 
 ## Contract review
 
@@ -13,7 +13,7 @@ Known integration constraints to coordinate with the backend owner:
 - There is no general admin user-search endpoint in the contract. Account restriction UX needs an existing authorized user reference; a searchable user picker would need backend-owner agreement.
 - Staged inspection requests require at least one already uploaded photo. File staging/scanning integration must precede the inspection-request client flow.
 
-These are contract observations, not proof that a backend endpoint is broken. No live backend acceptance session was run here.
+These are contract observations, not proof that a backend endpoint is broken. The original contribution did not run a live backend acceptance session; later review evidence is recorded separately.
 
 ## Implemented client code, not device verification
 
@@ -29,7 +29,7 @@ Expo Router, secure refresh storage/in-memory access, single-flight refresh and 
 - Dispute evidence/proposals/revisions, review editing, wallet transaction history.
 - Full list pagination/filter pickers, complete state/enum translations, app-wide native RTL/navigation/device accessibility and visual comparison beyond the home adaptation.
 - Push tap routing, token revocation lifecycle and real-device delivery/receipts acceptance.
-- Durable handling of ambiguous network outcomes for every mutation; the deposit/balance holds retain their key/version on retry, while several other mutations still need this coverage.
+- Durable handling of ambiguous network outcomes for every mutation; checkout now persists its original key/draft/version per account across restart, and deposit/balance holds retain their key/version within the mounted screen; several other mutations still need durable coverage.
 - End-to-end API, authorization, offline/session races, screenshots and Android/iOS device acceptance. No APK was produced.
 
 Do not mark these features complete because a route, adapter, schema or TypeScript build exists. Coordinate any contract changes with the backend owner rather than changing shared packages.

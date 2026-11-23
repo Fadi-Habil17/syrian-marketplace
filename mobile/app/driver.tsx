@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { router } from 'expo-router';
 import * as Crypto from 'expo-crypto';
 import { api, unwrap } from '../src/api/client';
 import { useLoad } from '../src/use-load';
@@ -28,6 +29,7 @@ export default function Driver() {
         }),
       );
       await jobs.reload();
+      router.push({ pathname: '/delivery', params: { id } });
     } catch (e) {
       setError(String(e));
     } finally {

@@ -1,6 +1,6 @@
 ﻿# Mobile application (partial implementation)
 
-Expo SDK 54 / React Native 0.81 / React 19.1 / TypeScript / Expo Router. Work branch: `feature/mobile`. See [coverage and remaining required implementation](../docs/MOBILE_API_ISSUES.md). This is not a complete mobile release.
+Expo SDK 54 / React Native 0.81 / React 19.1 / TypeScript / Expo Router. Originating branch: `feature/mobile`; reviewed for merge into main. See [coverage and remaining required implementation](../docs/MOBILE_API_ISSUES.md). This is not a complete mobile release.
 
 ## Run on Android or iOS
 
@@ -36,7 +36,7 @@ Configure `EXPO_PUBLIC_PROJECT_ID` with the real EAS project UUID, build a devel
 
 ## Security and API
 
-Access tokens stay in memory; rotating refresh tokens use Expo SecureStore. The typed client consumes the unchanged generated OpenAPI `paths`. A single in-flight refresh prevents ordinary concurrent refresh reuse; authenticated retries preserve request bodies, version and idempotency headers. No client calculates authoritative installments, escrow, fees, deadlines, permissions or order transitions. Redux persistence is not used. Context holds session/UI state and an ephemeral cart. Logout clears local session even if remote revocation fails; remote failure is shown.
+Access tokens stay in memory; rotating refresh tokens use Expo SecureStore. The typed client consumes the unchanged generated OpenAPI `paths`. A single in-flight refresh prevents ordinary concurrent refresh reuse; authenticated retries preserve request bodies, version and idempotency headers. No client calculates authoritative installments, escrow, fees, deadlines, permissions or order transitions. Redux persistence is not used. Context holds session/UI state and an ephemeral cart. Logout clears local session even if remote revocation fails; remote failure is shown. Session-generation checks prevent old-account retries and late refresh resurrection. Pending store-checkout command identities are isolated per user and stored in SecureStore before sending; authoritative prices, balances and order state are always fetched from the backend.
 
 Home design reference: Figma `Is0AUCFwf381hokeM2JUQ7`, frame `3:2`. Original image and SVG assets are local; Noto Sans Arabic is bundled. This is an adaptation, not a verified pixel match. Other flows need further design work. Views use explicit Arabic RTL/English LTR text and layout; full native navigation RTL remains unverified.
 
@@ -44,10 +44,10 @@ Home design reference: Figma `Is0AUCFwf381hokeM2JUQ7`, frame `3:2`. Original ima
 
 - Shared packages build: passed.
 - Mobile TypeScript: passed on the current source.
-- `node --test mobile/tests/client.test.cjs`: five transport/session tests passed (mock native storage/network, not backend integration).
+- `npm run test:mobile`: current session, checkout-retry and socket regression results are recorded in the [merge review](../docs/MOBILE_MERGE_REVIEW.md); native storage/network boundaries are mocked in unit tests.
 - Expo SDK dependency compatibility and public config: passed.
 - Android and iOS Hermes exports: passed after the local Babel monorepo fix and approved native compiler execution. Exports are ignored and are not APK/IPA files.
 - Setup verification: passed.
-- Workspace install audit: 17 affected nodes (13 moderate/four high). No force-upgrades or root overrides changed.
+- Production dependency audit during merge review: 27 affected nodes (20 moderate/seven high), no critical. No force-upgrades or root overrides changed.
 
-No emulator or real-device run, live API acceptance, native SecureStore verification, push delivery, OS permission/restart testing or full visual QA was performed. Do not infer any of these from successful compilation. Existing backend validation reports describe earlier backend work, not this mobile increment.
+No emulator or real-device run or native SecureStore verification, push delivery, OS permission/restart testing or full visual QA was performed. Do not infer any of these from successful compilation. The [merge review](../docs/MOBILE_MERGE_REVIEW.md) records the later live transport/checkout check with mocked native storage; full device/end-to-end acceptance remains pending. Existing backend validation reports describe the earlier backend increment.

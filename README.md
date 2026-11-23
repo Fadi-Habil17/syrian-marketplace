@@ -1,10 +1,10 @@
 # Syrian Marketplace | السوق السوري
 
-A B4F Syrian marketplace for freelance services, professional bookings/quotes and home-produced goods. **Current increment: implemented NestJS backend, 145 REST operations, authorized Socket.IO, PostgreSQL transactions and durable workers.** Payments are deliberately simulated with actual wallet/escrow/ledger records. Web/mobile business and admin screens remain a later increment. See the [backend implementation and actual validation report](docs/BACKEND_IMPLEMENTATION_REPORT.md).
+A B4F Syrian marketplace for freelance services, professional bookings/quotes and home-produced goods. **Current increment: implemented NestJS backend, 145 REST operations, authorized Socket.IO, PostgreSQL transactions and durable workers.** Payments are deliberately simulated with actual wallet/escrow/ledger records. Web business screens remain a later increment. The merged [Expo mobile client](mobile/README.md) adds partial marketplace screens; full mobile/admin parity remains unfinished. See the [backend implementation and actual validation report](docs/BACKEND_IMPLEMENTATION_REPORT.md).
 
 ## Team members
 
-The owner deferred the team name, full roster, primary roles, contributions and GitHub usernames. The original setup commit retains Mustafa Alshaar's attribution; subsequent work uses the verified repository-local Fadi-Habil17 identity. This does not establish a team roster. No other contributors or GitHub usernames are inferred. Before submission, replace this paragraph with each real member's name, role, actual main contribution and primary GitHub username; match both Word briefs and Git history. Never copy the PDF's illustrative roster.
+The owner deferred the team name, full roster, primary roles, contributions and GitHub usernames. The original setup commit retains Mustafa Alshaar's attribution; subsequent backend/review work uses the verified repository-local Fadi-Habil17 identity. The mobile contribution retains its observed Git author nagham-jaza55. This does not establish a team roster. No other contributors or GitHub usernames are inferred. Before submission, replace this paragraph with each real member's name, role, actual main contribution and primary GitHub username; match both Word briefs and Git history. Never copy the PDF's illustrative roster.
 
 ## Main features in release one
 
@@ -127,7 +127,7 @@ Separate root terminal: `npm run dev:frontend`. Per-folder equivalent: `cd front
 
 ## Mobile setup and run
 
-Separate root terminal: `npm run dev:mobile`. Per-folder equivalent: `cd mobile`, `npm install`, `npx expo start`. Use a compatible development build; Expo Go in the current store may target another SDK. Use `npm run android --workspace mobile` or `npm run ios --workspace mobile` with an available emulator/simulator. Native push, SecureStore, full navigation RTL and all business/admin screens are implementation work; see [mobile README](mobile/README.md).
+Separate root terminal: `npm run dev:mobile`. Per-folder equivalent: `cd mobile`, `npm install`, `npx expo start`. Use a compatible development build; Expo Go in the current store may target another SDK. Use `npm run android --workspace mobile` or `npm run ios --workspace mobile` with an available emulator/simulator. The partial Expo Router client includes session transport, browsing, basic requests/orders, checkout, text chat and selected driver/admin screens. Full workflows, native SecureStore/push/device acceptance and navigation RTL remain pending; see [mobile README](mobile/README.md) and [merge review](docs/MOBILE_MERGE_REVIEW.md).
 
 ## Durable background worker
 

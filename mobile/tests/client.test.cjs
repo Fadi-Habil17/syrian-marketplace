@@ -105,7 +105,11 @@ test('401 retry preserves mutation body and idempotency/version headers', async 
   const response = await f.transport()(
     new Request('https://api.example.test/api/v1/orders/fictional/payments/deposit', {
       method: 'POST',
-      headers: { 'Idempotency-Key': 'fictional-intent', 'If-Match': '"7"' },
+      headers: {
+        'Idempotency-Key': 'fictional-intent',
+        'If-Match': '"7"',
+        Authorization: 'Bearer fictional-access',
+      },
       body: '{"termsAccepted":true}',
     }),
   );
@@ -115,4 +119,131 @@ test('401 retry preserves mutation body and idempotency/version headers', async 
   assert.equal(seen[1].key, 'fictional-intent');
   assert.equal(seen[1].version, '"7"');
   assert.equal(seen[1].auth, 'Bearer new-access');
+});
+
+test('logout cancels an in-flight refresh without restoring credentials', async () => {
+  let respond, started;
+  const begin = new Promise((resolve) => {
+    started = resolve;
+  });
+  const f = fixture(() => {
+    started();
+    return new Promise((resolve) => {
+      respond = resolve;
+    });
+  });
+  await f.api.saveSession(pair);
+  const pending = f.api.restoreSession();
+  await begin;
+  await f.api.clearSession();
+  respond({ ok: true, json: async () => ({ ...pair, refreshToken: 'late-refresh' }) });
+  assert.equal(await pending, null);
+  assert.equal(f.api.getAccessToken(), null);
+  assert.equal(f.storage.size, 0);
+});
+
+test('an old refresh rejection cannot erase a newly signed-in account', async () => {
+  let respond, started;
+  const begin = new Promise((resolve) => {
+    started = resolve;
+  });
+  const f = fixture(() => {
+    started();
+    return new Promise((resolve) => {
+      respond = resolve;
+    });
+  });
+  await f.api.saveSession(pair);
+  const pending = f.api.restoreSession();
+  await begin;
+  await f.api.saveSession({ ...pair, accessToken: 'other-access', refreshToken: 'other-refresh' });
+  respond({ ok: false, status: 401 });
+  assert.equal(await pending, null);
+  assert.equal(f.api.getAccessToken(), 'other-access');
+  assert.equal(await f.api.getRefreshToken(), 'other-refresh');
+});
+
+test('a previous account mutation is never retried with another account credential', async () => {
+  let respond,
+    calls = 0;
+  const f = fixture(() => {
+    calls++;
+    return new Promise((resolve) => {
+      respond = resolve;
+    });
+  });
+  await f.api.saveSession(pair);
+  const pending = f.transport()(
+    new Request('https://api.example.test/api/v1/me', {
+      method: 'PATCH',
+      headers: { Authorization: 'Bearer fictional-access' },
+      body: '{}',
+    }),
+  );
+  await f.api.saveSession({ ...pair, accessToken: 'other-access', refreshToken: 'other-refresh' });
+  respond({ status: 401 });
+  await assert.rejects(pending, /Session changed/);
+  assert.equal(calls, 1);
+});
+
+test('late 401 uses the already rotated access token without rotating again', async () => {
+  let respond,
+    calls = 0,
+    refreshes = 0;
+  const f = fixture(async (request) => {
+    if (typeof request === 'string') {
+      refreshes++;
+      return { ok: true, json: async () => ({ ...pair, accessToken: 'rotated-access' }) };
+    }
+    calls++;
+    if (calls === 1)
+      return new Promise((resolve) => {
+        respond = resolve;
+      });
+    assert.equal(request.headers.get('Authorization'), 'Bearer rotated-access');
+    return { status: 200 };
+  });
+  await f.api.saveSession(pair);
+  const pending = f.transport()(
+    new Request('https://api.example.test/api/v1/wallets', {
+      headers: { Authorization: 'Bearer fictional-access' },
+    }),
+  );
+  await f.api.restoreSession();
+  respond({ status: 401 });
+  assert.equal((await pending).status, 200);
+  assert.equal(refreshes, 1);
+});
+
+test('only definitive rejection permits a fresh financial intent', () => {
+  const f = fixture();
+  const error = (status, code) => new f.api.ApiError(status, code, code);
+  assert.equal(f.api.isDefinitiveFailure(error(422, 'INSUFFICIENT_FUNDS')), true);
+  for (const [status, code] of [
+    [503, 'UNAVAILABLE'],
+    [408, 'TIMEOUT'],
+    [429, 'RATE_LIMITED'],
+    [401, 'AUTH_REQUIRED'],
+    [409, 'REQUEST_IN_PROGRESS'],
+    [409, 'IDEMPOTENCY_CONFLICT'],
+  ])
+    assert.equal(f.api.isDefinitiveFailure(error(status, code)), false);
+  assert.equal(f.api.isDefinitiveFailure(new Error('Network unavailable')), false);
+});
+
+test('protected auth/me refreshes an expired access token', async () => {
+  let calls = 0;
+  const f = fixture(async (request) => {
+    if (typeof request === 'string')
+      return { ok: true, json: async () => ({ ...pair, accessToken: 'rotated-access' }) };
+    return { status: ++calls === 1 ? 401 : 200 };
+  });
+  await f.api.saveSession(pair);
+  const result = await f.transport()(
+    new Request('https://api.example.test/api/v1/auth/me', {
+      headers: { Authorization: 'Bearer fictional-access' },
+    }),
+  );
+  assert.equal(result.status, 200);
+  assert.equal(calls, 2);
 });

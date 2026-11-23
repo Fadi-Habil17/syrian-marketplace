@@ -3,4 +3,4 @@ export const apiConfig = {
   socketUrl: process.env.EXPO_PUBLIC_WS_URL ?? 'http://localhost:4000/orders',
 };
 
-// Add authenticated transport after auth contract review. Never embed a shared secret.
+// Public connection configuration only. Never embed a shared secret.

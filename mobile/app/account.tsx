@@ -40,9 +40,40 @@ export default function Account() {
           {[
             ['wallet', 'المحفظة', 'Wallet'],
             ['notifications', 'الإشعارات', 'Notifications'],
+            ['addresses', 'العناوين', 'Addresses'],
+            ['cart', 'السلة', 'Cart'],
           ].map(([path, a, e]) => (
             <Button key={path} title={(ar ? a : e)!} onPress={() => router.push(`/${path}`)} />
           ))}
+          {user.activeBusinessProfile && (
+            <Button
+              title={ar ? 'لوحة أعمالي' : 'Business dashboard'}
+              onPress={() => router.push('/seller')}
+            />
+          )}
+          {user.roles.includes('DELIVERY_DRIVER') && (
+            <Button
+              title={ar ? 'مهام التوصيل' : 'Delivery jobs'}
+              onPress={() => router.push('/driver')}
+            />
+          )}
+          {user.roles.includes('ADMIN') && (
+            <Button
+              title={ar ? 'إدارة المحتوى' : 'Content moderation'}
+              onPress={() => router.push('/admin')}
+            />
+          )}
+          <Button
+            title={ar ? 'تفعيل الإشعارات' : 'Enable push'}
+            disabled={busy}
+            onPress={() => {
+              setBusy(true);
+              setError('');
+              void enablePush()
+                .catch((e) => setError(String(e)))
+                .finally(() => setBusy(false));
+            }}
+          />
           <Button
             title={ar ? 'خروج' : 'Sign out'}
             onPress={() => {

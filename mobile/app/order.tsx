@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Crypto from 'expo-crypto';
-import { api, unwrap } from '../src/api/client';
+import { api, isDefinitiveFailure, unwrap } from '../src/api/client';
 import { useLoad } from '../src/use-load';
 import { useSession } from '../src/state/session';
 import { Page, Copy, Card, Button, Busy, Failure } from '../src/ui';
@@ -10,7 +10,7 @@ import { OrderActions } from '../src/order-actions';
 import { money } from '../src/money';
 export default function Order() {
   const { id = '' } = useLocalSearchParams<{ id: string }>();
-  const { locale } = useSession();
+  const { locale, user } = useSession();
   const ar = locale === 'ar';
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -24,7 +24,7 @@ export default function Order() {
         await api.GET('/api/v1/orders/{orderId}/actions', { params: { path: { orderId: id } } }),
       ),
     }),
-    [id],
+    [id, user?.id],
   );
   async function pay(kind: 'deposit' | 'balance') {
     if (!result.data || busy) return;
@@ -52,6 +52,7 @@ export default function Order() {
       intent.current = null;
       await result.reload();
     } catch (e) {
+      if (isDefinitiveFailure(e)) intent.current = null;
       setError(String(e));
     } finally {
       setBusy(false);
@@ -69,22 +70,22 @@ export default function Order() {
           <Card>
             <Copy>{order.state}</Copy>
             <Button
-              title={ar ? '?????? ?????' : 'Order chat'}
+              title={ar ? 'محادثة الطلب' : 'Order chat'}
               onPress={() => router.push({ pathname: '/chat', params: { id } })}
             />
             <Button
-              title={ar ? '???????? ??????' : 'Disputes and support'}
+              title={ar ? 'النزاعات والدعم' : 'Disputes and support'}
               onPress={() => router.push({ pathname: '/cases', params: { id } })}
             />
             {order.state === 'COMPLETED' && (
               <Button
-                title={ar ? '????? ?????' : 'Review order'}
+                title={ar ? 'تقييم الطلب' : 'Review order'}
                 onPress={() => router.push({ pathname: '/review', params: { id } })}
               />
             )}
             {order.store && (
               <Button
-                title={ar ? '?????? ???????' : 'Track delivery'}
+                title={ar ? 'متابعة التوصيل' : 'Track delivery'}
                 onPress={() =>
                   router.push({ pathname: '/delivery', params: { id: order.store!.deliveryId } })
                 }
