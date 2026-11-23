@@ -244,3 +244,15 @@ The backend-only increment is mapped feature by feature in [BACKEND_IMPLEMENTATI
 | Timed policies                   | Durable deadline workers and stale-job checks                                      | Expired fixture timestamps with real DB constraints; no claim of real-hour waits |
 | Expo/production email            | Implemented configurable transports and persisted retry state                      | Real-device/production gateway acceptance pending credentials and client work    |
 | Clients/admin/locales/submission | Existing setup artifacts remain                                                    | Full first-release and B4F acceptance still pending                              |
+
+## Mobile branch implementation status (2026-11-23)
+
+The `feature/mobile` client increment is **partial**. Existing release-one acceptance rows are not promoted to complete. [Mobile integration issues](MOBILE_API_ISSUES.md) lists required unfinished workflows.
+
+| Slice | Designed | Implemented | Verified |
+| --- | --- | --- | --- |
+| Native session transport | Existing OpenAPI auth | Secure refresh/in-memory access, single-flight refresh, retry | Five mocked transport tests; no native/API acceptance |
+| Home and routing | Figma frame 3:2, adapted | Expo Router, local assets, Arabic/English view direction | TypeScript and Android/iOS Hermes export; no visual/device acceptance |
+| Marketplace/customer screens | Existing contracts | Partial browsing, requests, cart/preview, order commands/holds, text chat, profile/addresses | Compile only; not end-to-end verified |
+| Driver/seller/admin | Existing contracts | Partial job acceptance/delivery screen, seller overview, moderation | Compile only; full dashboards unfinished |
+| Push | Existing devices/notifications contract | Opt-in registration adapter | No physical-device test; lifecycle/deep links unfinished |
