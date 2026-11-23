@@ -1,0 +1,319 @@
+{
+  "date": "2026-11-24",
+  "browser": "Chromium (installed Chrome)",
+  "results": [
+    {
+      "name": "layout home en light 1440",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout login en light 1440",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout register en light 1440",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout home en dark 1440",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout login en dark 1440",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout register en dark 1440",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout home ar light 1440",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout login ar light 1440",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout register ar light 1440",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout home ar dark 1440",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout login ar dark 1440",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout register ar dark 1440",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout home en light 390",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout login en light 390",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout register en light 390",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout home en dark 390",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout login en dark 390",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout register en dark 390",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout home ar light 390",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout login ar light 390",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout register ar light 390",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout home ar dark 390",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout login ar dark 390",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout register ar dark 390",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout home en light 320",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout login en light 320",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout register en light 320",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout home en dark 320",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout login en dark 320",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout register en dark 320",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout home ar light 320",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout login ar light 320",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout register ar light 320",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout home ar dark 320",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout login ar dark 320",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "layout register ar dark 320",
+      "status": "PASS",
+      "detail": {
+        "axeViolations": 0
+      }
+    },
+    {
+      "name": "journeys keyboard/touch/reduced-motion en",
+      "status": "PASS"
+    },
+    {
+      "name": "journeys keyboard/touch/reduced-motion ar",
+      "status": "PASS"
+    },
+    {
+      "name": "appearance persistence, OS changes and pre-hydration render",
+      "status": "PASS"
+    },
+    {
+      "name": "login validation/failure/persistence/success en light",
+      "status": "PASS"
+    },
+    {
+      "name": "login validation/failure/persistence/success en dark",
+      "status": "PASS"
+    },
+    {
+      "name": "login validation/failure/persistence/success ar light",
+      "status": "PASS"
+    },
+    {
+      "name": "login validation/failure/persistence/success ar dark",
+      "status": "PASS"
+    },
+    {
+      "name": "registration success/duplicate preservation en light",
+      "status": "PASS"
+    },
+    {
+      "name": "registration success/duplicate preservation en dark",
+      "status": "PASS"
+    },
+    {
+      "name": "registration success/duplicate preservation ar light",
+      "status": "PASS"
+    },
+    {
+      "name": "registration success/duplicate preservation ar dark",
+      "status": "PASS"
+    },
+    {
+      "name": "admin dark surface and preserved target redirect",
+      "status": "PASS"
+    },
+    {
+      "name": "video deferred loading, actual playback and captions",
+      "status": "PASS",
+      "detail": {
+        "duration": 19.2,
+        "cues": 5,
+        "controls": true
+      }
+    },
+    {
+      "name": "video network failure keeps a usable poster and browse action",
+      "status": "PASS"
+    }
+  ]
+}

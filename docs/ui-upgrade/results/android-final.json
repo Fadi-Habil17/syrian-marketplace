@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-24",
+  "results": [
+    {
+      "name": "Android authenticated account and real logout to guest account",
+      "status": "PASS"
+    },
+    {
+      "name": "Android Arabic Light actual login success/failure and retained email",
+      "status": "PASS"
+    },
+    {
+      "name": "Android hardware back, recovery action, 200% text and keyboard navigation",
+      "status": "PASS"
+    },
+    {
+      "name": "Remaining native login matrix: Arabic Dark and English Light",
+      "status": "PASS"
+    },
+    {
+      "name": "Android appearance after font configuration change, native modal dismissed before apply",
+      "status": "FAIL",
+      "error": "Expected visible UI: المظهر: داكن"
+    }
+  ],
+  "notes": [
+    "Earlier interrupted and failed attempts are retained in ATTEMPTS.json and the report.",
+    "All four native login language/theme combinations ran against the isolated backend.",
+    "Ordinary persistence/System tests passed on the final retained implementation; font/configuration then theme remains FAIL."
+  ]
+}

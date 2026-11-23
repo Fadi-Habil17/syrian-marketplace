@@ -104,3 +104,7 @@ Detailed old attempts remain in local `security-before.log`, `database-attempt1.
 | B4F team roster, reviewer access and durable mobile review delivery                   | BLOCKED | Final team/identity/reviewer and publishing details are not established. Local Expo exports are not a durable submitted review artifact.                                                                        |
 
 See [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) for severity and [FINAL_VERIFICATION.md](FINAL_VERIFICATION.md) for the release decision.
+
+## UI increment addendum — 2026-11-24
+
+See [UI_UPGRADE_VERIFICATION.md](UI_UPGRADE_VERIFICATION.md) for separately scoped PASS/FAIL/BLOCKED/NOT RUN results, including **High / FAIL UI-01** on the Android font-configuration then appearance sequence. The 37 client unit/contract/session regressions are reruns of existing tests, not 37 additional unique backend scenarios. The backend/schema/API contracts were unchanged in this increment.

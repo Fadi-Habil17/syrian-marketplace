@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-24",
+  "results": [
+    {
+      "name": "Keyboard and 200% desktop zoom equivalent ar light",
+      "status": "PASS"
+    },
+    {
+      "name": "Keyboard and 200% desktop zoom equivalent ar dark",
+      "status": "PASS"
+    },
+    {
+      "name": "Keyboard and 200% desktop zoom equivalent en light",
+      "status": "PASS"
+    },
+    {
+      "name": "Keyboard and 200% desktop zoom equivalent en dark",
+      "status": "PASS"
+    },
+    {
+      "name": "Signed surface FREELANCER light",
+      "status": "PASS"
+    },
+    {
+      "name": "Signed surface FREELANCER dark",
+      "status": "PASS"
+    },
+    {
+      "name": "Signed surface PROFESSIONAL light",
+      "status": "PASS"
+    },
+    {
+      "name": "Signed surface PROFESSIONAL dark",
+      "status": "PASS"
+    },
+    {
+      "name": "Signed surface STORE_OWNER light",
+      "status": "PASS"
+    },
+    {
+      "name": "Signed surface STORE_OWNER dark",
+      "status": "PASS"
+    },
+    {
+      "name": "Signed surface DELIVERY_DRIVER light",
+      "status": "PASS"
+    },
+    {
+      "name": "Signed surface DELIVERY_DRIVER dark",
+      "status": "PASS"
+    },
+    {
+      "name": "Signed surface ADMIN light",
+      "status": "PASS"
+    },
+    {
+      "name": "Signed surface ADMIN dark",
+      "status": "PASS"
+    }
+  ]
+}
