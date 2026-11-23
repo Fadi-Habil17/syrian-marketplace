@@ -45,6 +45,7 @@ const ignored = new Set([
   'coverage',
   'tmp',
   'output',
+  '.local-data',
 ]);
 async function walk(directory) {
   const files = [];
@@ -78,7 +79,7 @@ for (const file of files) {
 const manifest = JSON.parse(await readFile('package.json', 'utf8'));
 assert.deepEqual(manifest.workspaces, ['backend', 'frontend', 'mobile', 'packages/*']);
 const collection = JSON.parse(
-  await readFile('docs/postman/syrian-marketplace.postman_collection.json', 'utf8'),
+  await readFile('docs/postman/marketplace.postman_collection.json', 'utf8'),
 );
 assert.equal(
   collection.info.schema,

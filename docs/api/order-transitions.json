@@ -649,6 +649,33 @@
       "initiator": "Participant",
       "preconditions": "Already settled",
       "effects": "Support only; no original journal replay/reversal; N handling admin"
+    },
+    {
+      "id": "TR-078",
+      "section": "Explicit backend coordination transitions",
+      "workspaces": ["FREELANCE", "PROFESSIONALS"],
+      "expression": "CANCELLATION_PENDING / DELIVERY_REVIEW_REQUIRED -> REVISION_IN_PROGRESS",
+      "initiator": "Both original parties",
+      "preconditions": "Same recorded revision scope/deadline accepted; service order; no competing governing case",
+      "effects": "Preserve held installments and old submissions; resume agreed work; fresh review only after resubmission"
+    },
+    {
+      "id": "TR-079",
+      "section": "Explicit backend coordination transitions",
+      "workspaces": ["HOME_STORE"],
+      "expression": "DISPUTED -> OUT_FOR_DELIVERY",
+      "initiator": "Assigned handling admin",
+      "preconditions": "Delivery custody case; both parties accepted recorded remedy; clean scoped custody evidence; eligible new driver",
+      "effects": "Resolve custody case without allocation; replace assignment and revoke old grants; preserve hold and agreed fees"
+    },
+    {
+      "id": "TR-080",
+      "section": "Explicit backend coordination transitions",
+      "workspaces": ["FREELANCE", "PROFESSIONALS"],
+      "expression": "EXTENSION_PENDING -> CANCELLATION_PENDING",
+      "initiator": "Buyer",
+      "preconditions": "Work already started; cancellation is contested or requires a recorded split",
+      "effects": "Keep funds frozen; exact proposal or admin resolution governs; no automatic refund award"
     }
   ]
 }

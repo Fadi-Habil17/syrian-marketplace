@@ -1,6 +1,6 @@
 export interface HealthResponse {
   status: 'ok';
-  phase: 'setup';
+  phase: 'backend';
   simulatedPayments: true;
 }
 export type { paths, operations, components } from './generated/openapi';

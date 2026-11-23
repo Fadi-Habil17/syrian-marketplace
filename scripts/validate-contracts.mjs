@@ -74,6 +74,38 @@ for (const [path, methods] of Object.entries(api.paths)) {
   }
 }
 assert(api.components.securitySchemes.bearerAuth.scheme === 'bearer');
+const postmanPath = 'docs/postman/marketplace.postman_collection.json';
+const postmanSource = await readFile(postmanPath, 'utf8');
+const postman = JSON.parse(postmanSource);
+assert.equal(
+  postman.info.schema,
+  'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
+);
+const collectionRoutes = postman.item
+  .flatMap((folder) => folder.item)
+  .map((item) => `${item.request.method} ${item.request.url.split('?')[0]}`)
+  .sort();
+const contractRoutes = Object.entries(api.paths)
+  .flatMap(([path, methods]) =>
+    Object.keys(methods)
+      .filter((method) => ['get', 'post', 'put', 'patch', 'delete'].includes(method))
+      .map(
+        (method) =>
+          `${method.toUpperCase()} {{baseUrl}}${path
+            .replace('/api/v1', '')
+            .replace(/\{(\w+)\}/g, (_, key) => `{{${key}}}`)}`,
+      ),
+  )
+  .sort();
+assert.deepEqual(collectionRoutes, contractRoutes, 'Postman endpoint coverage differs');
+assert.equal(new Set(collectionRoutes).size, collectionRoutes.length, 'Duplicate Postman route');
+assert.equal(postman.variable.find((v) => v.key === 'token')?.value, '');
+assert.equal(
+  postmanSource,
+  await readFile('docs/postman/syrian-marketplace.postman_collection.json', 'utf8'),
+  'Postman compatibility copy differs',
+);
+console.info(`Postman v2.1 matches all ${collectionRoutes.length} endpoint method/path pairs.`);
 console.info(
   `OpenAPI 3.1 valid: ${count} operations, ${Object.keys(api.components.schemas).length} schemas, ${transitionIds.size} documented transition rows.`,
 );

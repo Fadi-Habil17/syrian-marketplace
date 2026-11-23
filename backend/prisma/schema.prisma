@@ -304,6 +304,7 @@ enum RestrictionKind {
 enum VerificationKind {
   EMAIL
   PASSWORD_RESET
+  REALTIME_TICKET
 }
 
 enum ModerationOutcome {
@@ -321,6 +322,7 @@ enum JobStatus {
 }
 
 enum JobKind {
+  SERVICE_DUE
   RESPONSE_EXPIRY
   DEPOSIT_EXPIRY
   BALANCE_REMINDER_24
@@ -550,6 +552,8 @@ model BusinessProfile {
   bio                          String                @db.Text
   trade                        String?
   experienceYears              Int?
+  ratingAverage                Float?
+  reviewCount                  Int                   @default(0)
   archivedAt                   DateTime?             @db.Timestamptz(3)
   createdAt                    DateTime              @default(now()) @db.Timestamptz(3)
   updatedAt                    DateTime              @updatedAt @db.Timestamptz(3)
@@ -574,6 +578,7 @@ model BusinessProfile {
   @@index([type, status, cityId])
   @@index([userId, status])
   @@index([cityId])
+  @@index([status, ratingAverage, id])
 }
 
 model ProfileSkill {
@@ -670,18 +675,19 @@ model FileAsset {
 }
 
 model PortfolioItem {
-  id        String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  kind      PortfolioKind
-  title     String
-  caption   String?
-  url       String?
-  position  Int             @default(0)
-  createdAt DateTime        @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime        @updatedAt @db.Timestamptz(3)
-  profileId String          @db.Uuid
-  fileId    String?         @db.Uuid
-  profile   BusinessProfile @relation("PortfolioItem_profile", fields: [profileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
-  file      FileAsset?      @relation("PortfolioItem_file", fields: [fileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  id         String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kind       PortfolioKind
+  title      String
+  caption    String?
+  url        String?
+  position   Int             @default(0)
+  archivedAt DateTime?       @db.Timestamptz(3)
+  createdAt  DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime        @updatedAt @db.Timestamptz(3)
+  profileId  String          @db.Uuid
+  fileId     String?         @db.Uuid
+  profile    BusinessProfile @relation("PortfolioItem_profile", fields: [profileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  file       FileAsset?      @relation("PortfolioItem_file", fields: [fileId], references: [id], onDelete: Restrict, onUpdate: Restrict)
 
   @@index([profileId, position])
   @@index([fileId])
@@ -918,6 +924,9 @@ model ServiceOrder {
   readyAt                          DateTime?             @db.Timestamptz(3)
   readinessEvidence                Json?
   balanceDeadlineAt                DateTime?             @db.Timestamptz(3)
+  balanceResumedAt                 DateTime?             @db.Timestamptz(3)
+  balanceResumptionCaseId          String?               @db.Uuid
+  balanceResumptionCase            CaseRecord? @relation("ServiceOrder_balanceResumptionCase", fields:[balanceResumptionCaseId], references:[id], onDelete:Restrict,onUpdate:Restrict)
   createdAt                        DateTime              @default(now()) @db.Timestamptz(3)
   updatedAt                        DateTime              @updatedAt @db.Timestamptz(3)
   orderId                          String                @unique @db.Uuid
@@ -935,6 +944,7 @@ model ServiceOrder {
 
   @@index([depositDeadlineAt])
   @@index([balanceDeadlineAt])
+  @@index([balanceResumptionCaseId])
   @@index([responseDeadlineAt])
   @@index([listingId])
 }
@@ -1430,6 +1440,7 @@ model DeliveryEvent {
 }
 
 model CaseRecord {
+  serviceOrder_balanceResumptionCase ServiceOrder[] @relation("ServiceOrder_balanceResumptionCase")
   id                      String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   kind                    CaseKind
   status                  CaseStatus           @default(OPEN)
@@ -1505,6 +1516,7 @@ model ResolutionProposal {
   reason                    String             @db.Text
   scope                     String?            @db.Text
   newDueAt                  DateTime?          @db.Timestamptz(3)
+  inventoryReturns          Json?
   agreementDeadlineAt       DateTime           @db.Timestamptz(3)
   createdAt                 DateTime           @default(now()) @db.Timestamptz(3)
   updatedAt                 DateTime           @updatedAt @db.Timestamptz(3)
@@ -1703,6 +1715,9 @@ model NotificationDelivery {
   attempts       Int                   @default(0)
   nextAttemptAt  DateTime              @default(now()) @db.Timestamptz(3)
   errorCode      String?
+  providerTicketId String? @db.VarChar(200)
+  providerAcceptedAt DateTime? @db.Timestamptz(3)
+  receiptCheckedAt DateTime? @db.Timestamptz(3)
   createdAt      DateTime              @default(now()) @db.Timestamptz(3)
   updatedAt      DateTime              @updatedAt @db.Timestamptz(3)
   notificationId String                @db.Uuid

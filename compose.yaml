@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
     ports:
-      - '127.0.0.1:${POSTGRES_PORT:-5432}:5432'
+      - '127.0.0.1:${POSTGRES_PORT:-15432}:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -16,18 +16,36 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
-  minio:
-    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+  storage:
+    image: chrislusf/seaweedfs@sha256:4b42c212543a0acd4c0e675215ecdcaf62a186ef98def76c7e12701871222d15
     restart: unless-stopped
-    command: server /data --console-address ':9001'
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?Set MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD}
+      AWS_ACCESS_KEY_ID: ${STORAGE_ACCESS_KEY:?Set STORAGE_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${STORAGE_SECRET_KEY:?Set STORAGE_SECRET_KEY}
+      S3_BUCKET: ${STORAGE_BUCKET:-marketplace-private}
     ports:
-      - '127.0.0.1:9000:9000'
-      - '127.0.0.1:9001:9001'
+      - '127.0.0.1:${STORAGE_PORT:-19000}:8333'
     volumes:
       - object_data:/data
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '-O-', 'http://127.0.0.1:9333/cluster/status']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  clamav:
+    image: clamav/clamav@sha256:12177441d1b40cef3c47b44c4090d59d4babc4c67bedd5af0fa315e603aa6dd8
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:${CLAMAV_PORT:-13310}:3310'
+    volumes:
+      - virus_definitions:/var/lib/clamav
+    healthcheck:
+      test: ['CMD-SHELL', 'clamdcheck.sh']
+      start_period: 360s
+      interval: 10s
+      timeout: 10s
+      retries: 18
 volumes:
   postgres_data:
   object_data:
+  virus_definitions:

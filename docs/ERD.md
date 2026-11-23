@@ -143,6 +143,8 @@ erDiagram
     string bio
     string trade
     int experienceYears
+    float ratingAverage
+    int reviewCount
     datetime archivedAt
     datetime createdAt
     datetime updatedAt
@@ -219,6 +221,7 @@ erDiagram
     string caption
     string url
     int position
+    datetime archivedAt
     datetime createdAt
     datetime updatedAt
     uuid profileId FK
@@ -366,6 +369,7 @@ erDiagram
     uuid sellerProfileId FK
     uuid commissionRateId FK
   }
+  CaseRecord o|--o{ ServiceOrder : balanceResumptionCase
   MarketOrder ||--o| ServiceOrder : order
   Listing o|--o{ ServiceOrder : listing
   Quote o|--o| ServiceOrder : approvedQuote
@@ -380,6 +384,8 @@ erDiagram
     datetime readyAt
     json readinessEvidence
     datetime balanceDeadlineAt
+    datetime balanceResumedAt
+    uuid balanceResumptionCaseId FK
     datetime createdAt
     datetime updatedAt
     uuid orderId FK,UK
@@ -831,6 +837,7 @@ erDiagram
     string reason
     string scope
     datetime newDueAt
+    json inventoryReturns
     datetime agreementDeadlineAt
     datetime createdAt
     datetime updatedAt
@@ -978,6 +985,9 @@ erDiagram
     int attempts
     datetime nextAttemptAt
     string errorCode
+    string providerTicketId
+    datetime providerAcceptedAt
+    datetime receiptCheckedAt
     datetime createdAt
     datetime updatedAt
     uuid notificationId FK

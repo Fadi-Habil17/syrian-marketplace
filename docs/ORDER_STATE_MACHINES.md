@@ -105,6 +105,16 @@ Delivery is a child aggregate: job request may be recorded at checkout but canno
 | DELIVERED -> COMPLETED                                    | Buyer                                      | Even unproven physical delivery explicitly confirmed; no unresolved case            | Eligible settlement once; no automatic bypass of open case; N all                                                            |
 | Any terminal -> same terminal + SUPPORT_CASE              | Participant                                | Already settled                                                                     | Support only; no original journal replay/reversal; N handling admin                                                          |
 
+## Explicit backend coordination transitions
+
+These rows clarify the already required mutual revision and administrative custody paths; they do not release or collect money.
+
+| From -> to                                                              | Initiator               | Preconditions                                                                                                    | Financial / inventory / scheduling / notification effects                                                        |
+| ----------------------------------------------------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| CANCELLATION_PENDING / DELIVERY_REVIEW_REQUIRED -> REVISION_IN_PROGRESS | Both original parties   | Same recorded revision scope/deadline accepted; service order; no competing governing case                       | Preserve held installments and old submissions; resume agreed work; fresh review only after resubmission         |
+| DISPUTED -> OUT_FOR_DELIVERY                                            | Assigned handling admin | Delivery custody case; both parties accepted recorded remedy; clean scoped custody evidence; eligible new driver | Resolve custody case without allocation; replace assignment and revoke old grants; preserve hold and agreed fees |
+| EXTENSION_PENDING -> CANCELLATION_PENDING                               | Buyer                   | Work already started; cancellation is contested or requires a recorded split                                     | Keep funds frozen; exact proposal or admin resolution governs; no automatic refund award                         |
+
 ## Worker eligibility and timer checklist
 
 | Deadline                                  | From                              | Effect at/after deadline                                      | Unique operation                |

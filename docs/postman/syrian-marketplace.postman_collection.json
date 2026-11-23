@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Syrian Marketplace - Release One Contract",
-    "description": "Health is implemented. Every other request is contract-only until its backend slice is wired. Set resource IDs/token; use a new idempotencyKey per intent and reuse it on timeout. Never commit actual tokens. Example credentials are fictional seed-only, not a working login endpoint.",
+    "description": "Implemented NestJS backend routes; validation and scenario coverage are detailed in BACKEND_IMPLEMENTATION_REPORT.md. Run the isolated seed before using fictional demo credentials. Login/refresh save local collection tokens. Set resource IDs/orderVersion and a fresh idempotencyKey per intent; reuse that key on timeout. Never commit actual tokens.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -9,6 +9,9 @@
     { "key": "token", "value": "", "type": "string" },
     { "key": "idempotencyKey", "value": "", "type": "string" },
     { "key": "orderVersion", "value": "1", "type": "string" },
+    { "key": "refreshToken", "value": "", "type": "string" },
+    { "key": "verificationToken", "value": "", "type": "string" },
+    { "key": "passwordResetToken", "value": "", "type": "string" },
     { "key": "profileId", "value": "", "type": "string" },
     { "key": "itemId", "value": "", "type": "string" },
     { "key": "cityId", "value": "", "type": "string" },
@@ -20,6 +23,7 @@
     { "key": "storeId", "value": "", "type": "string" },
     { "key": "productId", "value": "", "type": "string" },
     { "key": "providerProfileId", "value": "", "type": "string" },
+    { "key": "photoIds", "value": "", "type": "string" },
     { "key": "draftOrderId", "value": "", "type": "string" },
     { "key": "orderId", "value": "", "type": "string" },
     { "key": "quoteId", "value": "", "type": "string" },
@@ -34,6 +38,7 @@
     { "key": "proposalId", "value": "", "type": "string" },
     { "key": "reviewId", "value": "", "type": "string" },
     { "key": "notificationId", "value": "", "type": "string" },
+    { "key": "expoPushToken", "value": "", "type": "string" },
     { "key": "deviceId", "value": "", "type": "string" },
     { "key": "driverProfileId", "value": "", "type": "string" },
     { "key": "resourceId", "value": "", "type": "string" },
@@ -60,12 +65,12 @@
           },
           "response": [
             {
-              "name": "Setup shell alive",
+              "name": "Backend process alive",
               "originalRequest": { "method": "GET", "header": [], "url": "{{baseUrl}}/health" },
               "status": "OK",
               "code": 200,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
-              "body": "{\n  \"status\": \"ok\",\n  \"phase\": \"setup\",\n  \"simulatedPayments\": true\n}"
+              "body": "{\n  \"status\": \"ok\",\n  \"phase\": \"backend\",\n  \"simulatedPayments\": true\n}"
             }
           ]
         }
@@ -80,7 +85,7 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{baseUrl}}/auth/register",
-            "description": "contract-only. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
+            "description": "implemented. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
             "auth": { "type": "noauth" },
             "body": {
               "mode": "raw",
@@ -96,7 +101,7 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{baseUrl}}/auth/login",
-            "description": "contract-only. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
+            "description": "implemented. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
             "auth": { "type": "noauth" },
             "body": {
               "mode": "raw",
@@ -104,7 +109,18 @@
               "options": { "raw": { "language": "json" } }
             }
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) { const pair = pm.response.json(); pm.collectionVariables.set('token', pair.accessToken); pm.collectionVariables.set('refreshToken', pair.refreshToken); }"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "refreshSession",
@@ -112,15 +128,26 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{baseUrl}}/auth/refresh",
-            "description": "contract-only. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
+            "description": "implemented. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
             "auth": { "type": "noauth" },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"refreshToken\": \"Demo request\"\n}",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
               "options": { "raw": { "language": "json" } }
             }
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) { const pair = pm.response.json(); pm.collectionVariables.set('token', pair.accessToken); pm.collectionVariables.set('refreshToken', pair.refreshToken); }"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "verifyEmail",
@@ -128,11 +155,11 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{baseUrl}}/auth/verify-email",
-            "description": "contract-only. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
+            "description": "implemented. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
             "auth": { "type": "noauth" },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"token\": \"Demo request\"\n}",
+              "raw": "{\n  \"token\": \"{{verificationToken}}\"\n}",
               "options": { "raw": { "language": "json" } }
             }
           },
@@ -144,7 +171,7 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{baseUrl}}/auth/forgot-password",
-            "description": "contract-only. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
+            "description": "implemented. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
             "auth": { "type": "noauth" },
             "body": {
               "mode": "raw",
@@ -160,11 +187,11 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{baseUrl}}/auth/reset-password",
-            "description": "contract-only. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
+            "description": "implemented. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
             "auth": { "type": "noauth" },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"token\": \"Demo request\",\n  \"password\": \"Marketplace123!\"\n}",
+              "raw": "{\n  \"token\": \"{{passwordResetToken}}\",\n  \"password\": \"Marketplace123!\"\n}",
               "options": { "raw": { "language": "json" } }
             }
           },
@@ -176,10 +203,10 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{baseUrl}}/auth/logout",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"refreshToken\": \"Demo request\"\n}",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
               "options": { "raw": { "language": "json" } }
             }
           },
@@ -191,7 +218,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/auth/me",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         }
@@ -206,7 +233,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/me",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -219,7 +246,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/me",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
           },
           "response": []
@@ -230,7 +257,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/business-profiles",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -243,7 +270,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/business-profiles",
-            "description": "contract-only. A draft does not activate a new workspace; activation uses atomic switching checks. One active business profile per user. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. A draft does not activate a new workspace; activation uses atomic switching checks. One active business profile per user. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"type\": \"FREELANCER\",\n  \"title\": \"Demo request\",\n  \"bio\": \"Demo request\",\n  \"skills\": [],\n  \"languages\": []\n}",
@@ -261,7 +288,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/business-profiles/{{profileId}}",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"title\": \"Demo request\",\n  \"bio\": \"Demo request\",\n  \"skills\": [],\n  \"languages\": []\n}",
@@ -279,7 +306,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/business-profiles/switch",
-            "description": "contract-only. Atomic zero active orders, open cases, pending delivery or unsettled escrow checks across buyer/provider/driver commitments. Archive previous profile; retain history. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Atomic zero active orders, open cases, pending delivery or unsettled escrow checks across buyer/provider/driver commitments. Archive previous profile; retain history. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"target\": \"FREELANCER\"\n}",
@@ -297,7 +324,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/business-profiles/{{profileId}}/reactivate",
-            "description": "contract-only. Same commitment checks as switch; existing restrictions and moderation survive. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Same commitment checks as switch; existing restrictions and moderation survive. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"accepted\": true\n}",
@@ -312,7 +339,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/profiles/{{profileId}}",
-            "description": "contract-only. Public published projection; private contact/history excluded.",
+            "description": "implemented. Public published projection; private contact/history excluded.",
             "auth": { "type": "noauth" }
           },
           "response": []
@@ -326,7 +353,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/business-profiles/{{profileId}}/portfolio",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"kind\": \"LINK\",\n  \"title\": \"Demo request\",\n  \"position\": 0,\n  \"url\": \"https://example.com/demo\"\n}",
@@ -341,7 +368,7 @@
             "method": "DELETE",
             "header": [{ "key": "Idempotency-Key", "value": "{{idempotencyKey}}" }],
             "url": "{{baseUrl}}/business-profiles/{{profileId}}/portfolio/{{itemId}}",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -351,7 +378,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/business-profiles/{{profileId}}/service-areas",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -364,7 +391,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/business-profiles/{{profileId}}/service-areas",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"cityId\": \"{{cityId}}\"\n}",
@@ -379,7 +406,7 @@
             "method": "DELETE",
             "header": [{ "key": "Idempotency-Key", "value": "{{idempotencyKey}}" }],
             "url": "{{baseUrl}}/business-profiles/{{profileId}}/service-areas/{{areaId}}",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         }
@@ -394,7 +421,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/geography/governorates",
-            "description": "contract-only. Public; canonical hierarchy IDs.",
+            "description": "implemented. Public; canonical hierarchy IDs.",
             "auth": { "type": "noauth" }
           },
           "response": []
@@ -405,7 +432,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/geography/cities?governorateId={{governorateId}}",
-            "description": "contract-only. Public; canonical hierarchy IDs.",
+            "description": "implemented. Public; canonical hierarchy IDs.",
             "auth": { "type": "noauth" }
           },
           "response": []
@@ -416,7 +443,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/geography/areas?cityId={{cityId}}",
-            "description": "contract-only. Public; canonical hierarchy IDs.",
+            "description": "implemented. Public; canonical hierarchy IDs.",
             "auth": { "type": "noauth" }
           },
           "response": []
@@ -427,7 +454,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/me/addresses",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -440,7 +467,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/me/addresses",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"label\": \"Demo request\",\n  \"cityId\": \"{{cityId}}\",\n  \"details\": \"Demo request\",\n  \"contactName\": \"Demo request\",\n  \"contactPhone\": \"Demo request\"\n}",
@@ -458,7 +485,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/me/addresses/{{addressId}}",
-            "description": "contract-only. Existing orders retain immutable address snapshots. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Existing orders retain immutable address snapshots. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"label\": \"Demo request\",\n  \"cityId\": \"{{cityId}}\",\n  \"details\": \"Demo request\",\n  \"contactName\": \"Demo request\",\n  \"contactPhone\": \"Demo request\"\n}",
@@ -473,7 +500,7 @@
             "method": "DELETE",
             "header": [{ "key": "Idempotency-Key", "value": "{{idempotencyKey}}" }],
             "url": "{{baseUrl}}/me/addresses/{{addressId}}",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         }
@@ -488,7 +515,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/categories",
-            "description": "contract-only. Public.",
+            "description": "implemented. Public.",
             "auth": { "type": "noauth" }
           },
           "response": []
@@ -499,7 +526,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/listings",
-            "description": "contract-only. Public published records only; supported filters/sort are validated server-side.",
+            "description": "implemented. Public published records only; supported filters/sort are validated server-side.",
             "auth": { "type": "noauth" }
           },
           "response": []
@@ -513,7 +540,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/listings",
-            "description": "contract-only. Owning active workspace of matching type; verified account. Price changes validated by backend; order snapshots stay fixed.",
+            "description": "implemented. Owning active workspace of matching type; verified account. Price changes validated by backend; order snapshots stay fixed.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"categoryId\": \"{{categoryId}}\",\n  \"kind\": \"FREELANCE\",\n  \"price\": {\n    \"currency\": \"SYP\",\n    \"units\": \"100\"\n  }\n}",
@@ -528,7 +555,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/listings/{{listingId}}",
-            "description": "contract-only. Public published record; inaccessible archived/hidden records return 404.",
+            "description": "implemented. Public published record; inaccessible archived/hidden records return 404.",
             "auth": { "type": "noauth" }
           },
           "response": []
@@ -542,7 +569,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/listings/{{listingId}}",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
           },
           "response": []
@@ -556,7 +583,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/listings/{{listingId}}/publish",
-            "description": "contract-only. Owning active workspace, verified account, complete bilingual content and clean assets; moderation restrictions survive archival.",
+            "description": "implemented. Owning active workspace, verified account, complete bilingual content and clean assets; moderation restrictions survive archival.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"accepted\": true\n}",
@@ -574,7 +601,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/listings/{{listingId}}/deactivate",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reason\": \"Demo request\"\n}",
@@ -589,7 +616,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/stores",
-            "description": "contract-only. Public published records only; supported filters/sort are validated server-side.",
+            "description": "implemented. Public published records only; supported filters/sort are validated server-side.",
             "auth": { "type": "noauth" }
           },
           "response": []
@@ -603,7 +630,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/stores",
-            "description": "contract-only. Owning active workspace of matching type; verified account. Price changes validated by backend; order snapshots stay fixed.",
+            "description": "implemented. Owning active workspace of matching type; verified account. Price changes validated by backend; order snapshots stay fixed.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"cityId\": \"{{cityId}}\",\n  \"supportsSellerDelivery\": false,\n  \"supportsPlatformDelivery\": false\n}",
@@ -618,7 +645,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/stores/{{storeId}}",
-            "description": "contract-only. Public published record; inaccessible archived/hidden records return 404.",
+            "description": "implemented. Public published record; inaccessible archived/hidden records return 404.",
             "auth": { "type": "noauth" }
           },
           "response": []
@@ -632,7 +659,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/stores/{{storeId}}",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
           },
           "response": []
@@ -646,7 +673,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/stores/{{storeId}}/publish",
-            "description": "contract-only. Owning active workspace, verified account, complete bilingual content and clean assets; moderation restrictions survive archival.",
+            "description": "implemented. Owning active workspace, verified account, complete bilingual content and clean assets; moderation restrictions survive archival.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"accepted\": true\n}",
@@ -664,7 +691,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/stores/{{storeId}}/deactivate",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reason\": \"Demo request\"\n}",
@@ -679,7 +706,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/products",
-            "description": "contract-only. Public published records only; supported filters/sort are validated server-side.",
+            "description": "implemented. Public published records only; supported filters/sort are validated server-side.",
             "auth": { "type": "noauth" }
           },
           "response": []
@@ -693,7 +720,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/products",
-            "description": "contract-only. Owning active workspace of matching type; verified account. Price changes validated by backend; order snapshots stay fixed.",
+            "description": "implemented. Owning active workspace of matching type; verified account. Price changes validated by backend; order snapshots stay fixed.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"categoryId\": \"{{categoryId}}\",\n  \"price\": {\n    \"currency\": \"SYP\",\n    \"units\": \"100\"\n  },\n  \"stockOnHand\": 0\n}",
@@ -708,7 +735,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/products/{{productId}}",
-            "description": "contract-only. Public published record; inaccessible archived/hidden records return 404.",
+            "description": "implemented. Public published record; inaccessible archived/hidden records return 404.",
             "auth": { "type": "noauth" }
           },
           "response": []
@@ -722,7 +749,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/products/{{productId}}",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
           },
           "response": []
@@ -736,7 +763,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/products/{{productId}}/publish",
-            "description": "contract-only. Owning active workspace, verified account, complete bilingual content and clean assets; moderation restrictions survive archival.",
+            "description": "implemented. Owning active workspace, verified account, complete bilingual content and clean assets; moderation restrictions survive archival.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"accepted\": true\n}",
@@ -754,7 +781,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/products/{{productId}}/deactivate",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reason\": \"Demo request\"\n}",
@@ -772,7 +799,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/products/{{productId}}/stock",
-            "description": "contract-only. Cannot reduce on-hand below reserved stock; atomic conditional update and audit. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Cannot reduce on-hand below reserved stock; atomic conditional update and audit. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"stockOnHand\": 0,\n  \"reason\": \"Demo request\"\n}",
@@ -795,7 +822,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/freelance",
-            "description": "contract-only. Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock reservation; quote valid 15 minutes. Buyer, including a business user buying; not own seller profile.",
+            "description": "implemented. Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock reservation; quote valid 15 minutes. Buyer, including a business user buying; not own seller profile.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"listingId\": \"{{listingId}}\",\n  \"description\": \"Demo request\"\n}",
@@ -813,7 +840,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/professional-bookings",
-            "description": "contract-only. Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock reservation; quote valid 15 minutes. Buyer, including a business user buying; not own seller profile.",
+            "description": "implemented. Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock reservation; quote valid 15 minutes. Buyer, including a business user buying; not own seller profile.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"listingId\": \"{{listingId}}\",\n  \"addressId\": \"{{addressId}}\",\n  \"startsAt\": \"2026-11-25T08:00:00Z\"\n}",
@@ -831,10 +858,10 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/inspection-requests",
-            "description": "contract-only. Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock reservation; quote valid 15 minutes. Buyer, including a business user buying; not own seller profile.",
+            "description": "implemented. Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock reservation; quote valid 15 minutes. Buyer, including a business user buying; not own seller profile.",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"providerProfileId\": \"{{providerProfileId}}\",\n  \"currency\": \"SYP\",\n  \"addressId\": \"{{addressId}}\",\n  \"description\": \"Demo request\",\n  \"photoIds\": []\n}",
+              "raw": "{\n  \"providerProfileId\": \"{{providerProfileId}}\",\n  \"currency\": \"SYP\",\n  \"addressId\": \"{{addressId}}\",\n  \"description\": \"Demo request\",\n  \"photoIds\": [\n    \"{{photoIds}}\"\n  ]\n}",
               "options": { "raw": { "language": "json" } }
             }
           },
@@ -849,7 +876,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/store-preview",
-            "description": "contract-only. Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock reservation; quote valid 15 minutes. Buyer, including a business user buying; not own seller profile.",
+            "description": "implemented. Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock reservation; quote valid 15 minutes. Buyer, including a business user buying; not own seller profile.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"storeId\": \"{{storeId}}\",\n  \"addressId\": \"{{addressId}}\",\n  \"method\": \"SELLER\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 1\n    }\n  ]\n}",
@@ -864,7 +891,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/orders",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -874,7 +901,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/orders/{{orderId}}",
-            "description": "contract-only. Buyer/provider or assigned handling admin; drivers use delivery projection, never service/financial details."
+            "description": "implemented. Buyer/provider or assigned handling admin; drivers use delivery projection, never service/financial details."
           },
           "response": []
         },
@@ -884,7 +911,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/orders/{{orderId}}/timeline",
-            "description": "contract-only. Buyer/provider or handling admin. Driver delivery events are exposed through delivery detail only."
+            "description": "implemented. Buyer/provider or handling admin. Driver delivery events are exposed through delivery detail only."
           },
           "response": []
         },
@@ -894,7 +921,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/orders/{{orderId}}/actions",
-            "description": "contract-only. A hint, not authority; every command rechecks guards under lock. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. A hint, not authority; every command rechecks guards under lock. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -908,7 +935,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/agree",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer and provider approve identical scope/price.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer and provider approve identical scope/price.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"scope\": \"Demo request\",\n  \"dueAt\": \"2026-11-26T08:00:00Z\",\n  \"accepted\": true\n}",
@@ -927,7 +954,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/accept-booking",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning professional accepts AND confirms requested slot.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning professional accepts AND confirms requested slot.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"accepted\": true\n}",
@@ -946,7 +973,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/propose-schedule",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning professional proposes alternate slot; no deposit yet.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning professional proposes alternate slot; no deposit yet.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"startsAt\": \"2026-11-25T08:00:00Z\"\n}",
@@ -965,7 +992,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/accept-schedule",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer explicitly accepts alternate slot before funding.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer explicitly accepts alternate slot before funding.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"accepted\": true\n}",
@@ -984,7 +1011,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/reject",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Provider declines request or buyer declines proposed agreement; no hold.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Provider declines request or buyer declines proposed agreement; no hold.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reason\": \"Demo request\"\n}",
@@ -1003,7 +1030,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/start",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning provider; deposit held, no case.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning provider; deposit held, no case.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"accepted\": true\n}",
@@ -1022,7 +1049,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/progress",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning provider; progress/milestones are nonfinancial.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning provider; progress/milestones are nonfinancial.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"kind\": \"UPDATE\",\n  \"note\": \"Demo request\"\n}",
@@ -1041,10 +1068,10 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/ready",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning provider; documented readiness starts 72h balance timer; reminders at 24/48h.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning provider; documented readiness starts 72h balance timer; reminders at 24/48h.",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"note\": \"Demo request\",\n  \"completedScope\": [],\n  \"previewFileIds\": []\n}",
+              "raw": "{\n  \"note\": \"Demo request\",\n  \"completedScope\": [\n    \"Demo request\"\n  ],\n  \"previewFileIds\": []\n}",
               "options": { "raw": { "language": "json" } }
             }
           },
@@ -1060,7 +1087,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/deliver",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning provider; both holds before final files/on-site handover.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning provider; both holds before final files/on-site handover.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"kind\": \"DIGITAL_FINAL\",\n  \"note\": \"Demo request\"\n}",
@@ -1079,7 +1106,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/confirm",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer; fully held and no case/revision, physical proof or explicit confirmation.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer; fully held and no case/revision, physical proof or explicit confirmation.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"accepted\": true\n}",
@@ -1098,7 +1125,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/cancel",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer/provider; full refund before work/store acceptance, otherwise freeze/propose/admin.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer/provider; full refund before work/store acceptance, otherwise freeze/propose/admin.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reason\": \"Demo request\"\n}",
@@ -1117,7 +1144,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/request-extension",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Participant; missed agreed deadline offers extension/cancel; contested refund freezes/admin.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Participant; missed agreed deadline offers extension/cancel; contested refund freezes/admin.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"dueAt\": \"2026-11-26T08:00:00Z\",\n  \"reason\": \"Demo request\"\n}",
@@ -1136,7 +1163,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/accept-extension",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Other participant explicitly agrees new deadline.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Other participant explicitly agrees new deadline.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"accepted\": true\n}",
@@ -1155,7 +1182,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/accept-store",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning store seller within 24h of hold.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning store seller within 24h of hold.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"accepted\": true\n}",
@@ -1174,7 +1201,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/ready-for-delivery",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning store seller; preparation complete.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning store seller; preparation complete.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"accepted\": true\n}",
@@ -1193,7 +1220,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/delivery/request-driver",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning seller; request can be recorded at checkout, offered only when ready.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning seller; request can be recorded at checkout, offered only when ready.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"accepted\": true\n}",
@@ -1212,7 +1239,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/milestones",
-            "description": "contract-only. Owning freelancer; milestones never fund or release money.",
+            "description": "implemented. Owning freelancer; milestones never fund or release money.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"description\": \"Demo request\",\n  \"position\": 0\n}",
@@ -1227,7 +1254,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/orders/{{orderId}}/milestones",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -1237,7 +1264,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/orders/{{orderId}}/submissions",
-            "description": "contract-only. Buyer/provider or handling admin; final files omitted/gated until both holds, drivers denied."
+            "description": "implemented. Buyer/provider or handling admin; final files omitted/gated until both holds, drivers denied."
           },
           "response": []
         }
@@ -1256,7 +1283,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/store-checkout",
-            "description": "contract-only. One seller and one currency. Full items plus agreed delivery. No amount accepted from buyer; failure advances neither order nor stock. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. One seller and one currency. Full items plus agreed delivery. No amount accepted from buyer; failure advances neither order nor stock. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"draftOrderId\": \"{{draftOrderId}}\",\n  \"termsAccepted\": true\n}",
@@ -1271,7 +1298,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/wallets",
-            "description": "contract-only. Own wallet only; business users retain purchasing capabilities."
+            "description": "implemented. Own wallet only; business users retain purchasing capabilities."
           },
           "response": []
         },
@@ -1281,7 +1308,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/wallets/{{currency}}/transactions",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -1291,7 +1318,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/orders/{{orderId}}/payments",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -1301,7 +1328,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/orders/{{orderId}}/settlement",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -1311,7 +1338,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/operations/{{operationId}}",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -1325,7 +1352,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/payments/deposit",
-            "description": "contract-only. Deposit is rounded one-third; balance is subtraction. Deposit deadline 48h. Balance needs readiness and 72h window; overdue creates one admin case and never forfeits deposit. Order buyer only; no client amount/rate/state accepted. Repeating a successful installment never adds another hold.",
+            "description": "implemented. Deposit is rounded one-third; balance is subtraction. Deposit deadline 48h. Balance needs readiness and 72h window; overdue creates one admin case and never forfeits deposit. Order buyer only; no client amount/rate/state accepted. Repeating a successful installment never adds another hold.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"termsAccepted\": true\n}",
@@ -1344,7 +1371,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/payments/balance",
-            "description": "contract-only. Deposit is rounded one-third; balance is subtraction. Deposit deadline 48h. Balance needs readiness and 72h window; overdue creates one admin case and never forfeits deposit. Order buyer only; no client amount/rate/state accepted. Repeating a successful installment never adds another hold.",
+            "description": "implemented. Deposit is rounded one-third; balance is subtraction. Deposit deadline 48h. Balance needs readiness and 72h window; overdue creates one admin case and never forfeits deposit. Order buyer only; no client amount/rate/state accepted. Repeating a successful installment never adds another hold.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"termsAccepted\": true\n}",
@@ -1364,7 +1391,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/orders/{{orderId}}/quotes",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -1378,7 +1405,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/quotes",
-            "description": "contract-only. Owning professional; server sums line items, fixes currency and sets 72h response deadline.",
+            "description": "implemented. Owning professional; server sums line items, fixes currency and sets 72h response deadline.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"currency\": \"SYP\",\n  \"scope\": \"Demo request\",\n  \"startsAt\": \"2026-11-25T08:00:00Z\",\n  \"endsAt\": \"2026-11-25T09:00:00Z\",\n  \"dueAt\": \"2026-11-26T08:00:00Z\",\n  \"items\": [\n    {\n      \"description\": \"Demo request\",\n      \"quantity\": 1,\n      \"unitPriceUnits\": \"100\"\n    }\n  ]\n}",
@@ -1397,7 +1424,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/inspection-schedule",
-            "description": "contract-only. Both parties must accept same inspection version; no inspection charge; explicit revised response deadline.",
+            "description": "implemented. Both parties must accept same inspection version; no inspection charge; explicit revised response deadline.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"startsAt\": \"2026-11-25T08:00:00Z\",\n  \"endsAt\": \"2026-11-25T09:00:00Z\",\n  \"responseDeadlineAt\": \"2026-11-25T08:00:00Z\",\n  \"accepted\": true\n}",
@@ -1416,7 +1443,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/quotes/{{quoteId}}/approve",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer of quote order; exact version, fixed total and schedule; rejection free.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer of quote order; exact version, fixed total and schedule; rejection free.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"accepted\": true\n}",
@@ -1435,7 +1462,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/quotes/{{quoteId}}/reject",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer of quote order; exact version, fixed total and schedule; rejection free.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer of quote order; exact version, fixed total and schedule; rejection free.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reason\": \"Demo request\"\n}",
@@ -1455,7 +1482,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/delivery-options?storeId={{storeId}}&addressId={{addressId}}&currency=SYP",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -1465,7 +1492,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/driver/jobs",
-            "description": "contract-only. Active driver in assigned city/governorate; no exact address/contact until assignment."
+            "description": "implemented. Active driver in assigned city/governorate; no exact address/contact until assignment."
           },
           "response": []
         },
@@ -1475,7 +1502,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/driver/assignments",
-            "description": "contract-only. Active or historical assigned driver; completed history redacted."
+            "description": "implemented. Active or historical assigned driver; completed history redacted."
           },
           "response": []
         },
@@ -1485,7 +1512,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/deliveries/{{deliveryId}}",
-            "description": "contract-only. Order buyer/seller/current driver/handling admin; contact/address only for fulfillment; no service files or private evidence."
+            "description": "implemented. Order buyer/seller/current driver/handling admin; contact/address only for fulfillment; no service files or private evidence."
           },
           "response": []
         },
@@ -1499,7 +1526,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/deliveries/{{deliveryId}}/accept",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Eligible active driver; one assignment wins atomically.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Eligible active driver; one assignment wins atomically.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"accepted\": true\n}",
@@ -1518,7 +1545,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/deliveries/{{deliveryId}}/release-assignment",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Current driver or seller before pickup; revoke previous grants.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Current driver or seller before pickup; revoke previous grants.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reason\": \"Demo request\"\n}",
@@ -1537,7 +1564,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/deliveries/{{deliveryId}}/pickup",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Assigned driver or seller for seller delivery; immutable pickup history.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Assigned driver or seller for seller delivery; immutable pickup history.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"notes\": \"Demo request\"\n}",
@@ -1556,7 +1583,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/deliveries/{{deliveryId}}/dropoff",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Assigned driver or seller; proof status explicit; without proof buyer confirmation/admin required.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Assigned driver or seller; proof status explicit; without proof buyer confirmation/admin required.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"notes\": \"Demo request\"\n}",
@@ -1575,7 +1602,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/deliveries/{{deliveryId}}/exception",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Order participant/current driver; funds held; no automatic payout or forfeiture.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Order participant/current driver; funds held; no automatic payout or forfeiture.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"kind\": \"NO_DRIVER\",\n  \"reason\": \"Demo request\",\n  \"evidenceFileIds\": []\n}",
@@ -1594,7 +1621,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/deliveries/{{deliveryId}}/fallback",
-            "description": "contract-only. If-Match is the parent order version; quote/delivery versions are separate snapshots. Seller proposes; buyer approves changed terms; full refund if fulfillment unavailable.",
+            "description": "implemented. If-Match is the parent order version; quote/delivery versions are separate snapshots. Seller proposes; buyer approves changed terms; full refund if fulfillment unavailable.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"choice\": \"SELLER_SAME_TERMS\",\n  \"reason\": \"Demo request\"\n}",
@@ -1613,7 +1640,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/deliveries/{{deliveryId}}/terms",
-            "description": "contract-only. Backend computes revised fee; no silent debit. Buyer approval required before applying price/method/promised-term changes. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Backend computes revised fee; no silent debit. Buyer approval required before applying price/method/promised-term changes. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"method\": \"SELLER\",\n  \"promisedAt\": \"2026-11-25T08:00:00Z\",\n  \"reason\": \"Demo request\"\n}",
@@ -1632,7 +1659,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/deliveries/{{deliveryId}}/terms/{{revisionId}}/approve",
-            "description": "contract-only. Buyer only; explicit delta hold/refund, original terms retained if funding fails.",
+            "description": "implemented. Buyer only; explicit delta hold/refund, original terms retained if funding fails.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"accepted\": true\n}",
@@ -1652,7 +1679,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/orders/{{orderId}}/chat-rooms",
-            "description": "contract-only. Buyer/provider shared thread; assigned driver delivery thread only; handling admin audited case scope."
+            "description": "implemented. Buyer/provider shared thread; assigned driver delivery thread only; handling admin audited case scope."
           },
           "response": []
         },
@@ -1662,7 +1689,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/orders/{{orderId}}/messages?roomId={{roomId}}",
-            "description": "contract-only. Room membership rechecked per request; driver cannot read shared service thread."
+            "description": "implemented. Room membership rechecked per request; driver cannot read shared service thread."
           },
           "response": []
         },
@@ -1675,7 +1702,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/messages",
-            "description": "contract-only. Authorized room member; immutable text/files, at least text or attachment; dedupe sender/room/clientMessageId.",
+            "description": "implemented. Authorized room member; immutable text/files, at least text or attachment; dedupe sender/room/clientMessageId.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"roomId\": \"{{roomId}}\",\n  \"clientMessageId\": \"{{clientMessageId}}\",\n  \"text\": \"Demo request\"\n}",
@@ -1695,7 +1722,7 @@
             "method": "POST",
             "header": [{ "key": "Idempotency-Key", "value": "{{idempotencyKey}}" }],
             "url": "{{baseUrl}}/files/uploads",
-            "description": "contract-only. Authenticated owner with target order/case/workspace authorization; driver delivery-only scope.",
+            "description": "implemented. Authenticated owner with target order/case/workspace authorization; driver delivery-only scope.",
             "body": {
               "mode": "formdata",
               "formdata": [
@@ -1712,7 +1739,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/files/{{fileId}}/status",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -1722,7 +1749,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/files/{{fileId}}/download",
-            "description": "contract-only. Backend reauthorizes each request. FINAL_DELIVERABLE requires full service funding. Driver limited to current delivery attachments; handling admin case-scoped."
+            "description": "implemented. Backend reauthorizes each request. FINAL_DELIVERABLE requires full service funding. Driver limited to current delivery attachments; handling admin case-scoped."
           },
           "response": []
         }
@@ -1737,7 +1764,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/orders/{{orderId}}/cases",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -1751,7 +1778,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/cases",
-            "description": "contract-only. Buyer/provider after hold and before settlement; terminal orders allow support only. Existing case reused; both get 72h evidence.",
+            "description": "implemented. Buyer/provider after hold and before settlement; terminal orders allow support only. Existing case reused; both get 72h evidence.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"kind\": \"DISPUTE\",\n  \"reason\": \"Demo request\"\n}",
@@ -1766,7 +1793,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/cases/{{caseId}}",
-            "description": "contract-only. Buyer/provider or assigned handling admin; private evidence visibility filtered; driver explicitly scoped evidence contribution only."
+            "description": "implemented. Buyer/provider or assigned handling admin; private evidence visibility filtered; driver explicitly scoped evidence contribution only."
           },
           "response": []
         },
@@ -1779,7 +1806,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/cases/{{caseId}}/evidence",
-            "description": "contract-only. Case party during own 72h window; late evidence needs handling-admin reason; files authorized. No deadline-based automatic award.",
+            "description": "implemented. Case party during own 72h window; late evidence needs handling-admin reason; files authorized. No deadline-based automatic award.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"visibility\": \"SHARED\",\n  \"text\": \"Demo request\"\n}",
@@ -1794,7 +1821,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/cases/{{caseId}}/evidence",
-            "description": "contract-only. Case parties see shared and own submissions; private-admin evidence only handling admin. Drivers see only explicitly granted delivery evidence."
+            "description": "implemented. Case parties see shared and own submissions; private-admin evidence only handling admin. Drivers see only explicitly granted delivery evidence."
           },
           "response": []
         },
@@ -1804,7 +1831,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/cases/{{caseId}}/proposals",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -1818,7 +1845,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/cases/{{caseId}}/proposals",
-            "description": "contract-only. Buyer/provider; proposal alone never moves money; source case keeps funds frozen.",
+            "description": "implemented. Buyer/provider; proposal alone never moves money; source case keeps funds frozen.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"kind\": \"CANCELLATION_SPLIT\",\n  \"reason\": \"Demo request\"\n}",
@@ -1837,7 +1864,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/cases/{{caseId}}/proposals/{{proposalId}}/accept",
-            "description": "contract-only. Participating buyer/provider, exact proposal version; both approvals needed. Rejected/72h unanswered cancellation split -> admin.",
+            "description": "implemented. Participating buyer/provider, exact proposal version; both approvals needed. Rejected/72h unanswered cancellation split -> admin.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"accepted\": true\n}",
@@ -1856,7 +1883,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/cases/{{caseId}}/proposals/{{proposalId}}/reject",
-            "description": "contract-only. Participating buyer/provider, exact proposal version; both approvals needed. Rejected/72h unanswered cancellation split -> admin.",
+            "description": "implemented. Participating buyer/provider, exact proposal version; both approvals needed. Rejected/72h unanswered cancellation split -> admin.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reason\": \"Demo request\"\n}",
@@ -1875,7 +1902,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/cases/{{caseId}}/revisions/accept",
-            "description": "contract-only. Both buyer/provider approve same recorded plan; no new charge if already fully funded; fresh 72h review after resubmission.",
+            "description": "implemented. Both buyer/provider approve same recorded plan; no new charge if already fully funded; fresh 72h review after resubmission.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"accepted\": true\n}",
@@ -1895,7 +1922,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/profiles/{{profileId}}/reviews",
-            "description": "contract-only. Public visible reviews only.",
+            "description": "implemented. Public visible reviews only.",
             "auth": { "type": "noauth" }
           },
           "response": []
@@ -1909,7 +1936,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/orders/{{orderId}}/review",
-            "description": "contract-only. Order buyer, COMPLETED order, not self-review; one per order.",
+            "description": "implemented. Order buyer, COMPLETED order, not self-review; one per order.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"stars\": 1\n}",
@@ -1927,7 +1954,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/reviews/{{reviewId}}",
-            "description": "contract-only. Original buyer, one edit, immutable prior version; admin may hide but never rewrite rating/text.",
+            "description": "implemented. Original buyer, one edit, immutable prior version; admin may hide but never rewrite rating/text.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"stars\": 1\n}",
@@ -1947,7 +1974,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/notifications",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -1957,7 +1984,7 @@
             "method": "POST",
             "header": [],
             "url": "{{baseUrl}}/notifications/{{notificationId}}/read",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -1967,7 +1994,7 @@
             "method": "POST",
             "header": [],
             "url": "{{baseUrl}}/notifications/read-all",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -1977,10 +2004,10 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{baseUrl}}/devices",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"token\": \"Demo request\",\n  \"platform\": \"IOS\"\n}",
+              "raw": "{\n  \"token\": \"{{expoPushToken}}\",\n  \"platform\": \"IOS\"\n}",
               "options": { "raw": { "language": "json" } }
             }
           },
@@ -1992,7 +2019,7 @@
             "method": "DELETE",
             "header": [],
             "url": "{{baseUrl}}/devices/{{deviceId}}",
-            "description": "contract-only. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
         },
@@ -2000,9 +2027,14 @@
           "name": "Single-use browser socket ticket",
           "request": {
             "method": "POST",
-            "header": [],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": "{{baseUrl}}/realtime/ticket",
-            "description": "contract-only. Short-lived JWT-derived capability, 60s, current session/room membership still rechecked. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
+            "description": "implemented. Short-lived JWT-derived capability, 60s, current session/room membership still rechecked. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
           },
           "response": []
         }
@@ -2017,7 +2049,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/admin/audit",
-            "description": "contract-only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
+            "description": "implemented. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
           },
           "response": []
         },
@@ -2027,7 +2059,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/admin/moderation",
-            "description": "contract-only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
+            "description": "implemented. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
           },
           "response": []
         },
@@ -2037,7 +2069,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/admin/cases",
-            "description": "contract-only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
+            "description": "implemented. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
           },
           "response": []
         },
@@ -2047,7 +2079,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/admin/commission-rates",
-            "description": "contract-only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
+            "description": "implemented. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
           },
           "response": []
         },
@@ -2060,7 +2092,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/admin/commission-rates",
-            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "description": "implemented. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"workspace\": \"FREELANCE\",\n  \"basisPoints\": 0\n}",
@@ -2075,7 +2107,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/admin/delivery-rates",
-            "description": "contract-only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
+            "description": "implemented. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
           },
           "response": []
         },
@@ -2088,7 +2120,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/admin/delivery-rates",
-            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "description": "implemented. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"cityId\": \"{{cityId}}\",\n  \"method\": \"SELLER\",\n  \"currency\": \"SYP\",\n  \"feeUnits\": \"100\"\n}",
@@ -2103,7 +2135,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/admin/driver-zones",
-            "description": "contract-only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
+            "description": "implemented. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
           },
           "response": []
         },
@@ -2116,7 +2148,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/admin/driver-zones",
-            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "description": "implemented. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"driverProfileId\": \"{{driverProfileId}}\",\n  \"governorateId\": \"{{governorateId}}\"\n}",
@@ -2134,7 +2166,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/admin/moderation/{{resourceId}}/decision",
-            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "description": "implemented. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"outcome\": \"APPROVE\",\n  \"reason\": \"Demo request\"\n}",
@@ -2152,7 +2184,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/admin/users/{{userId}}/restrictions",
-            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "description": "implemented. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"kind\": \"SUSPENSION\",\n  \"reason\": \"Demo request\"\n}",
@@ -2170,7 +2202,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/admin/cases/{{caseId}}/assign",
-            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "description": "implemented. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reason\": \"Demo request\"\n}",
@@ -2189,7 +2221,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/admin/cases/{{caseId}}/resolve",
-            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "description": "implemented. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reason\": \"Demo request\",\n  \"substantiation\": \"Demo request\",\n  \"sellerAwardUnits\": \"100\",\n  \"sellerDeliveryUnits\": \"100\",\n  \"driverAwardUnits\": \"100\",\n  \"outcome\": \"COMPLETED\"\n}",
@@ -2208,7 +2240,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/admin/deliveries/{{deliveryId}}/reassign",
-            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "description": "implemented. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"driverProfileId\": \"{{driverProfileId}}\",\n  \"reason\": \"Demo request\"\n}",
@@ -2226,7 +2258,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/admin/reviews/{{reviewId}}/moderate",
-            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "description": "implemented. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"outcome\": \"APPROVE\",\n  \"reason\": \"Demo request\"\n}",
@@ -2244,7 +2276,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/admin/simulator/topups",
-            "description": "contract-only. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "description": "implemented. Case resolution conserves held units, computes commission/refund on backend and never charges unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"amount\": {\n    \"currency\": \"SYP\",\n    \"units\": \"100\"\n  },\n  \"reason\": \"Demo request\"\n}",
@@ -2262,7 +2294,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/admin/restrictions/{{restrictionId}}/revoke",
-            "description": "contract-only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "description": "implemented. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"reason\": \"Demo request\"\n}",
@@ -2277,7 +2309,7 @@
             "method": "DELETE",
             "header": [{ "key": "Idempotency-Key", "value": "{{idempotencyKey}}" }],
             "url": "{{baseUrl}}/admin/driver-zones/{{zoneId}}",
-            "description": "contract-only. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
+            "description": "implemented. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment."
           },
           "response": []
         },
@@ -2291,7 +2323,7 @@
               { "key": "Content-Type", "value": "application/json" }
             ],
             "url": "{{baseUrl}}/admin/cases/{{caseId}}/resume-final-payment",
-            "description": "contract-only. Must record participant agreement/new deadline and resolve case without allocation. No deposit forfeiture or automatic balance charge. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
+            "description": "implemented. Must record participant agreement/new deadline and resolve case without allocation. No deposit forfeiture or automatic balance charge. Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally requires handling assignment.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"dueAt\": \"2026-11-26T08:00:00Z\",\n  \"reason\": \"Demo request\"\n}",

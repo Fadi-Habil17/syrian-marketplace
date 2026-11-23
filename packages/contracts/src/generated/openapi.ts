@@ -2728,6 +2728,8 @@ export interface components {
     /** @enum {string} */
     BusinessType: 'FREELANCER' | 'PROFESSIONAL' | 'STORE_OWNER' | 'DELIVERY_DRIVER';
     CancelInput: {
+      /** @description Exact stock reconciliation agreed with this proposal; required after goods were collected. */
+      inventoryReturns?: components['schemas']['InventoryReturn'][];
       proposal?: components['schemas']['ProposalInput'];
       reason: string;
     };
@@ -3071,7 +3073,14 @@ export interface components {
       | 'RATE_LIMITED'
       | 'TEMPORARILY_UNAVAILABLE'
       | 'COMMISSION_CONFIGURATION_MISSING'
-      | 'SETTLEMENT_POSTING_FAILED';
+      | 'SETTLEMENT_POSTING_FAILED'
+      | 'CURRENCY_MISMATCH'
+      | 'DRIVER_UNAVAILABLE'
+      | 'EVIDENCE_WINDOW_CLOSED'
+      | 'INVENTORY_RECONCILIATION_REQUIRED'
+      | 'CUSTODY_REVIEW_REQUIRED'
+      | 'INVALID_DRIVER_AWARD'
+      | 'REVIEW_NOT_ALLOWED';
     ErrorDetail: {
       code: string;
       field?: string;
@@ -3140,6 +3149,7 @@ export interface components {
       items: components['schemas']['FileMetadata'][];
       nextCursor: string | null;
     };
+    /** @description ORDER_SHARED may be staged without an order, owner-only, then claimed atomically by an inspection request. Other private classes require their order/case. No staged object is public. */
     FileUploadInput: {
       accessClass: components['schemas']['FileAccessClass'];
       /** Format: uuid */
@@ -3176,7 +3186,7 @@ export interface components {
     };
     Health: {
       /** @constant */
-      phase: 'setup';
+      phase: 'backend';
       /** @constant */
       simulatedPayments: true;
       /** @constant */
@@ -3342,6 +3352,13 @@ export interface components {
       reason: string;
     };
     ModerationItem: {
+      /** @description Admin-only content inspection, including drafts and hidden resources; no credentials. */
+      content?:
+        | components['schemas']['BusinessProfile']
+        | components['schemas']['Listing']
+        | components['schemas']['Store']
+        | components['schemas']['Product']
+        | components['schemas']['Review'];
       /** Format: date-time */
       createdAt: string;
       /** Format: uuid */
@@ -3649,6 +3666,7 @@ export interface components {
       driverAwardUnits: string;
       /** Format: uuid */
       id: string;
+      inventoryReturns?: components['schemas']['InventoryReturn'][] | null;
       kind: components['schemas']['ProposalKind'];
       newDueAt: string | null;
       reason: string;
@@ -3663,6 +3681,8 @@ export interface components {
     ProposalInput: {
       /** @description Price/allocation in stored units, maximum 9000000000000. SYP whole pounds, USD cents. */
       driverAwardUnits?: string;
+      /** @description Exact stock reconciliation agreed with this proposal; required after goods were collected. */
+      inventoryReturns?: components['schemas']['InventoryReturn'][];
       kind: components['schemas']['ProposalKind'];
       /** Format: date-time */
       newDueAt?: string;
@@ -3966,6 +3986,10 @@ export interface components {
       namespace: '/orders';
       ticket: string;
     };
+    RealtimeTicketInput: {
+      /** Format: uuid */
+      orderId: string;
+    };
     ReasonInput: {
       reason: string;
     };
@@ -4237,8 +4261,8 @@ export interface components {
     };
     Terms: {
       deliveryMethod?: components['schemas']['DeliveryMethod'] | null;
-      /** Format: date-time */
-      dueAt: string;
+      /** @description Null before the parties establish a service agreement; never a fabricated promised deadline. */
+      dueAt: string | null;
       endsAt?: string | null;
       promisedDeliveryAt?: string | null;
       scope: string;
@@ -4303,6 +4327,8 @@ export interface components {
       id: string;
       /** @enum {unknown} */
       locale: 'ar' | 'en';
+      /** @description Current restrictions visible only in the authenticated own-account DTO. */
+      restrictions?: components['schemas']['Restriction'][];
       roles: components['schemas']['RoleCode'][];
       verifiedAt: string | null;
     };
@@ -6946,6 +6972,8 @@ export interface operations {
         limit?: number;
         maxDeliveryDays?: number;
         maxPriceUnits?: string;
+        /** @description Owner-only management view, including drafts and inactive records. Requires a valid bearer session when true. */
+        mine?: boolean;
         minPriceUnits?: string;
         minRating?: number;
         q?: string;
@@ -9155,14 +9183,11 @@ export interface operations {
         governorateId?: string;
         limit?: number;
         maxPriceUnits?: string;
+        /** @description Owner-only management view, including drafts and inactive records. Requires a valid bearer session when true. */
+        mine?: boolean;
         minPriceUnits?: string;
         q?: string;
-        sort?:
-          | 'createdAt:desc'
-          | 'priceUnits:asc'
-          | 'priceUnits:desc'
-          | 'rating:desc'
-          | 'deliveryDays:asc';
+        sort?: 'createdAt:desc' | 'priceUnits:asc' | 'priceUnits:desc' | 'rating:desc';
         storeId?: string;
       };
       header?: never;
@@ -9585,7 +9610,11 @@ export interface operations {
       path?: never;
       cookie?: never;
     };
-    requestBody?: never;
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RealtimeTicketInput'];
+      };
+    };
     responses: {
       /** @description Successful result */
       200: {
@@ -9656,6 +9685,8 @@ export interface operations {
         cursor?: string;
         governorateId?: string;
         limit?: number;
+        /** @description Owner-only management view, including drafts and inactive records. Requires a valid bearer session when true. */
+        mine?: boolean;
         q?: string;
         sort?: 'createdAt:desc' | 'nameEn:asc';
       };

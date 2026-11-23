@@ -4,8 +4,23 @@ import prettier from 'prettier';
 
 const api = YAML.parse(await readFile('docs/api/openapi.yaml', 'utf8'));
 const variables = new Set(['baseUrl', 'token', 'idempotencyKey', 'orderVersion']);
+let currentOperation = '';
 function example(s, key = '', depth = 0) {
   if (depth > 8) return null;
+  if (key === 'refreshToken') {
+    variables.add('refreshToken');
+    return '{{refreshToken}}';
+  }
+  if (key === 'token') {
+    const variable =
+      currentOperation === 'registerDevice'
+        ? 'expoPushToken'
+        : currentOperation === 'resetPassword'
+          ? 'passwordResetToken'
+          : 'verificationToken';
+    variables.add(variable);
+    return `{{${variable}}}`;
+  }
   if (s.$ref) return example(api.components.schemas[s.$ref.split('/').pop()], key, depth + 1);
   if (s.const !== undefined) return s.const;
   if (s.enum) return s.enum[0];
@@ -48,6 +63,7 @@ function example(s, key = '', depth = 0) {
 const folders = new Map();
 for (const [path, methods] of Object.entries(api.paths))
   for (const [method, o] of Object.entries(methods)) {
+    currentOperation = o.operationId;
     const tag = o.tags[0];
     if (!folders.has(tag)) folders.set(tag, { name: tag, item: [] });
     const headers = [];
@@ -104,26 +120,39 @@ for (const [path, methods] of Object.entries(api.paths))
       o.operationId === 'getHealth'
         ? [
             {
-              name: 'Setup shell alive',
+              name: 'Backend process alive',
               originalRequest: { method: 'GET', header: [], url: '{{baseUrl}}/health' },
               status: 'OK',
               code: 200,
               header: [{ key: 'Content-Type', value: 'application/json' }],
               body: JSON.stringify(
-                { status: 'ok', phase: 'setup', simulatedPayments: true },
+                { status: 'ok', phase: 'backend', simulatedPayments: true },
                 null,
                 2,
               ),
             },
           ]
         : [];
-    folders.get(tag).item.push({ name: o.summary, request: req, response });
+    const item = { name: o.summary, request: req, response };
+    if (['login', 'refreshSession'].includes(o.operationId))
+      item.event = [
+        {
+          listen: 'test',
+          script: {
+            type: 'text/javascript',
+            exec: [
+              "if (pm.response.code === 200) { const pair = pm.response.json(); pm.collectionVariables.set('token', pair.accessToken); pm.collectionVariables.set('refreshToken', pair.refreshToken); }",
+            ],
+          },
+        },
+      ];
+    folders.get(tag).item.push(item);
   }
 const output = {
   info: {
     name: 'Syrian Marketplace - Release One Contract',
     description:
-      'Health is implemented. Every other request is contract-only until its backend slice is wired. Set resource IDs/token; use a new idempotencyKey per intent and reuse it on timeout. Never commit actual tokens. Example credentials are fictional seed-only, not a working login endpoint.',
+      'Implemented NestJS backend routes; validation and scenario coverage are detailed in BACKEND_IMPLEMENTATION_REPORT.md. Run the isolated seed before using fictional demo credentials. Login/refresh save local collection tokens. Set resource IDs/orderVersion and a fresh idempotencyKey per intent; reuse that key on timeout. Never commit actual tokens.',
     schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
   },
   variable: [...variables].map((key) => ({
@@ -134,13 +163,18 @@ const output = {
   auth: { type: 'bearer', bearer: [{ key: 'token', value: '{{token}}', type: 'string' }] },
   item: [...folders.values()],
 };
-const file = 'docs/postman/syrian-marketplace.postman_collection.json';
+const file = 'docs/postman/marketplace.postman_collection.json';
 await writeFile(
   file,
   await prettier.format(JSON.stringify(output), {
     parser: 'json',
     ...(await prettier.resolveConfig(file)),
   }),
+);
+// Preserve old documentation links while publishing the exact requested filename.
+await writeFile(
+  'docs/postman/syrian-marketplace.postman_collection.json',
+  await readFile(file, 'utf8'),
 );
 console.info(
   `Postman v2.1 generated for ${[...folders.values()].reduce((n, f) => n + f.item.length, 0)} operations.`,

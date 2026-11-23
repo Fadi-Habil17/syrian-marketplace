@@ -1,4 +1,4 @@
-name: Database and contract checks
+name: Backend database and contract checks
 on:
   push:
   pull_request:
@@ -19,11 +19,41 @@ jobs:
         options: >-
           --health-cmd "pg_isready -U marketplace_ci -d marketplace_ci"
           --health-interval 5s --health-timeout 3s --health-retries 10
+      storage:
+        image: chrislusf/seaweedfs@sha256:4b42c212543a0acd4c0e675215ecdcaf62a186ef98def76c7e12701871222d15
+        env:
+          AWS_ACCESS_KEY_ID: ci-storage-only
+          AWS_SECRET_ACCESS_KEY: ci-storage-only-not-a-real-secret
+          S3_BUCKET: marketplace-private
+        ports:
+          - 19000:8333
+        options: >-
+          --health-cmd "wget -q -O- http://127.0.0.1:9333/cluster/status"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+      scanner:
+        image: clamav/clamav@sha256:12177441d1b40cef3c47b44c4090d59d4babc4c67bedd5af0fa315e603aa6dd8
+        ports:
+          - 13310:3310
+        options: >-
+          --health-cmd "clamdcheck.sh" --health-start-period 360s
+          --health-interval 10s --health-timeout 10s --health-retries 18
     env:
       DATABASE_URL: postgresql://marketplace_ci:ci-test-only@localhost:5432/marketplace_ci?schema=public
       DATABASE_TEST_URL: postgresql://marketplace_ci:ci-test-only@localhost:5432/marketplace_ci?schema=public
       ALLOW_DEMO_SEED: 'true'
       NEXT_TELEMETRY_DISABLED: '1'
+      JWT_ACCESS_SECRET: ci-access-secret-for-isolated-runner-only-123
+      JWT_REFRESH_SECRET: ci-refresh-secret-for-isolated-runner-only-456
+      EMAIL_OUTBOX_KEY: ci-encryption-key-for-isolated-runner-only-789
+      STORAGE_ENDPOINT: http://127.0.0.1:19000
+      STORAGE_REGION: us-east-1
+      STORAGE_BUCKET: marketplace-private
+      STORAGE_ACCESS_KEY: ci-storage-only
+      STORAGE_SECRET_KEY: ci-storage-only-not-a-real-secret
+      STORAGE_FORCE_PATH_STYLE: 'true'
+      CLAMAV_HOST: 127.0.0.1
+      CLAMAV_PORT: '13310'
+      EXPO_PUSH_ENABLED: 'false'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -31,12 +61,14 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
+      - run: npm run build:packages
       - run: npm run verify:setup
       - run: npm run db:generate
       - run: npm run db:validate --workspace backend
       - run: npm run db:migrate
       - run: npm run db:seed
       - run: npm run db:seed
+      - run: npm run db:seed:check --workspace backend
       - run: npm run contracts:validate
       - run: npm run contracts:check
       - run: npm run db:erd:check

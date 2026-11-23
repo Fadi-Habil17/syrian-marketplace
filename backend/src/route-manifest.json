@@ -1,0 +1,358 @@
+{
+  "implemented": [
+    "uploadFile",
+    "getFileStatus",
+    "downloadFile",
+    "getHealth",
+    "register",
+    "login",
+    "refreshSession",
+    "verifyEmail",
+    "forgotPassword",
+    "resetPassword",
+    "logout",
+    "getSessionUser",
+    "createRealtimeTicket",
+    "listAuditHistory",
+    "listAdminCases",
+    "listCommissionRates",
+    "configureCommission",
+    "listDeliveryRates",
+    "configureDeliveryRate",
+    "listDriverZones",
+    "assignDriverZone",
+    "removeDriverZone",
+    "listModerationQueue",
+    "moderateResource",
+    "moderateReview",
+    "restrictAccount",
+    "revokeRestriction",
+    "assignAdminCase",
+    "resolveAdminCase",
+    "resumeOverdueFinalPayment",
+    "getOrderRooms",
+    "listMessages",
+    "sendMessage",
+    "listNotifications",
+    "readNotification",
+    "readAllNotifications",
+    "registerDevice",
+    "revokeDevice",
+    "listVerifiedReviews",
+    "createReview",
+    "editReview",
+    "reassignDelivery",
+    "requestPlatformDriver",
+    "getDelivery",
+    "listDriverJobs",
+    "listDriverAssignments",
+    "acceptDeliveryJob",
+    "releaseDriverAssignment",
+    "recordPickup",
+    "recordDropoff",
+    "reportDeliveryException",
+    "proposeDeliveryTerms",
+    "approveDeliveryTerms",
+    "chooseDeliveryFallback",
+    "listOrderCases",
+    "getCase",
+    "openCase",
+    "listEvidence",
+    "submitEvidence",
+    "listProposals",
+    "proposeResolution",
+    "acceptResolutionProposal",
+    "rejectResolutionProposal",
+    "acceptRevisionPlan",
+    "cancelOrder",
+    "requestExtension",
+    "acceptExtension",
+    "previewStoreCheckout",
+    "getDeliveryOptions",
+    "getAllowedOrderActions",
+    "rejectOrder",
+    "startWork",
+    "recordProgress",
+    "markReady",
+    "deliverService",
+    "createMilestone",
+    "acceptStoreOrder",
+    "markStoreReady",
+    "createFreelanceOrder",
+    "agreeOrder",
+    "createBooking",
+    "acceptBooking",
+    "proposeSchedule",
+    "acceptSchedule",
+    "requestInspectionQuote",
+    "listOrderQuotes",
+    "sendQuote",
+    "approveQuote",
+    "rejectQuote",
+    "agreeInspectionSchedule",
+    "holdDeposit",
+    "holdBalance",
+    "checkoutStore",
+    "confirmReceipt",
+    "listOrders",
+    "getOrder",
+    "getOrderTimeline",
+    "listMilestones",
+    "listSubmissions",
+    "listWallets",
+    "listWalletTransactions",
+    "listOrderPayments",
+    "getSettlement",
+    "getOperation",
+    "simulateWalletTopUp",
+    "listStores",
+    "createStore",
+    "getStore",
+    "updateStore",
+    "publishStore",
+    "deactivateStore",
+    "listProducts",
+    "createProduct",
+    "getProduct",
+    "updateProduct",
+    "publishProduct",
+    "deactivateProduct",
+    "setProductStock",
+    "listCategories",
+    "listListings",
+    "createListing",
+    "getListing",
+    "updateListing",
+    "publishListing",
+    "deactivateListing",
+    "getMe",
+    "updateMe",
+    "listOwnBusinessProfiles",
+    "createBusinessProfile",
+    "updateBusinessProfile",
+    "switchBusinessWorkspace",
+    "reactivateBusinessProfile",
+    "getPublicProfile",
+    "createPortfolioItem",
+    "removePortfolioItem",
+    "listServiceAreas",
+    "addServiceArea",
+    "removeServiceArea",
+    "listGovernorates",
+    "listCities",
+    "listAreas",
+    "listAddresses",
+    "createAddress",
+    "updateAddress",
+    "archiveAddress"
+  ],
+  "features": [
+    {
+      "name": "realtime",
+      "operations": ["createRealtimeTicket"]
+    },
+    {
+      "name": "admin",
+      "operations": [
+        "listAuditHistory",
+        "listAdminCases",
+        "listCommissionRates",
+        "configureCommission",
+        "listDeliveryRates",
+        "configureDeliveryRate",
+        "listDriverZones",
+        "assignDriverZone",
+        "removeDriverZone",
+        "listModerationQueue",
+        "moderateResource",
+        "moderateReview",
+        "restrictAccount",
+        "revokeRestriction",
+        "assignAdminCase",
+        "resolveAdminCase",
+        "resumeOverdueFinalPayment"
+      ]
+    },
+    {
+      "name": "chat",
+      "operations": ["getOrderRooms", "listMessages", "sendMessage"]
+    },
+    {
+      "name": "notifications",
+      "operations": [
+        "listNotifications",
+        "readNotification",
+        "readAllNotifications",
+        "registerDevice",
+        "revokeDevice"
+      ]
+    },
+    {
+      "name": "reviews",
+      "operations": ["listVerifiedReviews", "createReview", "editReview"]
+    },
+    {
+      "name": "delivery",
+      "operations": [
+        "reassignDelivery",
+        "requestPlatformDriver",
+        "getDelivery",
+        "listDriverJobs",
+        "listDriverAssignments",
+        "acceptDeliveryJob",
+        "releaseDriverAssignment",
+        "recordPickup",
+        "recordDropoff",
+        "reportDeliveryException",
+        "proposeDeliveryTerms",
+        "approveDeliveryTerms",
+        "chooseDeliveryFallback"
+      ]
+    },
+    {
+      "name": "disputes",
+      "operations": [
+        "listOrderCases",
+        "getCase",
+        "openCase",
+        "listEvidence",
+        "submitEvidence",
+        "listProposals",
+        "proposeResolution",
+        "acceptResolutionProposal",
+        "rejectResolutionProposal",
+        "acceptRevisionPlan",
+        "cancelOrder",
+        "requestExtension",
+        "acceptExtension"
+      ]
+    },
+    {
+      "name": "checkout",
+      "operations": ["previewStoreCheckout", "getDeliveryOptions"]
+    },
+    {
+      "name": "orders",
+      "operations": [
+        "getAllowedOrderActions",
+        "rejectOrder",
+        "startWork",
+        "recordProgress",
+        "markReady",
+        "deliverService",
+        "createMilestone",
+        "acceptStoreOrder",
+        "markStoreReady"
+      ]
+    },
+    {
+      "name": "freelance",
+      "operations": ["createFreelanceOrder", "agreeOrder"]
+    },
+    {
+      "name": "bookings",
+      "operations": ["createBooking", "acceptBooking", "proposeSchedule", "acceptSchedule"]
+    },
+    {
+      "name": "quotes",
+      "operations": [
+        "requestInspectionQuote",
+        "listOrderQuotes",
+        "sendQuote",
+        "approveQuote",
+        "rejectQuote",
+        "agreeInspectionSchedule"
+      ]
+    },
+    {
+      "name": "payments",
+      "operations": ["holdDeposit", "holdBalance", "checkoutStore", "confirmReceipt"]
+    },
+    {
+      "name": "orders-query",
+      "operations": [
+        "listOrders",
+        "getOrder",
+        "getOrderTimeline",
+        "listMilestones",
+        "listSubmissions"
+      ]
+    },
+    {
+      "name": "wallets",
+      "operations": [
+        "listWallets",
+        "listWalletTransactions",
+        "listOrderPayments",
+        "getSettlement",
+        "getOperation",
+        "simulateWalletTopUp"
+      ]
+    },
+    {
+      "name": "stores",
+      "operations": [
+        "listStores",
+        "createStore",
+        "getStore",
+        "updateStore",
+        "publishStore",
+        "deactivateStore"
+      ]
+    },
+    {
+      "name": "products",
+      "operations": [
+        "listProducts",
+        "createProduct",
+        "getProduct",
+        "updateProduct",
+        "publishProduct",
+        "deactivateProduct",
+        "setProductStock"
+      ]
+    },
+    {
+      "name": "catalog",
+      "operations": [
+        "listCategories",
+        "listListings",
+        "createListing",
+        "getListing",
+        "updateListing",
+        "publishListing",
+        "deactivateListing"
+      ]
+    },
+    {
+      "name": "profiles",
+      "operations": [
+        "getMe",
+        "updateMe",
+        "listOwnBusinessProfiles",
+        "createBusinessProfile",
+        "updateBusinessProfile",
+        "switchBusinessWorkspace",
+        "reactivateBusinessProfile",
+        "getPublicProfile",
+        "createPortfolioItem",
+        "removePortfolioItem",
+        "listServiceAreas",
+        "addServiceArea",
+        "removeServiceArea"
+      ]
+    },
+    {
+      "name": "geography",
+      "operations": [
+        "listGovernorates",
+        "listCities",
+        "listAreas",
+        "listAddresses",
+        "createAddress",
+        "updateAddress",
+        "archiveAddress"
+      ]
+    }
+  ]
+}

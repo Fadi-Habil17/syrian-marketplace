@@ -3,11 +3,11 @@ jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: Syrian Marketplace API contract
   version: 1.0.0
-  summary: Contract-first release-one API; only health is currently wired.
+  summary: Implemented NestJS REST API with a local simulated payment gateway.
   description:
-    Canonical target contract, not a claim of implemented business endpoints. Local simulated payments
-    only; no live ShamCash. All pricing, commission, escrow and transitions execute on backend. See ORDER_STATE_MACHINES.md
-    and order-transitions.json for every actor/guard/effect.
+    NestJS modular-monolith backend contract. All operations have registered handlers. See
+    BACKEND_IMPLEMENTATION_REPORT.md for actual scenario validation and operational limits. Payment
+    is intentionally simulated.
 servers:
   - url: http://localhost:4000
     description: Local simulator; use HTTPS for deployment
@@ -97,7 +97,7 @@ paths:
         - Auth
       summary: register
       description: Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.
       parameters: []
@@ -148,7 +148,7 @@ paths:
         - Auth
       summary: login
       description: Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.
       parameters: []
@@ -199,7 +199,7 @@ paths:
         - Auth
       summary: refreshSession
       description: Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.
       parameters: []
@@ -250,7 +250,7 @@ paths:
         - Auth
       summary: verifyEmail
       description: Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.
       parameters: []
@@ -301,7 +301,7 @@ paths:
         - Auth
       summary: forgotPassword
       description: Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.
       parameters: []
@@ -352,7 +352,7 @@ paths:
         - Auth
       summary: resetPassword
       description: Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.
       parameters: []
@@ -402,10 +402,12 @@ paths:
       tags:
         - Auth
       summary: Revoke current session
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters: []
       responses:
         '200':
@@ -452,10 +454,12 @@ paths:
       tags:
         - Auth
       summary: Current authenticated identity
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters: []
       responses:
         '200':
@@ -496,10 +500,12 @@ paths:
       tags:
         - Profiles
       summary: Own profile
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters: []
       responses:
         '200':
@@ -539,10 +545,12 @@ paths:
       tags:
         - Profiles
       summary: Update own display name/locale
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -590,10 +598,12 @@ paths:
       tags:
         - Profiles
       summary: Own active and archived business profiles
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: cursor
           in: query
@@ -649,12 +659,13 @@ paths:
         - Profiles
       summary: Create draft profile
       description:
-        A draft does not activate a new workspace; activation uses atomic switching checks. One active
-        business profile per user. Authenticated owner/participant; backend role, active-workspace, ownership and
-        restriction checks.
-      x-implementation-status: contract-only
+        A draft does not activate a new workspace; activation uses atomic switching checks. One
+        active business profile per user. Authenticated owner/participant; backend role,
+        active-workspace, ownership and restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -702,10 +713,12 @@ paths:
       tags:
         - Profiles
       summary: Edit owned active workspace profile
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: profileId
           in: path
@@ -760,12 +773,14 @@ paths:
         - Profiles
       summary: Automatically switch when eligible
       description:
-        Atomic zero active orders, open cases, pending delivery or unsettled escrow checks across buyer/provider/driver
-        commitments. Archive previous profile; retain history. Authenticated owner/participant; backend role, active-workspace,
-        ownership and restriction checks.
-      x-implementation-status: contract-only
+        Atomic zero active orders, open cases, pending delivery or unsettled escrow checks
+        across buyer/provider/driver commitments. Archive previous profile; retain history.
+        Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+        checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -813,12 +828,13 @@ paths:
       tags:
         - Profiles
       summary: Reactivate owned archived profile
-      description:
-        Same commitment checks as switch; existing restrictions and moderation survive. Authenticated
-        owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Same commitment checks as switch; existing restrictions and moderation survive.
+        Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+        checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: profileId
           in: path
@@ -873,7 +889,7 @@ paths:
         - Profiles
       summary: Published public profile
       description: Public published projection; private contact/history excluded.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public published projection; private contact/history excluded.
       parameters:
@@ -923,10 +939,12 @@ paths:
       tags:
         - Profiles
       summary: Add portfolio item
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: profileId
           in: path
@@ -980,10 +998,12 @@ paths:
       tags:
         - Profiles
       summary: Remove owned portfolio reference
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: profileId
           in: path
@@ -1033,10 +1053,12 @@ paths:
       tags:
         - Profiles
       summary: Owned coverage
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: profileId
           in: path
@@ -1097,10 +1119,12 @@ paths:
       tags:
         - Profiles
       summary: Add owned seller coverage
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: profileId
           in: path
@@ -1154,10 +1178,12 @@ paths:
       tags:
         - Profiles
       summary: Remove owned coverage
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: profileId
           in: path
@@ -1208,7 +1234,7 @@ paths:
         - Geography
       summary: Shared Syrian geography
       description: Public; canonical hierarchy IDs.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public; canonical hierarchy IDs.
       parameters:
@@ -1268,7 +1294,7 @@ paths:
         - Geography
       summary: Shared Syrian geography
       description: Public; canonical hierarchy IDs.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public; canonical hierarchy IDs.
       parameters:
@@ -1334,7 +1360,7 @@ paths:
         - Geography
       summary: Shared Syrian geography
       description: Public; canonical hierarchy IDs.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public; canonical hierarchy IDs.
       parameters:
@@ -1399,10 +1425,12 @@ paths:
       tags:
         - Geography
       summary: Own saved addresses
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: cursor
           in: query
@@ -1457,10 +1485,12 @@ paths:
       tags:
         - Geography
       summary: Save own address
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -1509,11 +1539,12 @@ paths:
         - Geography
       summary: Update own address
       description:
-        Existing orders retain immutable address snapshots. Authenticated owner/participant; backend
-        role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+        Existing orders retain immutable address snapshots. Authenticated owner/participant;
+        backend role, active-workspace, ownership and restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: addressId
           in: path
@@ -1566,10 +1597,12 @@ paths:
       tags:
         - Geography
       summary: Archive own address
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: addressId
           in: path
@@ -1614,7 +1647,7 @@ paths:
         - Catalog
       summary: Workspace categories
       description: Public.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public.
       parameters:
@@ -1679,7 +1712,7 @@ paths:
         - Catalog
       summary: Browse published listings
       description: Public published records only; supported filters/sort are validated server-side.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public published records only; supported filters/sort are validated server-side.
       parameters:
@@ -1774,6 +1807,15 @@ paths:
             type: string
             maxLength: 100
             minLength: 1
+        - name: mine
+          in: query
+          required: false
+          description:
+            Owner-only management view, including drafts and inactive records. Requires a valid
+            bearer session when true.
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: Successful result
@@ -1814,12 +1856,12 @@ paths:
         - Catalog
       summary: Create owned Listing
       description:
-        Owning active workspace of matching type; verified account. Price changes validated by backend;
-        order snapshots stay fixed.
-      x-implementation-status: contract-only
+        Owning active workspace of matching type; verified account. Price changes validated by
+        backend; order snapshots stay fixed.
+      x-implementation-status: implemented
       x-permissions:
-        - Owning active workspace of matching type; verified account. Price changes validated by backend; order snapshots
-          stay fixed.
+        - Owning active workspace of matching type; verified account. Price changes validated by
+          backend; order snapshots stay fixed.
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -1868,7 +1910,7 @@ paths:
         - Catalog
       summary: Published Listing
       description: Public published record; inaccessible archived/hidden records return 404.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public published record; inaccessible archived/hidden records return 404.
       parameters:
@@ -1917,10 +1959,12 @@ paths:
       tags:
         - Catalog
       summary: Edit owned Listing
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: listingId
           in: path
@@ -1975,12 +2019,12 @@ paths:
         - Catalog
       summary: Publish validated owned Listing
       description:
-        Owning active workspace, verified account, complete bilingual content and clean assets; moderation
-        restrictions survive archival.
-      x-implementation-status: contract-only
+        Owning active workspace, verified account, complete bilingual content and clean assets;
+        moderation restrictions survive archival.
+      x-implementation-status: implemented
       x-permissions:
-        - Owning active workspace, verified account, complete bilingual content and clean assets; moderation restrictions
-          survive archival.
+        - Owning active workspace, verified account, complete bilingual content and clean assets;
+          moderation restrictions survive archival.
       parameters:
         - name: listingId
           in: path
@@ -2034,10 +2078,12 @@ paths:
       tags:
         - Catalog
       summary: Deactivate owned Listing
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: listingId
           in: path
@@ -2092,7 +2138,7 @@ paths:
         - Catalog
       summary: Browse published stores
       description: Public published records only; supported filters/sort are validated server-side.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public published records only; supported filters/sort are validated server-side.
       parameters:
@@ -2138,6 +2184,15 @@ paths:
             type: string
             maxLength: 100
             minLength: 1
+        - name: mine
+          in: query
+          required: false
+          description:
+            Owner-only management view, including drafts and inactive records. Requires a valid
+            bearer session when true.
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: Successful result
@@ -2178,12 +2233,12 @@ paths:
         - Catalog
       summary: Create owned Store
       description:
-        Owning active workspace of matching type; verified account. Price changes validated by backend;
-        order snapshots stay fixed.
-      x-implementation-status: contract-only
+        Owning active workspace of matching type; verified account. Price changes validated by
+        backend; order snapshots stay fixed.
+      x-implementation-status: implemented
       x-permissions:
-        - Owning active workspace of matching type; verified account. Price changes validated by backend; order snapshots
-          stay fixed.
+        - Owning active workspace of matching type; verified account. Price changes validated by
+          backend; order snapshots stay fixed.
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -2232,7 +2287,7 @@ paths:
         - Catalog
       summary: Published Store
       description: Public published record; inaccessible archived/hidden records return 404.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public published record; inaccessible archived/hidden records return 404.
       parameters:
@@ -2281,10 +2336,12 @@ paths:
       tags:
         - Catalog
       summary: Edit owned Store
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: storeId
           in: path
@@ -2339,12 +2396,12 @@ paths:
         - Catalog
       summary: Publish validated owned Store
       description:
-        Owning active workspace, verified account, complete bilingual content and clean assets; moderation
-        restrictions survive archival.
-      x-implementation-status: contract-only
+        Owning active workspace, verified account, complete bilingual content and clean assets;
+        moderation restrictions survive archival.
+      x-implementation-status: implemented
       x-permissions:
-        - Owning active workspace, verified account, complete bilingual content and clean assets; moderation restrictions
-          survive archival.
+        - Owning active workspace, verified account, complete bilingual content and clean assets;
+          moderation restrictions survive archival.
       parameters:
         - name: storeId
           in: path
@@ -2398,10 +2455,12 @@ paths:
       tags:
         - Catalog
       summary: Deactivate owned Store
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: storeId
           in: path
@@ -2456,7 +2515,7 @@ paths:
         - Catalog
       summary: Browse published products
       description: Public published records only; supported filters/sort are validated server-side.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public published records only; supported filters/sort are validated server-side.
       parameters:
@@ -2521,7 +2580,6 @@ paths:
               - priceUnits:asc
               - priceUnits:desc
               - rating:desc
-              - deliveryDays:asc
             default: createdAt:desc
         - name: storeId
           in: query
@@ -2536,6 +2594,15 @@ paths:
             type: string
             maxLength: 100
             minLength: 1
+        - name: mine
+          in: query
+          required: false
+          description:
+            Owner-only management view, including drafts and inactive records. Requires a valid
+            bearer session when true.
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: Successful result
@@ -2576,12 +2643,12 @@ paths:
         - Catalog
       summary: Create owned Product
       description:
-        Owning active workspace of matching type; verified account. Price changes validated by backend;
-        order snapshots stay fixed.
-      x-implementation-status: contract-only
+        Owning active workspace of matching type; verified account. Price changes validated by
+        backend; order snapshots stay fixed.
+      x-implementation-status: implemented
       x-permissions:
-        - Owning active workspace of matching type; verified account. Price changes validated by backend; order snapshots
-          stay fixed.
+        - Owning active workspace of matching type; verified account. Price changes validated by
+          backend; order snapshots stay fixed.
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -2630,7 +2697,7 @@ paths:
         - Catalog
       summary: Published Product
       description: Public published record; inaccessible archived/hidden records return 404.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public published record; inaccessible archived/hidden records return 404.
       parameters:
@@ -2679,10 +2746,12 @@ paths:
       tags:
         - Catalog
       summary: Edit owned Product
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: productId
           in: path
@@ -2737,12 +2806,12 @@ paths:
         - Catalog
       summary: Publish validated owned Product
       description:
-        Owning active workspace, verified account, complete bilingual content and clean assets; moderation
-        restrictions survive archival.
-      x-implementation-status: contract-only
+        Owning active workspace, verified account, complete bilingual content and clean assets;
+        moderation restrictions survive archival.
+      x-implementation-status: implemented
       x-permissions:
-        - Owning active workspace, verified account, complete bilingual content and clean assets; moderation restrictions
-          survive archival.
+        - Owning active workspace, verified account, complete bilingual content and clean assets;
+          moderation restrictions survive archival.
       parameters:
         - name: productId
           in: path
@@ -2796,10 +2865,12 @@ paths:
       tags:
         - Catalog
       summary: Deactivate owned Product
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: productId
           in: path
@@ -2853,12 +2924,13 @@ paths:
       tags:
         - Catalog
       summary: Set stock with reservation checks
-      description:
-        Cannot reduce on-hand below reserved stock; atomic conditional update and audit. Authenticated
-        owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Cannot reduce on-hand below reserved stock; atomic conditional update and audit.
+        Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+        checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: productId
           in: path
@@ -2913,9 +2985,10 @@ paths:
         - Orders
       summary: createFreelanceOrder
       description:
-        Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock reservation;
-        quote valid 15 minutes. Buyer, including a business user buying; not own seller profile.
-      x-implementation-status: contract-only
+        Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock
+        reservation; quote valid 15 minutes. Buyer, including a business user buying; not own seller
+        profile.
+      x-implementation-status: implemented
       x-permissions:
         - Buyer, including a business user buying; not own seller profile.
       parameters:
@@ -2972,9 +3045,10 @@ paths:
         - Orders
       summary: createBooking
       description:
-        Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock reservation;
-        quote valid 15 minutes. Buyer, including a business user buying; not own seller profile.
-      x-implementation-status: contract-only
+        Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock
+        reservation; quote valid 15 minutes. Buyer, including a business user buying; not own seller
+        profile.
+      x-implementation-status: implemented
       x-permissions:
         - Buyer, including a business user buying; not own seller profile.
       parameters:
@@ -3031,9 +3105,10 @@ paths:
         - Orders
       summary: requestInspectionQuote
       description:
-        Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock reservation;
-        quote valid 15 minutes. Buyer, including a business user buying; not own seller profile.
-      x-implementation-status: contract-only
+        Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock
+        reservation; quote valid 15 minutes. Buyer, including a business user buying; not own seller
+        profile.
+      x-implementation-status: implemented
       x-permissions:
         - Buyer, including a business user buying; not own seller profile.
       parameters:
@@ -3090,9 +3165,10 @@ paths:
         - Orders
       summary: previewStoreCheckout
       description:
-        Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock reservation;
-        quote valid 15 minutes. Buyer, including a business user buying; not own seller profile.
-      x-implementation-status: contract-only
+        Backend computes totals and serviceability. Store preview is unfunded DRAFT, no stock
+        reservation; quote valid 15 minutes. Buyer, including a business user buying; not own seller
+        profile.
+      x-implementation-status: implemented
       x-permissions:
         - Buyer, including a business user buying; not own seller profile.
       parameters:
@@ -3149,12 +3225,13 @@ paths:
         - Payments
       summary: Atomically hold total and reserve stock
       description:
-        One seller and one currency. Full items plus agreed delivery. No amount accepted from buyer;
-        failure advances neither order nor stock. Authenticated owner/participant; backend role, active-workspace,
-        ownership and restriction checks.
-      x-implementation-status: contract-only
+        One seller and one currency. Full items plus agreed delivery. No amount accepted from
+        buyer; failure advances neither order nor stock. Authenticated owner/participant; backend
+        role, active-workspace, ownership and restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
         - $ref: '#/components/parameters/IfMatch'
@@ -3208,10 +3285,12 @@ paths:
       tags:
         - Orders
       summary: Own purchase/provider orders
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: cursor
           in: query
@@ -3292,12 +3371,12 @@ paths:
       tags:
         - Orders
       summary: Private order detail
-      description:
-        Buyer/provider or assigned handling admin; drivers use delivery projection, never service/financial
-        details.
-      x-implementation-status: contract-only
+      description: Buyer/provider or assigned handling admin; drivers use delivery projection, never
+        service/financial details.
+      x-implementation-status: implemented
       x-permissions:
-        - Buyer/provider or assigned handling admin; drivers use delivery projection, never service/financial details.
+        - Buyer/provider or assigned handling admin; drivers use delivery projection, never
+          service/financial details.
       parameters:
         - name: orderId
           in: path
@@ -3345,11 +3424,12 @@ paths:
         - Orders
       summary: Immutable order timeline
       description:
-        Buyer/provider or handling admin. Driver delivery events are exposed through delivery detail
-        only.
-      x-implementation-status: contract-only
+        Buyer/provider or handling admin. Driver delivery events are exposed through delivery
+        detail only.
+      x-implementation-status: implemented
       x-permissions:
-        - Buyer/provider or handling admin. Driver delivery events are exposed through delivery detail only.
+        - Buyer/provider or handling admin. Driver delivery events are exposed through delivery
+          detail only.
       parameters:
         - name: orderId
           in: path
@@ -3411,12 +3491,12 @@ paths:
       tags:
         - Orders
       summary: Server-computed allowed commands
-      description:
-        A hint, not authority; every command rechecks guards under lock. Authenticated owner/participant;
-        backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: A hint, not authority; every command rechecks guards under lock. Authenticated
+        owner/participant; backend role, active-workspace, ownership and restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: orderId
           in: path
@@ -3464,9 +3544,9 @@ paths:
         - Orders
       summary: agreeOrder
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer and
-        provider approve identical scope/price.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Buyer and provider approve identical scope/price.
+      x-implementation-status: implemented
       x-permissions:
         - Buyer and provider approve identical scope/price.
       parameters:
@@ -3529,9 +3609,9 @@ paths:
         - Orders
       summary: acceptBooking
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning
-        professional accepts AND confirms requested slot.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Owning professional accepts AND confirms requested slot.
+      x-implementation-status: implemented
       x-permissions:
         - Owning professional accepts AND confirms requested slot.
       parameters:
@@ -3595,9 +3675,9 @@ paths:
         - Orders
       summary: proposeSchedule
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning
-        professional proposes alternate slot; no deposit yet.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Owning professional proposes alternate slot; no deposit yet.
+      x-implementation-status: implemented
       x-permissions:
         - Owning professional proposes alternate slot; no deposit yet.
       parameters:
@@ -3660,9 +3740,9 @@ paths:
         - Orders
       summary: acceptSchedule
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer explicitly
-        accepts alternate slot before funding.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Buyer explicitly accepts alternate slot before funding.
+      x-implementation-status: implemented
       x-permissions:
         - Buyer explicitly accepts alternate slot before funding.
       parameters:
@@ -3725,9 +3805,9 @@ paths:
         - Orders
       summary: rejectOrder
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Provider
-        declines request or buyer declines proposed agreement; no hold.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Provider declines request or buyer declines proposed agreement; no hold.
+      x-implementation-status: implemented
       x-permissions:
         - Provider declines request or buyer declines proposed agreement; no hold.
       parameters:
@@ -3790,9 +3870,9 @@ paths:
         - Orders
       summary: startWork
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning
-        provider; deposit held, no case.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Owning provider; deposit held, no case.
+      x-implementation-status: implemented
       x-permissions:
         - Owning provider; deposit held, no case.
       parameters:
@@ -3861,9 +3941,9 @@ paths:
         - Orders
       summary: recordProgress
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning
-        provider; progress/milestones are nonfinancial.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Owning provider; progress/milestones are nonfinancial.
+      x-implementation-status: implemented
       x-permissions:
         - Owning provider; progress/milestones are nonfinancial.
       parameters:
@@ -3932,9 +4012,9 @@ paths:
         - Orders
       summary: markReady
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning
-        provider; documented readiness starts 72h balance timer; reminders at 24/48h.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Owning provider; documented readiness starts 72h balance timer; reminders at 24/48h.
+      x-implementation-status: implemented
       x-permissions:
         - Owning provider; documented readiness starts 72h balance timer; reminders at 24/48h.
       parameters:
@@ -4001,9 +4081,9 @@ paths:
         - Orders
       summary: deliverService
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning
-        provider; both holds before final files/on-site handover.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Owning provider; both holds before final files/on-site handover.
+      x-implementation-status: implemented
       x-permissions:
         - Owning provider; both holds before final files/on-site handover.
       parameters:
@@ -4071,9 +4151,9 @@ paths:
         - Orders
       summary: confirmReceipt
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer;
-        fully held and no case/revision, physical proof or explicit confirmation.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Buyer; fully held and no case/revision, physical proof or explicit confirmation.
+      x-implementation-status: implemented
       x-permissions:
         - Buyer; fully held and no case/revision, physical proof or explicit confirmation.
       parameters:
@@ -4138,9 +4218,9 @@ paths:
         - Orders
       summary: cancelOrder
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer/provider;
-        full refund before work/store acceptance, otherwise freeze/propose/admin.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Buyer/provider; full refund before work/store acceptance, otherwise freeze/propose/admin.
+      x-implementation-status: implemented
       x-permissions:
         - Buyer/provider; full refund before work/store acceptance, otherwise freeze/propose/admin.
       parameters:
@@ -4186,6 +4266,7 @@ paths:
         '503':
           $ref: '#/components/responses/Error503'
       x-transition-ids:
+        - TR-080
         - TR-044
         - TR-056
         - TR-058
@@ -4210,11 +4291,12 @@ paths:
         - Orders
       summary: requestExtension
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Participant;
-        missed agreed deadline offers extension/cancel; contested refund freezes/admin.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Participant; missed agreed deadline offers extension/cancel; contested refund freezes/admin.
+      x-implementation-status: implemented
       x-permissions:
-        - Participant; missed agreed deadline offers extension/cancel; contested refund freezes/admin.
+        - Participant; missed agreed deadline offers extension/cancel; contested refund
+          freezes/admin.
       parameters:
         - name: orderId
           in: path
@@ -4275,9 +4357,9 @@ paths:
         - Orders
       summary: acceptExtension
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Other participant
-        explicitly agrees new deadline.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Other participant explicitly agrees new deadline.
+      x-implementation-status: implemented
       x-permissions:
         - Other participant explicitly agrees new deadline.
       parameters:
@@ -4340,9 +4422,9 @@ paths:
         - Orders
       summary: acceptStoreOrder
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning
-        store seller within 24h of hold.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Owning store seller within 24h of hold.
+      x-implementation-status: implemented
       x-permissions:
         - Owning store seller within 24h of hold.
       parameters:
@@ -4404,9 +4486,9 @@ paths:
         - Orders
       summary: markStoreReady
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning
-        store seller; preparation complete.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Owning store seller; preparation complete.
+      x-implementation-status: implemented
       x-permissions:
         - Owning store seller; preparation complete.
       parameters:
@@ -4471,9 +4553,9 @@ paths:
         - Orders
       summary: requestPlatformDriver
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Owning
-        seller; request can be recorded at checkout, offered only when ready.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Owning seller; request can be recorded at checkout, offered only when ready.
+      x-implementation-status: implemented
       x-permissions:
         - Owning seller; request can be recorded at checkout, offered only when ready.
       parameters:
@@ -4539,7 +4621,7 @@ paths:
         - Orders
       summary: Add non-billing progress milestone
       description: Owning freelancer; milestones never fund or release money.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Owning freelancer; milestones never fund or release money.
       parameters:
@@ -4595,10 +4677,12 @@ paths:
       tags:
         - Orders
       summary: Order progress milestones
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: orderId
           in: path
@@ -4661,9 +4745,10 @@ paths:
         - Orders
       summary: Authorized readiness and final submission files
       description: Buyer/provider or handling admin; final files omitted/gated until both holds, drivers denied.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
-        - Buyer/provider or handling admin; final files omitted/gated until both holds, drivers denied.
+        - Buyer/provider or handling admin; final files omitted/gated until both holds, drivers
+          denied.
       parameters:
         - name: orderId
           in: path
@@ -4725,10 +4810,12 @@ paths:
       tags:
         - Quotes
       summary: Versioned itemized quotes
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: orderId
           in: path
@@ -4790,7 +4877,7 @@ paths:
         - Quotes
       summary: Send itemized quote
       description: Owning professional; server sums line items, fixes currency and sets 72h response deadline.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Owning professional; server sums line items, fixes currency and sets 72h response deadline.
       parameters:
@@ -4852,12 +4939,12 @@ paths:
       tags:
         - Quotes
       summary: Agree free inspection schedule
-      description:
-        Both parties must accept same inspection version; no inspection charge; explicit revised response
-        deadline.
-      x-implementation-status: contract-only
+      description: Both parties must accept same inspection version; no inspection charge; explicit
+        revised response deadline.
+      x-implementation-status: implemented
       x-permissions:
-        - Both parties must accept same inspection version; no inspection charge; explicit revised response deadline.
+        - Both parties must accept same inspection version; no inspection charge; explicit revised
+          response deadline.
       parameters:
         - name: orderId
           in: path
@@ -4919,9 +5006,9 @@ paths:
         - Quotes
       summary: approve itemized quote
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer of
-        quote order; exact version, fixed total and schedule; rejection free.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Buyer of quote order; exact version, fixed total and schedule; rejection free.
+      x-implementation-status: implemented
       x-permissions:
         - Buyer of quote order; exact version, fixed total and schedule; rejection free.
       parameters:
@@ -4989,9 +5076,9 @@ paths:
         - Quotes
       summary: reject itemized quote
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Buyer of
-        quote order; exact version, fixed total and schedule; rejection free.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Buyer of quote order; exact version, fixed total and schedule; rejection free.
+      x-implementation-status: implemented
       x-permissions:
         - Buyer of quote order; exact version, fixed total and schedule; rejection free.
       parameters:
@@ -5059,7 +5146,7 @@ paths:
         - Payments
       summary: Own SYP and USD wallets
       description: Own wallet only; business users retain purchasing capabilities.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Own wallet only; business users retain purchasing capabilities.
       parameters:
@@ -5117,10 +5204,12 @@ paths:
       tags:
         - Payments
       summary: Own immutable transaction history
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: currency
           in: path
@@ -5181,10 +5270,12 @@ paths:
       tags:
         - Payments
       summary: Order payment references
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: orderId
           in: path
@@ -5246,10 +5337,12 @@ paths:
       tags:
         - Payments
       summary: Recorded conserved allocation
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: orderId
           in: path
@@ -5296,10 +5389,12 @@ paths:
       tags:
         - Payments
       summary: Resolve unknown outcome after timeout
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: operationId
           in: path
@@ -5347,13 +5442,14 @@ paths:
         - Payments
       summary: Hold deposit in simulated escrow
       description:
-        Deposit is rounded one-third; balance is subtraction. Deposit deadline 48h. Balance needs readiness
-        and 72h window; overdue creates one admin case and never forfeits deposit. Order buyer only; no client amount/rate/state
-        accepted. Repeating a successful installment never adds another hold.
-      x-implementation-status: contract-only
+        Deposit is rounded one-third; balance is subtraction. Deposit deadline 48h. Balance
+        needs readiness and 72h window; overdue creates one admin case and never forfeits deposit.
+        Order buyer only; no client amount/rate/state accepted. Repeating a successful installment
+        never adds another hold.
+      x-implementation-status: implemented
       x-permissions:
-        - Order buyer only; no client amount/rate/state accepted. Repeating a successful installment never adds another
-          hold.
+        - Order buyer only; no client amount/rate/state accepted. Repeating a successful installment
+          never adds another hold.
       parameters:
         - name: orderId
           in: path
@@ -5415,13 +5511,14 @@ paths:
         - Payments
       summary: Hold balance in simulated escrow
       description:
-        Deposit is rounded one-third; balance is subtraction. Deposit deadline 48h. Balance needs readiness
-        and 72h window; overdue creates one admin case and never forfeits deposit. Order buyer only; no client amount/rate/state
-        accepted. Repeating a successful installment never adds another hold.
-      x-implementation-status: contract-only
+        Deposit is rounded one-third; balance is subtraction. Deposit deadline 48h. Balance
+        needs readiness and 72h window; overdue creates one admin case and never forfeits deposit.
+        Order buyer only; no client amount/rate/state accepted. Repeating a successful installment
+        never adds another hold.
+      x-implementation-status: implemented
       x-permissions:
-        - Order buyer only; no client amount/rate/state accepted. Repeating a successful installment never adds another
-          hold.
+        - Order buyer only; no client amount/rate/state accepted. Repeating a successful installment
+          never adds another hold.
       parameters:
         - name: orderId
           in: path
@@ -5482,10 +5579,12 @@ paths:
       tags:
         - Delivery
       summary: Preview serviceability, methods and fees
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: storeId
           in: query
@@ -5544,7 +5643,7 @@ paths:
         - Delivery
       summary: Eligible redacted ready jobs
       description: Active driver in assigned city/governorate; no exact address/contact until assignment.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Active driver in assigned city/governorate; no exact address/contact until assignment.
       parameters:
@@ -5603,7 +5702,7 @@ paths:
         - Delivery
       summary: Own assignments
       description: Active or historical assigned driver; completed history redacted.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Active or historical assigned driver; completed history redacted.
       parameters:
@@ -5662,12 +5761,12 @@ paths:
         - Delivery
       summary: Authorized delivery projection
       description:
-        Order buyer/seller/current driver/handling admin; contact/address only for fulfillment; no service
-        files or private evidence.
-      x-implementation-status: contract-only
+        Order buyer/seller/current driver/handling admin; contact/address only for fulfillment;
+        no service files or private evidence.
+      x-implementation-status: implemented
       x-permissions:
-        - Order buyer/seller/current driver/handling admin; contact/address only for fulfillment; no service files
-          or private evidence.
+        - Order buyer/seller/current driver/handling admin; contact/address only for fulfillment; no
+          service files or private evidence.
       parameters:
         - name: deliveryId
           in: path
@@ -5715,9 +5814,9 @@ paths:
         - Delivery
       summary: acceptDeliveryJob
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Eligible
-        active driver; one assignment wins atomically.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Eligible active driver; one assignment wins atomically.
+      x-implementation-status: implemented
       x-permissions:
         - Eligible active driver; one assignment wins atomically.
       parameters:
@@ -5778,9 +5877,9 @@ paths:
         - Delivery
       summary: releaseDriverAssignment
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Current
-        driver or seller before pickup; revoke previous grants.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Current driver or seller before pickup; revoke previous grants.
+      x-implementation-status: implemented
       x-permissions:
         - Current driver or seller before pickup; revoke previous grants.
       parameters:
@@ -5846,9 +5945,9 @@ paths:
         - Delivery
       summary: recordPickup
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Assigned
-        driver or seller for seller delivery; immutable pickup history.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Assigned driver or seller for seller delivery; immutable pickup history.
+      x-implementation-status: implemented
       x-permissions:
         - Assigned driver or seller for seller delivery; immutable pickup history.
       parameters:
@@ -5911,11 +6010,13 @@ paths:
         - Delivery
       summary: recordDropoff
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Assigned
-        driver or seller; proof status explicit; without proof buyer confirmation/admin required.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Assigned driver or seller; proof status explicit; without proof buyer confirmation/admin
+        required.
+      x-implementation-status: implemented
       x-permissions:
-        - Assigned driver or seller; proof status explicit; without proof buyer confirmation/admin required.
+        - Assigned driver or seller; proof status explicit; without proof buyer confirmation/admin
+          required.
       parameters:
         - name: deliveryId
           in: path
@@ -5981,9 +6082,9 @@ paths:
         - Delivery
       summary: reportDeliveryException
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Order participant/current
-        driver; funds held; no automatic payout or forfeiture.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Order participant/current driver; funds held; no automatic payout or forfeiture.
+      x-implementation-status: implemented
       x-permissions:
         - Order participant/current driver; funds held; no automatic payout or forfeiture.
       parameters:
@@ -6045,9 +6146,9 @@ paths:
         - Delivery
       summary: chooseDeliveryFallback
       description:
-        If-Match is the parent order version; quote/delivery versions are separate snapshots. Seller
-        proposes; buyer approves changed terms; full refund if fulfillment unavailable.
-      x-implementation-status: contract-only
+        If-Match is the parent order version; quote/delivery versions are separate snapshots.
+        Seller proposes; buyer approves changed terms; full refund if fulfillment unavailable.
+      x-implementation-status: implemented
       x-permissions:
         - Seller proposes; buyer approves changed terms; full refund if fulfillment unavailable.
       parameters:
@@ -6110,11 +6211,13 @@ paths:
         - Delivery
       summary: Propose changed delivery terms
       description:
-        Backend computes revised fee; no silent debit. Buyer approval required before applying price/method/promised-term
-        changes. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+        Backend computes revised fee; no silent debit. Buyer approval required before applying
+        price/method/promised-term changes. Authenticated owner/participant; backend role,
+        active-workspace, ownership and restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: deliveryId
           in: path
@@ -6170,7 +6273,7 @@ paths:
         - Delivery
       summary: Buyer approves exact revised terms
       description: Buyer only; explicit delta hold/refund, original terms retained if funding fails.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Buyer only; explicit delta hold/refund, original terms retained if funding fails.
       parameters:
@@ -6238,11 +6341,12 @@ paths:
         - Chat
       summary: Authorized order/delivery threads
       description:
-        Buyer/provider shared thread; assigned driver delivery thread only; handling admin audited case
-        scope.
-      x-implementation-status: contract-only
+        Buyer/provider shared thread; assigned driver delivery thread only; handling admin
+        audited case scope.
+      x-implementation-status: implemented
       x-permissions:
-        - Buyer/provider shared thread; assigned driver delivery thread only; handling admin audited case scope.
+        - Buyer/provider shared thread; assigned driver delivery thread only; handling admin audited
+          case scope.
       parameters:
         - name: orderId
           in: path
@@ -6305,7 +6409,7 @@ paths:
         - Chat
       summary: Immutable room messages
       description: Room membership rechecked per request; driver cannot read shared service thread.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Room membership rechecked per request; driver cannot read shared service thread.
       parameters:
@@ -6374,10 +6478,12 @@ paths:
       tags:
         - Chat
       summary: Append message with deduplication
-      description: Authorized room member; immutable text/files, at least text or attachment; dedupe sender/room/clientMessageId.
-      x-implementation-status: contract-only
+      description: Authorized room member; immutable text/files, at least text or attachment; dedupe
+        sender/room/clientMessageId.
+      x-implementation-status: implemented
       x-permissions:
-        - Authorized room member; immutable text/files, at least text or attachment; dedupe sender/room/clientMessageId.
+        - Authorized room member; immutable text/files, at least text or attachment; dedupe
+          sender/room/clientMessageId.
       parameters:
         - name: orderId
           in: path
@@ -6431,10 +6537,12 @@ paths:
       tags:
         - Files
       summary: Quarantine an authorized file
-      description: Authenticated owner with target order/case/workspace authorization; driver delivery-only scope.
-      x-implementation-status: contract-only
+      description: Authenticated owner with target order/case/workspace authorization; driver
+        delivery-only scope.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner with target order/case/workspace authorization; driver delivery-only scope.
+        - Authenticated owner with target order/case/workspace authorization; driver delivery-only
+          scope.
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -6482,10 +6590,12 @@ paths:
       tags:
         - Files
       summary: Own/authorized scan status
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: fileId
           in: path
@@ -6533,12 +6643,13 @@ paths:
         - Files
       summary: Authorized private file stream
       description:
-        Backend reauthorizes each request. FINAL_DELIVERABLE requires full service funding. Driver limited
-        to current delivery attachments; handling admin case-scoped.
-      x-implementation-status: contract-only
+        Backend reauthorizes each request. FINAL_DELIVERABLE requires full service funding.
+        Driver limited to current delivery attachments; handling admin case-scoped.
+      x-implementation-status: implemented
       x-permissions:
-        - Backend reauthorizes each request. FINAL_DELIVERABLE requires full service funding. Driver limited to current
-          delivery attachments; handling admin case-scoped.
+        - Clean public catalog objects referenced by a published resource may be downloaded
+          anonymously; every private object requires current authenticated ownership/participation
+          and funding/assignment/case checks.
       parameters:
         - name: fileId
           in: path
@@ -6580,16 +6691,21 @@ paths:
           $ref: '#/components/responses/Error429'
         '503':
           $ref: '#/components/responses/Error503'
+      security:
+        - {}
+        - bearerAuth: []
   /api/v1/orders/{orderId}/cases:
     get:
       operationId: listOrderCases
       tags:
         - Disputes
       summary: Own order cases
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: orderId
           in: path
@@ -6651,12 +6767,12 @@ paths:
         - Disputes
       summary: Freeze unsettled held funds or create support case
       description:
-        Buyer/provider after hold and before settlement; terminal orders allow support only. Existing
-        case reused; both get 72h evidence.
-      x-implementation-status: contract-only
+        Buyer/provider after hold and before settlement; terminal orders allow support only.
+        Existing case reused; both get 72h evidence.
+      x-implementation-status: implemented
       x-permissions:
-        - Buyer/provider after hold and before settlement; terminal orders allow support only. Existing case reused;
-          both get 72h evidence.
+        - Buyer/provider after hold and before settlement; terminal orders allow support only.
+          Existing case reused; both get 72h evidence.
       parameters:
         - name: orderId
           in: path
@@ -6719,12 +6835,12 @@ paths:
         - Disputes
       summary: Authorized case and evidence
       description:
-        Buyer/provider or assigned handling admin; private evidence visibility filtered; driver explicitly
-        scoped evidence contribution only.
-      x-implementation-status: contract-only
+        Buyer/provider or assigned handling admin; private evidence visibility filtered; driver
+        explicitly scoped evidence contribution only.
+      x-implementation-status: implemented
       x-permissions:
-        - Buyer/provider or assigned handling admin; private evidence visibility filtered; driver explicitly scoped
-          evidence contribution only.
+        - Buyer/provider or assigned handling admin; private evidence visibility filtered; driver
+          explicitly scoped evidence contribution only.
       parameters:
         - name: caseId
           in: path
@@ -6772,12 +6888,12 @@ paths:
         - Disputes
       summary: Append immutable evidence
       description:
-        Case party during own 72h window; late evidence needs handling-admin reason; files authorized.
-        No deadline-based automatic award.
-      x-implementation-status: contract-only
+        Case party during own 72h window; late evidence needs handling-admin reason; files
+        authorized. No deadline-based automatic award.
+      x-implementation-status: implemented
       x-permissions:
-        - Case party during own 72h window; late evidence needs handling-admin reason; files authorized. No deadline-based
-          automatic award.
+        - Case party during own 72h window; late evidence needs handling-admin reason; files
+          authorized. No deadline-based automatic award.
       parameters:
         - name: caseId
           in: path
@@ -6830,13 +6946,12 @@ paths:
       tags:
         - Disputes
       summary: Authorized paginated case evidence
-      description:
-        Case parties see shared and own submissions; private-admin evidence only handling admin. Drivers
-        see only explicitly granted delivery evidence.
-      x-implementation-status: contract-only
+      description: Case parties see shared and own submissions; private-admin evidence only handling
+        admin. Drivers see only explicitly granted delivery evidence.
+      x-implementation-status: implemented
       x-permissions:
-        - Case parties see shared and own submissions; private-admin evidence only handling admin. Drivers see only
-          explicitly granted delivery evidence.
+        - Case parties see shared and own submissions; private-admin evidence only handling admin.
+          Drivers see only explicitly granted delivery evidence.
       parameters:
         - name: caseId
           in: path
@@ -6898,10 +7013,12 @@ paths:
       tags:
         - Disputes
       summary: Documented proposal history
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: caseId
           in: path
@@ -6963,7 +7080,7 @@ paths:
         - Disputes
       summary: Document cancellation split/revision
       description: Buyer/provider; proposal alone never moves money; source case keeps funds frozen.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Buyer/provider; proposal alone never moves money; source case keeps funds frozen.
       parameters:
@@ -7031,13 +7148,12 @@ paths:
       tags:
         - Disputes
       summary: accept proposal
-      description:
-        Participating buyer/provider, exact proposal version; both approvals needed. Rejected/72h unanswered
-        cancellation split -> admin.
-      x-implementation-status: contract-only
+      description: Participating buyer/provider, exact proposal version; both approvals needed.
+        Rejected/72h unanswered cancellation split -> admin.
+      x-implementation-status: implemented
       x-permissions:
-        - Participating buyer/provider, exact proposal version; both approvals needed. Rejected/72h unanswered cancellation
-          split -> admin.
+        - Participating buyer/provider, exact proposal version; both approvals needed. Rejected/72h
+          unanswered cancellation split -> admin.
       parameters:
         - name: caseId
           in: path
@@ -7087,6 +7203,7 @@ paths:
         '503':
           $ref: '#/components/responses/Error503'
       x-transition-ids:
+        - TR-078
         - TR-060
         - TR-061
         - TR-062
@@ -7105,13 +7222,12 @@ paths:
       tags:
         - Disputes
       summary: reject proposal
-      description:
-        Participating buyer/provider, exact proposal version; both approvals needed. Rejected/72h unanswered
-        cancellation split -> admin.
-      x-implementation-status: contract-only
+      description: Participating buyer/provider, exact proposal version; both approvals needed.
+        Rejected/72h unanswered cancellation split -> admin.
+      x-implementation-status: implemented
       x-permissions:
-        - Participating buyer/provider, exact proposal version; both approvals needed. Rejected/72h unanswered cancellation
-          split -> admin.
+        - Participating buyer/provider, exact proposal version; both approvals needed. Rejected/72h
+          unanswered cancellation split -> admin.
       parameters:
         - name: caseId
           in: path
@@ -7180,12 +7296,12 @@ paths:
         - Disputes
       summary: Mutually accept recorded revision plan
       description:
-        Both buyer/provider approve same recorded plan; no new charge if already fully funded; fresh
-        72h review after resubmission.
-      x-implementation-status: contract-only
+        Both buyer/provider approve same recorded plan; no new charge if already fully funded;
+        fresh 72h review after resubmission.
+      x-implementation-status: implemented
       x-permissions:
-        - Both buyer/provider approve same recorded plan; no new charge if already fully funded; fresh 72h review
-          after resubmission.
+        - Both buyer/provider approve same recorded plan; no new charge if already fully funded;
+          fresh 72h review after resubmission.
       parameters:
         - name: caseId
           in: path
@@ -7229,6 +7345,7 @@ paths:
         '503':
           $ref: '#/components/responses/Error503'
       x-transition-ids:
+        - TR-078
         - TR-070
         - TR-071
         - TR-072
@@ -7245,7 +7362,7 @@ paths:
         - Reviews
       summary: Published verified reviews
       description: Public visible reviews only.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Public visible reviews only.
       parameters:
@@ -7320,7 +7437,7 @@ paths:
         - Reviews
       summary: Create one verified review
       description: Order buyer, COMPLETED order, not self-review; one per order.
-      x-implementation-status: contract-only
+      x-implementation-status: implemented
       x-permissions:
         - Order buyer, COMPLETED order, not self-review; one per order.
       parameters:
@@ -7376,10 +7493,13 @@ paths:
       tags:
         - Reviews
       summary: Edit own review once within seven days
-      description: Original buyer, one edit, immutable prior version; admin may hide but never rewrite rating/text.
-      x-implementation-status: contract-only
+      description:
+        Original buyer, one edit, immutable prior version; admin may hide but never rewrite
+        rating/text.
+      x-implementation-status: implemented
       x-permissions:
-        - Original buyer, one edit, immutable prior version; admin may hide but never rewrite rating/text.
+        - Original buyer, one edit, immutable prior version; admin may hide but never rewrite
+          rating/text.
       parameters:
         - name: reviewId
           in: path
@@ -7433,10 +7553,12 @@ paths:
       tags:
         - Notifications
       summary: Own persistent notices
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: cursor
           in: query
@@ -7497,10 +7619,12 @@ paths:
       tags:
         - Notifications
       summary: Mark own notice read
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: notificationId
           in: path
@@ -7547,10 +7671,12 @@ paths:
       tags:
         - Notifications
       summary: Mark own notices read
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters: []
       responses:
         '200':
@@ -7591,10 +7717,12 @@ paths:
       tags:
         - Notifications
       summary: Register own Expo device token
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters: []
       responses:
         '201':
@@ -7641,10 +7769,12 @@ paths:
       tags:
         - Notifications
       summary: Revoke own device token
-      description: Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters:
         - name: deviceId
           in: path
@@ -7687,12 +7817,13 @@ paths:
       tags:
         - Notifications
       summary: Single-use browser socket ticket
-      description:
-        Short-lived JWT-derived capability, 60s, current session/room membership still rechecked. Authenticated
-        owner/participant; backend role, active-workspace, ownership and restriction checks.
-      x-implementation-status: contract-only
+      description: Short-lived JWT-derived capability, 60s, current session/room membership still
+        rechecked. Authenticated owner/participant; backend role, active-workspace, ownership and
+        restriction checks.
+      x-implementation-status: implemented
       x-permissions:
-        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
+        - Authenticated owner/participant; backend role, active-workspace, ownership and restriction
+          checks.
       parameters: []
       responses:
         '200':
@@ -7727,6 +7858,12 @@ paths:
           $ref: '#/components/responses/Error429'
         '503':
           $ref: '#/components/responses/Error503'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RealtimeTicketInput'
   /api/v1/admin/audit:
     get:
       operationId: listAuditHistory
@@ -7734,12 +7871,12 @@ paths:
         - Admin
       summary: listAuditHistory
       description:
-        Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence
-        additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Active authorized ADMIN; same complete actions available to web and mobile. Private
+        case evidence additionally requires handling assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - name: cursor
           in: query
@@ -7796,12 +7933,12 @@ paths:
         - Admin
       summary: listModerationQueue
       description:
-        Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence
-        additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Active authorized ADMIN; same complete actions available to web and mobile. Private
+        case evidence additionally requires handling assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - name: cursor
           in: query
@@ -7858,12 +7995,12 @@ paths:
         - Admin
       summary: listAdminCases
       description:
-        Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence
-        additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Active authorized ADMIN; same complete actions available to web and mobile. Private
+        case evidence additionally requires handling assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - name: cursor
           in: query
@@ -7920,12 +8057,12 @@ paths:
         - Admin
       summary: listCommissionRates
       description:
-        Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence
-        additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Active authorized ADMIN; same complete actions available to web and mobile. Private
+        case evidence additionally requires handling assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - name: cursor
           in: query
@@ -7981,14 +8118,15 @@ paths:
         - Admin
       summary: configureCommission
       description:
-        Case resolution conserves held units, computes commission/refund on backend and never charges
-        unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never
-        rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions
-        available to web and mobile. Private case evidence additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Case resolution conserves held units, computes commission/refund on backend and never
+        charges unfunded balance. Global starts at 0%; configured workspace zero overrides global.
+        Commission changes never rewrite snapshots. Topups are fictional simulator credits only.
+        Active authorized ADMIN; same complete actions available to web and mobile. Private case
+        evidence additionally requires handling assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -8037,12 +8175,12 @@ paths:
         - Admin
       summary: listDeliveryRates
       description:
-        Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence
-        additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Active authorized ADMIN; same complete actions available to web and mobile. Private
+        case evidence additionally requires handling assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - name: cursor
           in: query
@@ -8098,14 +8236,15 @@ paths:
         - Admin
       summary: configureDeliveryRate
       description:
-        Case resolution conserves held units, computes commission/refund on backend and never charges
-        unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never
-        rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions
-        available to web and mobile. Private case evidence additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Case resolution conserves held units, computes commission/refund on backend and never
+        charges unfunded balance. Global starts at 0%; configured workspace zero overrides global.
+        Commission changes never rewrite snapshots. Topups are fictional simulator credits only.
+        Active authorized ADMIN; same complete actions available to web and mobile. Private case
+        evidence additionally requires handling assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -8154,12 +8293,12 @@ paths:
         - Admin
       summary: listDriverZones
       description:
-        Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence
-        additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Active authorized ADMIN; same complete actions available to web and mobile. Private
+        case evidence additionally requires handling assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - name: cursor
           in: query
@@ -8215,14 +8354,15 @@ paths:
         - Admin
       summary: assignDriverZone
       description:
-        Case resolution conserves held units, computes commission/refund on backend and never charges
-        unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never
-        rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions
-        available to web and mobile. Private case evidence additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Case resolution conserves held units, computes commission/refund on backend and never
+        charges unfunded balance. Global starts at 0%; configured workspace zero overrides global.
+        Commission changes never rewrite snapshots. Topups are fictional simulator credits only.
+        Active authorized ADMIN; same complete actions available to web and mobile. Private case
+        evidence additionally requires handling assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -8271,14 +8411,15 @@ paths:
         - Admin
       summary: moderateResource
       description:
-        Case resolution conserves held units, computes commission/refund on backend and never charges
-        unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never
-        rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions
-        available to web and mobile. Private case evidence additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Case resolution conserves held units, computes commission/refund on backend and never
+        charges unfunded balance. Global starts at 0%; configured workspace zero overrides global.
+        Commission changes never rewrite snapshots. Topups are fictional simulator credits only.
+        Active authorized ADMIN; same complete actions available to web and mobile. Private case
+        evidence additionally requires handling assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - name: resourceId
           in: path
@@ -8333,14 +8474,15 @@ paths:
         - Admin
       summary: restrictAccount
       description:
-        Case resolution conserves held units, computes commission/refund on backend and never charges
-        unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never
-        rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions
-        available to web and mobile. Private case evidence additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Case resolution conserves held units, computes commission/refund on backend and never
+        charges unfunded balance. Global starts at 0%; configured workspace zero overrides global.
+        Commission changes never rewrite snapshots. Topups are fictional simulator credits only.
+        Active authorized ADMIN; same complete actions available to web and mobile. Private case
+        evidence additionally requires handling assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - name: userId
           in: path
@@ -8395,14 +8537,15 @@ paths:
         - Admin
       summary: assignAdminCase
       description:
-        Case resolution conserves held units, computes commission/refund on backend and never charges
-        unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never
-        rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions
-        available to web and mobile. Private case evidence additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Case resolution conserves held units, computes commission/refund on backend and never
+        charges unfunded balance. Global starts at 0%; configured workspace zero overrides global.
+        Commission changes never rewrite snapshots. Topups are fictional simulator credits only.
+        Active authorized ADMIN; same complete actions available to web and mobile. Private case
+        evidence additionally requires handling assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - name: caseId
           in: path
@@ -8457,14 +8600,15 @@ paths:
         - Admin
       summary: resolveAdminCase
       description:
-        Case resolution conserves held units, computes commission/refund on backend and never charges
-        unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never
-        rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions
-        available to web and mobile. Private case evidence additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Case resolution conserves held units, computes commission/refund on backend and never
+        charges unfunded balance. Global starts at 0%; configured workspace zero overrides global.
+        Commission changes never rewrite snapshots. Topups are fictional simulator credits only.
+        Active authorized ADMIN; same complete actions available to web and mobile. Private case
+        evidence additionally requires handling assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - name: caseId
           in: path
@@ -8525,14 +8669,17 @@ paths:
         - Admin
       summary: reassignDelivery
       description:
-        Case resolution conserves held units, computes commission/refund on backend and never charges
-        unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never
-        rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions
-        available to web and mobile. Private case evidence additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Case resolution conserves held units, computes commission/refund on backend and never
+        charges unfunded balance. Global starts at 0%; configured workspace zero overrides global.
+        Commission changes never rewrite snapshots. Topups are fictional simulator credits only.
+        Active authorized ADMIN; same complete actions available to web and mobile. Private case
+        evidence additionally requires handling assignment.
+      x-implementation-status: implemented
+      x-transition-ids:
+        - TR-079
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - name: deliveryId
           in: path
@@ -8588,14 +8735,15 @@ paths:
         - Admin
       summary: moderateReview
       description:
-        Case resolution conserves held units, computes commission/refund on backend and never charges
-        unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never
-        rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions
-        available to web and mobile. Private case evidence additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Case resolution conserves held units, computes commission/refund on backend and never
+        charges unfunded balance. Global starts at 0%; configured workspace zero overrides global.
+        Commission changes never rewrite snapshots. Topups are fictional simulator credits only.
+        Active authorized ADMIN; same complete actions available to web and mobile. Private case
+        evidence additionally requires handling assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - name: reviewId
           in: path
@@ -8650,14 +8798,15 @@ paths:
         - Admin
       summary: simulateWalletTopUp
       description:
-        Case resolution conserves held units, computes commission/refund on backend and never charges
-        unfunded balance. Global starts at 0%; configured workspace zero overrides global. Commission changes never
-        rewrite snapshots. Topups are fictional simulator credits only. Active authorized ADMIN; same complete actions
-        available to web and mobile. Private case evidence additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Case resolution conserves held units, computes commission/refund on backend and never
+        charges unfunded balance. Global starts at 0%; configured workspace zero overrides global.
+        Commission changes never rewrite snapshots. Topups are fictional simulator credits only.
+        Active authorized ADMIN; same complete actions available to web and mobile. Private case
+        evidence additionally requires handling assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
       responses:
@@ -8706,12 +8855,12 @@ paths:
         - Admin
       summary: Revoke restriction with audit reason
       description:
-        Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence
-        additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Active authorized ADMIN; same complete actions available to web and mobile. Private
+        case evidence additionally requires handling assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - name: restrictionId
           in: path
@@ -8766,12 +8915,12 @@ paths:
         - Admin
       summary: Remove driver zone with commitment checks
       description:
-        Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence
-        additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Active authorized ADMIN; same complete actions available to web and mobile. Private
+        case evidence additionally requires handling assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - name: zoneId
           in: path
@@ -8816,13 +8965,14 @@ paths:
         - Admin
       summary: Authorize documented overdue resumption
       description:
-        Must record participant agreement/new deadline and resolve case without allocation. No deposit
-        forfeiture or automatic balance charge. Active authorized ADMIN; same complete actions available to web
-        and mobile. Private case evidence additionally requires handling assignment.
-      x-implementation-status: contract-only
+        Must record participant agreement/new deadline and resolve case without allocation. No
+        deposit forfeiture or automatic balance charge. Active authorized ADMIN; same complete
+        actions available to web and mobile. Private case evidence additionally requires handling
+        assignment.
+      x-implementation-status: implemented
       x-permissions:
-        - Active authorized ADMIN; same complete actions available to web and mobile. Private case evidence additionally
-          requires handling assignment.
+        - Active authorized ADMIN; same complete actions available to web and mobile. Private case
+          evidence additionally requires handling assignment.
       parameters:
         - name: caseId
           in: path
@@ -8882,8 +9032,8 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description:
-        15-minute access JWT; rotating 30-day refresh session. Current DB role, restriction and participation
-        checks always required.
+        15-minute access JWT; rotating 30-day refresh session. Current DB role, restriction and
+        participation checks always required.
   parameters:
     IdempotencyKey:
       name: Idempotency-Key
@@ -8894,8 +9044,9 @@ components:
         minLength: 1
         maxLength: 128
       description:
-        Actor/route/key scoped, request-hash bound. Reuse same key on timeout; different body -> 409.
-        Permanent installment/settlement operation keys prevent duplicates across different client keys.
+        Actor/route/key scoped, request-hash bound. Reuse same key on timeout; different body
+        -> 409. Permanent installment/settlement operation keys prevent duplicates across different
+        client keys.
     IfMatch:
       name: If-Match
       in: header
@@ -8905,14 +9056,12 @@ components:
         pattern: ^"[1-9][0-9]*"$
         examples:
           - '"1"'
-      description:
-        Quoted current parent order.version. Rechecked under lock; stale version -> VERSION_CONFLICT.
-        Idempotency replay may return original result despite stale version.
+      description: Quoted current parent order.version. Rechecked under lock; stale version ->
+        VERSION_CONFLICT. Idempotency replay may return original result despite stale version.
   responses:
     Error400:
-      description:
-        INVALID_INPUT INVALID_CURSOR MIXED_CURRENCY INVALID_INSTALLMENT_TOTAL INVALID_IDEMPOTENCY_KEY
-        AGREEMENT_REQUIRED INVALID_ALLOCATION REASON_REQUIRED
+      description: INVALID_INPUT INVALID_CURSOR MIXED_CURRENCY INVALID_INSTALLMENT_TOTAL
+        INVALID_IDEMPOTENCY_KEY AGREEMENT_REQUIRED INVALID_ALLOCATION REASON_REQUIRED
       headers:
         X-Request-Id:
           schema:
@@ -8960,10 +9109,10 @@ components:
           schema:
             $ref: '#/components/schemas/ApiError'
     Error409:
-      description:
-        INVALID_TRANSITION VERSION_CONFLICT STOCK_UNAVAILABLE DRIVER_ALREADY_ASSIGNED WORKSPACE_SWITCH_BLOCKED
-        DEADLINE_EXPIRED IDEMPOTENCY_CONFLICT REQUEST_IN_PROGRESS ALREADY_SETTLED FUNDS_FROZEN BOOKING_NOT_CONFIRMED
-        QUOTE_NOT_APPROVED DEPOSIT_REQUIRED HOLD_REQUIRED REVIEW_WINDOW_OPEN EVIDENCE_WINDOW_OPEN DELIVERY_PROOF_REQUIRED
+      description: INVALID_TRANSITION VERSION_CONFLICT STOCK_UNAVAILABLE DRIVER_ALREADY_ASSIGNED
+        WORKSPACE_SWITCH_BLOCKED DEADLINE_EXPIRED IDEMPOTENCY_CONFLICT REQUEST_IN_PROGRESS
+        ALREADY_SETTLED FUNDS_FROZEN BOOKING_NOT_CONFIRMED QUOTE_NOT_APPROVED DEPOSIT_REQUIRED
+        HOLD_REQUIRED REVIEW_WINDOW_OPEN EVIDENCE_WINDOW_OPEN DELIVERY_PROOF_REQUIRED
         NOT_ELIGIBLE_FOR_SETTLEMENT TERMS_APPROVAL_REQUIRED
       headers:
         X-Request-Id:
@@ -9279,7 +9428,8 @@ components:
     Units:
       type: string
       pattern: ^(0|[1-9][0-9]{0,18})$
-      description: Integer stored units as a decimal string, up to 19 digits; backend additionally enforces PostgreSQL BIGINT maximum 9223372036854775807. Never a float.
+      description: Integer stored units as a decimal string, up to 19 digits; backend additionally
+        enforces PostgreSQL BIGINT maximum 9223372036854775807. Never a float.
     PriceUnits:
       type: string
       pattern: ^(0|[1-9][0-9]{0,11}|[1-8][0-9]{12}|9000000000000)$
@@ -9336,7 +9486,7 @@ components:
         status:
           const: ok
         phase:
-          const: setup
+          const: backend
         simulatedPayments:
           const: true
       required:
@@ -9392,6 +9542,13 @@ components:
         - TEMPORARILY_UNAVAILABLE
         - COMMISSION_CONFIGURATION_MISSING
         - SETTLEMENT_POSTING_FAILED
+        - CURRENCY_MISMATCH
+        - DRIVER_UNAVAILABLE
+        - EVIDENCE_WINDOW_CLOSED
+        - INVENTORY_RECONCILIATION_REQUIRED
+        - CUSTODY_REVIEW_REQUIRED
+        - INVALID_DRIVER_AWARD
+        - REVIEW_NOT_ALLOWED
     ErrorDetail:
       type: object
       additionalProperties: false
@@ -9540,6 +9697,7 @@ components:
           type: string
           maxLength: 80
           minLength: 1
+          pattern: \S
         cityId:
           type: string
           format: uuid
@@ -9552,14 +9710,17 @@ components:
           type: string
           maxLength: 2000
           minLength: 1
+          pattern: \S
         contactName:
           type: string
           maxLength: 120
           minLength: 1
+          pattern: \S
         contactPhone:
           type: string
           maxLength: 30
           minLength: 1
+          pattern: \S
       required:
         - label
         - cityId
@@ -9693,10 +9854,12 @@ components:
           type: string
           maxLength: 200
           minLength: 1
+          pattern: \S
         bio:
           type: string
           maxLength: 10000
           minLength: 1
+          pattern: \S
         cityId:
           anyOf:
             - type: string
@@ -9707,6 +9870,7 @@ components:
             - type: string
               maxLength: 100
               minLength: 1
+              pattern: \S
             - type: 'null'
         experienceYears:
           anyOf:
@@ -9720,6 +9884,7 @@ components:
             type: string
             maxLength: 100
             minLength: 1
+            pattern: \S
           maxItems: 50
         languages:
           type: array
@@ -9731,10 +9896,12 @@ components:
                 type: string
                 maxLength: 10
                 minLength: 1
+                pattern: \S
               proficiency:
                 type: string
                 maxLength: 40
                 minLength: 1
+                pattern: \S
             required:
               - languageCode
               - proficiency
@@ -9754,10 +9921,12 @@ components:
           type: string
           maxLength: 200
           minLength: 1
+          pattern: \S
         bio:
           type: string
           maxLength: 10000
           minLength: 1
+          pattern: \S
         cityId:
           anyOf:
             - type: string
@@ -9768,6 +9937,7 @@ components:
             - type: string
               maxLength: 100
               minLength: 1
+              pattern: \S
             - type: 'null'
         experienceYears:
           anyOf:
@@ -9781,6 +9951,7 @@ components:
             type: string
             maxLength: 100
             minLength: 1
+            pattern: \S
           maxItems: 50
         languages:
           type: array
@@ -9792,10 +9963,12 @@ components:
                 type: string
                 maxLength: 10
                 minLength: 1
+                pattern: \S
               proficiency:
                 type: string
                 maxLength: 40
                 minLength: 1
+                pattern: \S
             required:
               - languageCode
               - proficiency
@@ -10014,6 +10187,11 @@ components:
           anyOf:
             - $ref: '#/components/schemas/BusinessProfile'
             - type: 'null'
+        restrictions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Restriction'
+          description: Current restrictions visible only in the authenticated own-account DTO.
       required:
         - id
         - email
@@ -10035,10 +10213,12 @@ components:
           minLength: 12
           maxLength: 72
           description: Server also enforces maximum 72 UTF-8 bytes before bcrypt hashing.
+          pattern: \S
         displayName:
           type: string
           maxLength: 120
           minLength: 1
+          pattern: \S
         locale:
           enum:
             - ar
@@ -10063,6 +10243,7 @@ components:
           type: string
           maxLength: 72
           minLength: 1
+          pattern: \S
         client:
           enum:
             - WEB
@@ -10108,6 +10289,7 @@ components:
           type: string
           maxLength: 8192
           minLength: 1
+          pattern: \S
       required:
         - refreshToken
     TokenInput:
@@ -10118,6 +10300,7 @@ components:
           type: string
           maxLength: 512
           minLength: 1
+          pattern: \S
       required:
         - token
     EmailInput:
@@ -10137,10 +10320,12 @@ components:
           type: string
           maxLength: 512
           minLength: 1
+          pattern: \S
         password:
           type: string
           minLength: 12
           maxLength: 72
+          pattern: \S
       required:
         - token
         - password
@@ -10152,6 +10337,7 @@ components:
           type: string
           maxLength: 120
           minLength: 1
+          pattern: \S
         locale:
           enum:
             - ar
@@ -10214,10 +10400,12 @@ components:
           type: string
           maxLength: 200
           minLength: 1
+          pattern: \S
         caption:
           type: string
           maxLength: 2000
           minLength: 1
+          pattern: \S
         url:
           type: string
           format: uri
@@ -10653,6 +10841,7 @@ components:
           type: string
           maxLength: 1000
           minLength: 1
+          pattern: \S
       required:
         - stockOnHand
         - reason
@@ -10665,8 +10854,13 @@ components:
           maxLength: 10000
           minLength: 1
         dueAt:
-          type: string
-          format: date-time
+          anyOf:
+            - type: string
+              format: date-time
+            - type: 'null'
+          description:
+            Null before the parties establish a service agreement; never a fabricated promised
+            deadline.
         startsAt:
           anyOf:
             - type: string
@@ -11038,6 +11232,7 @@ components:
           type: string
           maxLength: 10000
           minLength: 1
+          pattern: \S
       required:
         - listingId
         - description
@@ -11058,6 +11253,7 @@ components:
           type: string
           maxLength: 10000
           minLength: 1
+          pattern: \S
       required:
         - listingId
         - addressId
@@ -11078,12 +11274,14 @@ components:
           type: string
           maxLength: 10000
           minLength: 1
+          pattern: \S
         photoIds:
           type: array
           items:
             type: string
             format: uuid
           maxItems: 10
+          minItems: 1
       required:
         - providerProfileId
         - currency
@@ -11186,6 +11384,7 @@ components:
           type: string
           maxLength: 10000
           minLength: 1
+          pattern: \S
         dueAt:
           type: string
           format: date-time
@@ -11214,6 +11413,7 @@ components:
           type: string
           maxLength: 1000
           minLength: 1
+          pattern: \S
       required:
         - startsAt
     InspectionScheduleInput:
@@ -11249,6 +11449,7 @@ components:
           type: string
           maxLength: 2000
           minLength: 1
+          pattern: \S
         milestoneId:
           type: string
           format: uuid
@@ -11267,6 +11468,7 @@ components:
           type: string
           maxLength: 2000
           minLength: 1
+          pattern: \S
         position:
           type: integer
           minimum: 0
@@ -11304,13 +11506,16 @@ components:
           type: string
           maxLength: 5000
           minLength: 1
+          pattern: \S
         completedScope:
           type: array
           items:
             type: string
             maxLength: 500
             minLength: 1
+            pattern: \S
           maxItems: 100
+          minItems: 1
         previewFileIds:
           type: array
           items:
@@ -11333,6 +11538,7 @@ components:
           type: string
           maxLength: 5000
           minLength: 1
+          pattern: \S
         fileIds:
           type: array
           items:
@@ -11353,6 +11559,7 @@ components:
           type: string
           maxLength: 5000
           minLength: 1
+          pattern: \S
       required:
         - reason
     CancelInput:
@@ -11363,8 +11570,17 @@ components:
           type: string
           maxLength: 5000
           minLength: 1
+          pattern: \S
         proposal:
           $ref: '#/components/schemas/ProposalInput'
+        inventoryReturns: &a1
+          type: array
+          items:
+            $ref: '#/components/schemas/InventoryReturn'
+          maxItems: 100
+          description:
+            Exact stock reconciliation agreed with this proposal; required after goods were
+            collected.
       required:
         - reason
     ExtensionInput:
@@ -11378,6 +11594,7 @@ components:
           type: string
           maxLength: 5000
           minLength: 1
+          pattern: \S
       required:
         - dueAt
         - reason
@@ -11627,6 +11844,7 @@ components:
           type: string
           maxLength: 10000
           minLength: 1
+          pattern: \S
         startsAt:
           type: string
           format: date-time
@@ -11648,6 +11866,7 @@ components:
                 type: string
                 maxLength: 1000
                 minLength: 1
+                pattern: \S
               quantity:
                 type: integer
                 minimum: 1
@@ -11930,6 +12149,7 @@ components:
           type: string
           maxLength: 2000
           minLength: 1
+          pattern: \S
       required:
         - notes
     DeliveryExceptionInput:
@@ -11948,6 +12168,7 @@ components:
           type: string
           maxLength: 5000
           minLength: 1
+          pattern: \S
         evidenceFileIds:
           type: array
           items:
@@ -11971,6 +12192,7 @@ components:
           type: string
           maxLength: 5000
           minLength: 1
+          pattern: \S
       required:
         - method
         - promisedAt
@@ -12032,6 +12254,7 @@ components:
           type: string
           maxLength: 5000
           minLength: 1
+          pattern: \S
         termsRevisionId:
           type: string
           format: uuid
@@ -12054,8 +12277,8 @@ components:
           type: string
           format: binary
           description:
-            Images <=10 MiB, PDF <=20 MiB, final ZIP <=50 MiB. Validate extension, declared MIME, magic
-            bytes, size and ownership; quarantine/scan.
+            Images <=10 MiB, PDF <=20 MiB, final ZIP <=50 MiB. Validate extension, declared MIME,
+            magic bytes, size and ownership; quarantine/scan.
       required:
         - accessClass
         - file
@@ -12064,7 +12287,6 @@ components:
             properties:
               accessClass:
                 enum:
-                  - ORDER_SHARED
                   - FINAL_DELIVERABLE
                   - DELIVERY_ONLY
           then:
@@ -12077,6 +12299,10 @@ components:
           then:
             required:
               - caseId
+      description:
+        ORDER_SHARED may be staged without an order, owner-only, then claimed atomically by an
+        inspection request. Other private classes require their order/case. No staged object is
+        public.
     ChatRoom:
       type: object
       additionalProperties: false
@@ -12122,6 +12348,7 @@ components:
             text:
               type: string
               minLength: 1
+              pattern: \S
         - required:
             - attachmentIds
           properties:
@@ -12180,6 +12407,7 @@ components:
           type: string
           maxLength: 10000
           minLength: 1
+          pattern: \S
         evidenceFileIds:
           type: array
           items:
@@ -12197,6 +12425,7 @@ components:
           type: string
           maxLength: 10000
           minLength: 1
+          pattern: \S
         fileIds:
           type: array
           items:
@@ -12209,6 +12438,7 @@ components:
           type: string
           maxLength: 2000
           minLength: 1
+          pattern: \S
       required:
         - visibility
       anyOf:
@@ -12218,6 +12448,7 @@ components:
             text:
               type: string
               minLength: 1
+              pattern: \S
         - required:
             - fileIds
           properties:
@@ -12329,6 +12560,7 @@ components:
           type: string
           maxLength: 10000
           minLength: 1
+          pattern: \S
         sellerAwardUnits:
           type: string
           pattern: ^(0|[1-9][0-9]{0,11}|[1-8][0-9]{12}|9000000000000)$
@@ -12345,9 +12577,11 @@ components:
           type: string
           maxLength: 10000
           minLength: 1
+          pattern: \S
         newDueAt:
           type: string
           format: date-time
+        inventoryReturns: *a1
       required:
         - kind
         - reason
@@ -12408,6 +12642,10 @@ components:
                 - ACCEPT
                 - REJECT
             - type: 'null'
+        inventoryReturns:
+          anyOf:
+            - *a1
+            - type: 'null'
       required:
         - id
         - caseId
@@ -12430,10 +12668,12 @@ components:
           type: string
           maxLength: 10000
           minLength: 1
+          pattern: \S
         substantiation:
           type: string
           maxLength: 10000
           minLength: 1
+          pattern: \S
         sellerAwardUnits:
           type: string
           pattern: ^(0|[1-9][0-9]{0,11}|[1-8][0-9]{12}|9000000000000)$
@@ -12460,8 +12700,8 @@ components:
             $ref: '#/components/schemas/InventoryReturn'
           maxItems: 100
           description:
-            'Required for cancelled/refunded store orders: reconcile every reserved/consumed item once,
-            including non-restockable units.'
+            'Required for cancelled/refunded store orders: reconcile every reserved/consumed item
+            once, including non-restockable units.'
       required:
         - reason
         - substantiation
@@ -12572,6 +12812,7 @@ components:
           type: string
           maxLength: 1000
           minLength: 1
+          pattern: \S
         platform:
           $ref: '#/components/schemas/DevicePlatform'
       required:
@@ -12756,6 +12997,7 @@ components:
           type: string
           maxLength: 5000
           minLength: 1
+          pattern: \S
         expiresAt:
           anyOf:
             - type: string
@@ -12807,6 +13049,7 @@ components:
           type: string
           maxLength: 5000
           minLength: 1
+          pattern: \S
       required:
         - outcome
         - reason
@@ -12834,6 +13077,14 @@ components:
         createdAt:
           type: string
           format: date-time
+        content:
+          anyOf:
+            - $ref: '#/components/schemas/BusinessProfile'
+            - $ref: '#/components/schemas/Listing'
+            - $ref: '#/components/schemas/Store'
+            - $ref: '#/components/schemas/Product'
+            - $ref: '#/components/schemas/Review'
+          description: Admin-only content inspection, including drafts and hidden resources; no credentials.
       required:
         - id
         - resourceType
@@ -12891,6 +13142,7 @@ components:
           type: string
           maxLength: 5000
           minLength: 1
+          pattern: \S
       required:
         - userId
         - amount
@@ -12906,6 +13158,7 @@ components:
           type: string
           maxLength: 5000
           minLength: 1
+          pattern: \S
         custodyEvidenceFileIds:
           type: array
           items:
@@ -14083,6 +14336,15 @@ components:
             - ok
             - requestId
             - error
+    RealtimeTicketInput:
+      type: object
+      additionalProperties: false
+      properties:
+        orderId:
+          type: string
+          format: uuid
+      required:
+        - orderId
 x-order-transition-document: ./order-transitions.json
 x-websocket-contract:
   namespace: /orders

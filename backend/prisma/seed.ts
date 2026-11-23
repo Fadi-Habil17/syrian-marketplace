@@ -3,6 +3,7 @@ import { hash as bcryptHash } from 'bcrypt';
 import { Prisma, PrismaClient, RoleCode, Currency } from '@prisma/client';
 import { LocalSimulatedGateway } from '../src/modules/payments/infrastructure/local-simulated-gateway';
 import { serviceSplit } from '../src/modules/payments/domain/money';
+import { seedMedia } from './seed-media';
 
 const prisma = new PrismaClient();
 
@@ -13,6 +14,15 @@ export function demoId(key: string): string {
 async function main(): Promise<void> {
   if (process.env.NODE_ENV === 'production' || process.env.ALLOW_DEMO_SEED !== 'true')
     throw new Error('Demo seed requires ALLOW_DEMO_SEED=true and a nonproduction database');
+  for (const key of [
+    'STORAGE_ENDPOINT',
+    'STORAGE_BUCKET',
+    'STORAGE_ACCESS_KEY',
+    'STORAGE_SECRET_KEY',
+    'CLAMAV_HOST',
+  ])
+    if (!process.env[key])
+      throw new Error('Demo media requires configured private S3 storage and ClamAV');
   const password = 'Marketplace123!';
   const passwordHash = await bcryptHash(password, 12);
   const gateway = new LocalSimulatedGateway();
@@ -586,7 +596,8 @@ async function main(): Promise<void> {
     },
     { isolationLevel: Prisma.TransactionIsolationLevel.Serializable, timeout: 60000 },
   );
-  console.info('Fictional demo accounts (API login implementation is a later slice):');
+  await seedMedia(prisma, demoId);
+  console.info('Fictional isolated demo accounts; login through /api/v1/auth/login:');
   for (const role of Object.values(RoleCode))
     console.info(`${role}: ${role.toLowerCase()}@demo.marketplace.test / ${password}`);
   console.info(

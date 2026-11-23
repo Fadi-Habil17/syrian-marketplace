@@ -19,6 +19,7 @@ const result = spawnSync(
     fileURLToPath(new URL('../node_modules/jest/bin/jest.js', import.meta.url)),
     '--runInBand',
     '--testPathPattern=\\.db\\.spec\\.ts$',
+    ...process.argv.slice(2),
   ],
   {
     cwd: fileURLToPath(new URL('../backend/', import.meta.url)),
