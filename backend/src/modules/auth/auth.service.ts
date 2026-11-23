@@ -9,6 +9,8 @@ import { EmailDelivery } from './email-delivery';
 import { fail } from '../../common/errors';
 import { LoginDto, RegisterDto } from './auth.dto';
 export const tokenHash = (token: string) => createHash('sha256').update(token).digest('hex');
+// Public, deliberately unusable identity; keep the same bcrypt cost as registration.
+const unknownIdentityHash = '$2b$12$AHkww40C8hO9tLXQH5Da1.wlK3bDMHb3QjwOw897JDyDAGd.Z1/Cm';
 interface RefreshClaims {
   sub: string;
   sid: string;
@@ -149,12 +151,8 @@ export class AuthService {
   }
   async login(b: LoginDto) {
     const user = await this.db.user.findUnique({ where: { email: b.email.trim().toLowerCase() } });
-    if (
-      !user ||
-      Buffer.byteLength(b.password) > 72 ||
-      !(await compare(b.password, user.passwordHash))
-    )
-      fail('AUTH_REQUIRED', 401);
+    const matches = await compare(b.password, user?.passwordHash ?? unknownIdentityHash);
+    if (!user || Buffer.byteLength(b.password) > 72 || !matches) fail('AUTH_REQUIRED', 401);
     return this.db.atomic(async (tx) => {
       await this.db.lockUsers(tx, [user.id]);
       const fresh = await this.allowed(tx, user.id, true);

@@ -39,3 +39,9 @@ The active backend DTO validator is pinned to **AJV 8.20.0**, beyond the affecte
 Reachability assessment is an inference from the implemented code: Nest SSE is unused; uploads use custom signature/extension/MIME checks, Sharp and ClamAV, not Nest's affected file-type parser. Prisma configuration is trusted repository code and cannot be submitted through an API. Expo image-size/glob/minimatch findings concern the retained SDK/tooling; native/client review remains pending. These boundaries reduce relevant exposure without removing the advisories. The backend now exposes real authenticated business commands and uploads, so the earlier health-only reachability assessment is historical.
 
 Before deployment, review the unresolved Nest 10, Prisma/deepmerge and Expo/tooling findings, use least-privileged database credentials, verify mail/push providers and perform deployment/load/backup checks. The requested Nest 10/Next 15/Expo stack was not silently changed to resolve incompatible upstream advisories.
+
+## Comprehensive verification refresh
+
+The current production audit on 2026-11-23 reports **27 affected dependency nodes: 20 moderate, 7 high, 0 critical**, with a nonzero audit exit. Older counts above describe earlier trees. See [current limitations](KNOWN_LIMITATIONS.md#dependency-disposition) for the Prisma/configuration, Expo Router/decoder, Metro image-size and Nest findings and compatibility limits. No production security approval was issued.
+
+Backend archive validation now directly pins `yauzl` 3.4.0 with its matching TypeScript declarations and uses bounded sequential validation plus Node's CRC-32. Content is still quarantined and scanned; no filesystem extraction was introduced. See [actual tests](TEST_REPORT.md). Both original framework majors and payment policies are preserved.

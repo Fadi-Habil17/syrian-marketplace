@@ -1,4 +1,5 @@
 import sharp from 'sharp';
+import { validateFinalZip } from './zip-validation';
 import { fail } from '../../common/errors';
 export interface UploadBytes {
   originalname: string;
@@ -63,25 +64,11 @@ export async function validateUpload(file: UploadBytes, accessClass: string) {
   )
     fail('UNSUPPORTED_MEDIA_TYPE', 415);
   if (mime === 'application/zip') {
-    // Examine central-directory names without extracting or inflating archive data.
-    let cursor = b.indexOf(Buffer.from([80, 75, 1, 2])),
-      entries = 0;
-    while (cursor >= 0) {
-      if (cursor + 46 > b.length || ++entries > 10000) fail('UNSUPPORTED_MEDIA_TYPE', 415);
-      const length = b.readUInt16LE(cursor + 28),
-        extra = b.readUInt16LE(cursor + 30),
-        comment = b.readUInt16LE(cursor + 32),
-        entry = b.subarray(cursor + 46, cursor + 46 + length).toString('utf8');
-      if (
-        cursor + 46 + length > b.length ||
-        entry.split(/[\\/]/).includes('..') ||
-        /^(?:[\\/]|[A-Za-z]:)/.test(entry) ||
-        entry.includes('\0')
-      )
-        fail('UNSUPPORTED_MEDIA_TYPE', 415);
-      cursor = b.indexOf(Buffer.from([80, 75, 1, 2]), cursor + 46 + length + extra + comment);
+    try {
+      await validateFinalZip(b);
+    } catch {
+      fail('UNSUPPORTED_MEDIA_TYPE', 415);
     }
-    if (!b.includes(Buffer.from([80, 75, 5, 6]))) fail('UNSUPPORTED_MEDIA_TYPE', 415);
   }
   return { bytes: b, mime, ext };
 }
