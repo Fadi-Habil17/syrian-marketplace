@@ -7,10 +7,13 @@ const ui = createSlice({
     closeNavigation: (state) => {
       state.navigationOpen = false;
     },
+    toggleNavigation: (state) => {
+      state.navigationOpen = !state.navigationOpen;
+    },
   },
 });
 
-// Create per mounted provider/request; no shared server singleton or token persistence.
+export const { closeNavigation, toggleNavigation } = ui.actions;
 export const makeStore = () => configureStore({ reducer: { ui: ui.reducer } });
 export type AppStore = ReturnType<typeof makeStore>;
 export type RootState = ReturnType<AppStore['getState']>;
