@@ -1,146 +1,216 @@
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
+  type StyleProp,
   type TextInputProps,
+  type TextStyle,
+  type ViewStyle,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
 import { useSession } from './state/session';
-export const colors = {
-  ink: '#192f2a',
-  green: '#10554c',
-  cream: '#faf6ed',
-  muted: '#486158',
-  line: '#d8dfd4',
-  gold: '#e8b665',
-};
-export function Page({ title, children }: { title: string; children: ReactNode }) {
+import { MobileShell } from './shell';
+import { colors, design, readingStyle } from './theme';
+
+export { colors } from './theme';
+
+export function Page({
+  title,
+  backLabel,
+  children,
+}: {
+  title?: string;
+  backLabel?: string;
+  children: ReactNode;
+}) {
   const { locale } = useSession();
+  const ar = locale === 'ar';
+  const label = backLabel ?? (ar ? 'رجوع' : 'Back');
   return (
-    <SafeAreaView style={s.screen}>
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={[s.page, { direction: locale === 'ar' ? 'rtl' : 'ltr' }]}
+    <MobileShell>
+      <Pressable
+        accessibilityRole="link"
+        accessibilityLabel={label}
+        onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+        style={s.back}
       >
-        <Button
-          title={locale === 'ar' ? 'رجوع' : 'Back'}
-          onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
-        />
-        <Text accessibilityRole="header" style={s.title}>
-          {title}
-        </Text>
-        {children}
-      </ScrollView>
-    </SafeAreaView>
+        <Image source={design.arrow} style={[s.arrow, ar && { transform: [{ scaleX: -1 }] }]} />
+        <Text style={[s.backLabel, readingStyle(locale, true)]}>{label}</Text>
+      </Pressable>
+      {title && <Heading>{title}</Heading>}
+      {children}
+    </MobileShell>
   );
 }
-export function Copy({ children }: { children: ReactNode }) {
+
+export function Heading({ children, small = false }: { children: ReactNode; small?: boolean }) {
   const { locale } = useSession();
+  const androidArabic = Platform.OS === 'android' && locale === 'ar';
   return (
     <Text
+      accessibilityRole="header"
       style={[
-        s.text,
-        {
-          textAlign: locale === 'ar' ? 'right' : 'left',
-          writingDirection: locale === 'ar' ? 'rtl' : 'ltr',
-        },
+        s.title,
+        small && s.section,
+        androidArabic && (small ? s.arabicSection : s.arabicTitle),
+        readingStyle(locale, true),
       ]}
     >
       {children}
     </Text>
   );
 }
-export function Card({ children }: { children: ReactNode }) {
-  return <View style={s.card}>{children}</View>;
+
+export function Copy({
+  children,
+  variant = 'body',
+  style,
+}: {
+  children: ReactNode;
+  variant?: 'body' | 'muted' | 'label' | 'price';
+  style?: StyleProp<TextStyle>;
+}) {
+  const { locale } = useSession();
+  return (
+    <Text
+      style={[
+        s.text,
+        variant !== 'body' && s[variant],
+        readingStyle(locale, variant === 'label' || variant === 'price'),
+        style,
+      ]}
+    >
+      {children}
+    </Text>
+  );
 }
+
+export function Card({ children, style }: { children: ReactNode; style?: StyleProp<ViewStyle> }) {
+  return <View style={[s.card, style]}>{children}</View>;
+}
+
 export function Button({
   title,
   onPress,
   disabled = false,
+  variant = 'primary',
 }: {
   title: string;
   onPress: () => void;
   disabled?: boolean;
+  variant?: 'primary' | 'outline' | 'link';
 }) {
+  const { locale } = useSession();
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={[s.button, disabled && { opacity: 0.5 }]}
+      style={({ pressed }) => [
+        s.button,
+        variant === 'outline' && s.outline,
+        variant === 'link' && s.link,
+        (pressed || disabled) && s.dimmed,
+      ]}
     >
-      <Text style={s.buttonText}>{title}</Text>
+      <Text
+        style={[readingStyle(locale, true), s.buttonText, variant !== 'primary' && s.greenText]}
+      >
+        {title}
+      </Text>
     </Pressable>
   );
 }
-export function Field({ label, ...props }: TextInputProps & { label: string }) {
+
+export function Field({ label, style, multiline, ...props }: TextInputProps & { label: string }) {
   const { locale } = useSession();
   return (
-    <View style={{ gap: 6 }}>
-      <Copy>{label}</Copy>
+    <View style={s.field}>
+      <Copy variant="label">{label}</Copy>
       <TextInput
         {...props}
+        multiline={multiline}
         accessibilityLabel={label}
-        style={[s.input, { textAlign: locale === 'ar' ? 'right' : 'left' }]}
+        style={[s.input, readingStyle(locale), multiline && s.multiline, style]}
         placeholderTextColor={colors.muted}
       />
     </View>
   );
 }
+
 export function Busy() {
   return <ActivityIndicator accessibilityLabel="Loading / جار التحميل" color={colors.green} />;
 }
+
 export function Failure({ message, retry }: { message: string; retry?: () => void }) {
   return (
     <Card>
-      <Text accessibilityRole="alert" style={{ color: '#9b3429' }}>
+      <Text accessibilityRole="alert" style={s.error}>
         {message}
       </Text>
       {retry && <Button title="إعادة المحاولة / Retry" onPress={retry} />}
     </Card>
   );
 }
+
 const s = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.cream },
-  page: { padding: 22, gap: 16, paddingBottom: 40 },
-  title: { fontSize: 28, fontWeight: '700', color: colors.ink, textAlign: 'auto' },
-  text: {
-    color: colors.ink,
-    fontFamily: 'NotoSansArabic_400Regular',
-    fontSize: 14,
-    lineHeight: 25,
+  back: {
+    minHeight: 36,
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
+  arrow: { width: 16, height: 16 },
+  backLabel: { fontSize: 13, lineHeight: 20, color: colors.green },
+  title: { fontSize: 28, lineHeight: 38, color: colors.ink },
+  section: { fontSize: 20, lineHeight: 28 },
+  arabicTitle: { lineHeight: 42 },
+  arabicSection: { lineHeight: 30 },
+  text: { color: colors.ink, fontSize: 14, lineHeight: 22 },
+  muted: { color: colors.muted, fontSize: 13, lineHeight: 21 },
+  label: { fontSize: 13, lineHeight: 20 },
+  price: { color: colors.green, fontSize: 16, lineHeight: 24 },
   card: {
-    padding: 18,
+    padding: 14,
     gap: 12,
-    backgroundColor: 'white',
-    borderRadius: 18,
+    backgroundColor: colors.paper,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.line,
   },
   button: {
-    minHeight: 48,
-    padding: 13,
+    minHeight: 46,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
     backgroundColor: colors.green,
-    borderRadius: 12,
+    borderRadius: 11,
     justifyContent: 'center',
   },
-  buttonText: { color: 'white', textAlign: 'center', fontSize: 16, fontWeight: '600' },
+  outline: { backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.line },
+  link: { backgroundColor: 'transparent', paddingHorizontal: 4 },
+  dimmed: { opacity: 0.55 },
+  buttonText: { color: colors.paper, textAlign: 'center', fontSize: 14, lineHeight: 22 },
+  greenText: { color: colors.green },
+  field: { gap: 4 },
   input: {
-    minHeight: 50,
+    minHeight: 46,
     borderWidth: 1,
     borderColor: colors.line,
-    borderRadius: 12,
-    padding: 12,
-    backgroundColor: 'white',
+    borderRadius: 11,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: colors.paper,
     color: colors.ink,
-    fontSize: 16,
+    fontSize: 15,
   },
+  multiline: { minHeight: 76, textAlignVertical: 'top' },
+  error: { color: '#9b3429' },
 });
