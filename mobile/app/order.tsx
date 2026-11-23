@@ -1,11 +1,10 @@
 import { useRef, useState } from 'react';
-import { Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Crypto from 'expo-crypto';
 import { api, isDefinitiveFailure, unwrap } from '../src/api/client';
 import { useLoad } from '../src/use-load';
 import { useSession } from '../src/state/session';
-import { Page, Copy, Card, Button, Busy, Failure } from '../src/ui';
+import { Page, Copy, Card, Button, Busy, Failure, ConfirmDialog } from '../src/ui';
 import { OrderActions } from '../src/order-actions';
 import { money } from '../src/money';
 export default function Order() {
@@ -14,6 +13,7 @@ export default function Order() {
   const ar = locale === 'ar';
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [confirmPayment, setConfirmPayment] = useState<'deposit' | 'balance' | null>(null);
   const intent = useRef<{ kind: string; key: string; version: number } | null>(null);
   const result = useLoad(
     async () => ({
@@ -138,21 +138,23 @@ export default function Order() {
                       : 'Hold balance'
                 }
                 onPress={() =>
-                  Alert.alert(
-                    ar ? 'تأكيد الحجز التجريبي' : 'Confirm simulated hold',
-                    `${order.terms.scope}\n${money(action.operationId === 'holdDeposit' ? order.deposit : order.balance)}`,
-                    [
-                      { text: ar ? 'رجوع' : 'Back', style: 'cancel' },
-                      {
-                        text: ar ? 'أوافق على الشروط' : 'Accept terms',
-                        onPress: () =>
-                          void pay(action.operationId === 'holdDeposit' ? 'deposit' : 'balance'),
-                      },
-                    ],
-                  )
+                  setConfirmPayment(action.operationId === 'holdDeposit' ? 'deposit' : 'balance')
                 }
               />
             ))}
+          <ConfirmDialog
+            visible={confirmPayment !== null}
+            title={ar ? 'تأكيد الحجز التجريبي' : 'Confirm simulated hold'}
+            message={`${order.terms.scope}\n${money(confirmPayment === 'deposit' ? order.deposit : order.balance)}`}
+            cancelLabel={ar ? 'رجوع' : 'Back'}
+            confirmLabel={ar ? 'أوافق على الشروط' : 'Accept terms'}
+            onCancel={() => setConfirmPayment(null)}
+            onConfirm={() => {
+              const kind = confirmPayment;
+              setConfirmPayment(null);
+              if (kind) void pay(kind);
+            }}
+          />
         </>
       )}
     </Page>

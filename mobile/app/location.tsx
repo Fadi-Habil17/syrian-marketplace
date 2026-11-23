@@ -1,3 +1,4 @@
+import { themedStyles, useAppearance } from '../src/appearance';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Image } from 'expo-image';
@@ -6,12 +7,14 @@ import { api, unwrap } from '../src/api/client';
 import { useBrowseLocation } from '../src/state/browse-location';
 import { useSession } from '../src/state/session';
 import { useLoad } from '../src/use-load';
-import { colors, design } from '../src/theme';
+import { design } from '../src/theme';
 import { Busy, Button, Card, Copy, Failure, Heading, Page } from '../src/ui';
 
 type Place = { id: string; nameAr: string; nameEn: string };
 
 export default function Location() {
+  const s = useStyles();
+  const { colors } = useAppearance();
   const { locale } = useSession();
   const ar = locale === 'ar';
   const { location, setLocation } = useBrowseLocation();
@@ -39,7 +42,7 @@ export default function Location() {
   return (
     <Page backLabel={ar ? 'العودة للسوق' : 'Marketplace'}>
       <Card>
-        <Image source={design.pin} style={s.pin} />
+        <Image tintColor={colors.green} source={design.pin} style={s.pin} />
         <Heading small>{ar ? 'اختر موقعك' : 'Choose your location'}</Heading>
         <Copy variant="muted">
           {ar
@@ -141,6 +144,7 @@ function PlaceOption({
   selected: boolean;
   onPress: () => void;
 }) {
+  const s = useStyles();
   return (
     <Pressable
       accessibilityRole="radio"
@@ -153,9 +157,11 @@ function PlaceOption({
   );
 }
 
-const s = StyleSheet.create({
-  pin: { width: 17, height: 17 },
-  field: { gap: 5 },
-  option: { minHeight: 44, paddingHorizontal: 12, justifyContent: 'center', borderRadius: 9 },
-  selected: { backgroundColor: colors.mint },
-});
+const useStyles = themedStyles((colors) =>
+  StyleSheet.create({
+    pin: { width: 17, height: 17 },
+    field: { gap: 5 },
+    option: { minHeight: 44, paddingHorizontal: 12, justifyContent: 'center', borderRadius: 9 },
+    selected: { backgroundColor: colors.mint },
+  }),
+);

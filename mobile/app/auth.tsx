@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { router } from 'expo-router';
-import { api, unwrap } from '../src/api/client';
+import { useCallback, useRef, useState } from 'react';
+import { BackHandler, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
+import { api, unwrap, ApiError } from '../src/api/client';
 import type { ApiSchemas } from '../src/api/contracts';
 import { useSession } from '../src/state/session';
-import { colors } from '../src/theme';
+import { themedStyles } from '../src/appearance';
 import { Page, Field, Button, Failure, Copy, Card, Heading } from '../src/ui';
 
 type Mode = 'login' | 'register' | 'forgot' | 'verify' | 'reset';
@@ -12,204 +12,432 @@ type Role = ApiSchemas['BusinessType'] | null;
 const actions = {
   login: ['تسجيل الدخول', 'Sign in'],
   register: ['إنشاء حساب', 'Create account'],
-  forgot: ['نسيت كلمة المرور', 'Forgot password'],
+  forgot: ['استعادة الحساب', 'Recover your account'],
   verify: ['تأكيد البريد', 'Verify email'],
-  reset: ['إعادة تعيين كلمة المرور', 'Reset password'],
+  reset: ['كلمة مرور جديدة', 'New password'],
 } satisfies Record<Mode, [string, string]>;
 const roles = [
-  [null, 'عميل', 'Customer', 'تصفح واطلب من السوق.', 'Browse and order.'],
-  ['FREELANCER', 'مستقل', 'Freelancer', 'اعرض خدمات رقمية.', 'Offer digital services.'],
-  ['PROFESSIONAL', 'مهني', 'Professional', 'اعرض خدماتك المحلية.', 'Offer local services.'],
-  ['STORE_OWNER', 'صاحب متجر', 'Store owner', 'اعرض منتجات متجرك.', 'Offer home-store goods.'],
-  [
-    'DELIVERY_DRIVER',
-    'سائق توصيل',
-    'Delivery driver',
-    'نفّذ مهام التوصيل.',
-    'Deliver marketplace orders.',
-  ],
+  [null, 'زبون — تصفّح واطلب', 'Customer — browse and order'],
+  ['FREELANCER', 'مستقل', 'Freelancer'],
+  ['PROFESSIONAL', 'مهني', 'Professional'],
+  ['STORE_OWNER', 'صاحب متجر', 'Store owner'],
+  ['DELIVERY_DRIVER', 'سائق توصيل', 'Delivery driver'],
 ] as const;
-
+function utf8Size(s: string) {
+  return Array.from(s).reduce((n, c) => {
+    const p = c.codePointAt(0)!;
+    return n + (p <= 127 ? 1 : p <= 2047 ? 2 : p <= 65535 ? 3 : 4);
+  }, 0);
+}
 export default function Auth() {
+  const s = useStyles();
   const { login, locale } = useSession();
   const ar = locale === 'ar';
-  const [mode, setMode] = useState<Mode>('login');
-  const [role, setRole] = useState<Role>(null);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [token, setToken] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const [notice, setNotice] = useState('');
-  function changeMode(next: Mode) {
+  const [mode, setMode] = useState<Mode>('login'),
+    [role, setRole] = useState<Role>(null),
+    [roleOpen, setRoleOpen] = useState(false),
+    [email, setEmail] = useState(''),
+    [password, setPassword] = useState(''),
+    [name, setName] = useState(''),
+    [token, setToken] = useState(''),
+    [visible, setVisible] = useState(false),
+    [busy, setBusy] = useState(false),
+    [error, setError] = useState(''),
+    [notice, setNotice] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const emailRef = useRef<TextInput>(null),
+    passwordRef = useRef<TextInput>(null),
+    nameRef = useRef<TextInput>(null),
+    tokenRef = useRef<TextInput>(null);
+  const changeMode = useCallback((next: Mode) => {
     setMode(next);
     setPassword('');
     setToken('');
+    setErrors({});
     setError('');
     setNotice('');
+    setVisible(false);
+  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      if (mode === 'login') return;
+      const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+        changeMode('login');
+        return true;
+      });
+      return () => subscription.remove();
+    }, [mode, changeMode]),
+  );
+  function validate() {
+    const e: Record<string, string> = {};
+    if (mode === 'register' && !name.trim())
+      e.name = ar ? 'اكتب الاسم الذي سيظهر في حسابك.' : 'Enter your display name.';
+    if (
+      ['login', 'register', 'forgot'].includes(mode) &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+    )
+      e.email = ar ? 'اكتب بريدك الإلكتروني بشكل صحيح.' : 'Enter a valid email address.';
+    if (['login', 'register', 'reset'].includes(mode) && !password)
+      e.password = ar ? 'اكتب كلمة المرور.' : 'Enter your password.';
+    if (
+      ['register', 'reset'].includes(mode) &&
+      (Array.from(password).length < 12 || utf8Size(password) > 72)
+    )
+      e.password = ar
+        ? 'استخدم 12 حرفاً على الأقل، وبحد أقصى 72 بايت.'
+        : 'Use at least 12 characters and no more than 72 UTF-8 bytes.';
+    if (['verify', 'reset'].includes(mode) && !token.trim())
+      e.token = ar ? 'اكتب رمز التحقق من بريدك.' : 'Enter the token from your email.';
+    setErrors(e);
+    const first = Object.keys(e)[0];
+    const inputs: Record<string, typeof nameRef> = {
+      name: nameRef,
+      email: emailRef,
+      password: passwordRef,
+      token: tokenRef,
+    };
+    inputs[first ?? '']?.current?.focus();
+    return Object.keys(e).length === 0;
   }
   async function submit() {
+    if (busy || !validate()) return;
     setBusy(true);
     setError('');
     setNotice('');
     try {
       if (mode === 'login') {
-        await login(email, password);
+        await login(email.trim(), password);
         router.replace('/');
       }
       if (mode === 'register') {
         unwrap(
           await api.POST('/api/v1/auth/register', {
-            body: { email, password, displayName: name, locale, businessRole: role },
+            body: {
+              email: email.trim(),
+              password,
+              displayName: name.trim(),
+              locale,
+              businessRole: role,
+            },
           }),
         );
-        setNotice(ar ? 'تحقق من بريدك ثم سجّل الدخول' : 'Verify your email, then sign in');
+        setPassword('');
+        setNotice(
+          ar
+            ? 'أهلاً في الحارة! راجع بريدك لتأكيد الحساب.'
+            : 'Welcome to the neighbourhood! Check your email to verify your account.',
+        );
       }
       if (mode === 'forgot') {
-        unwrap(await api.POST('/api/v1/auth/forgot-password', { body: { email } }));
-        setNotice(ar ? 'راجع بريدك الإلكتروني' : 'Check your email');
+        unwrap(await api.POST('/api/v1/auth/forgot-password', { body: { email: email.trim() } }));
+        setNotice(
+          ar
+            ? 'إذا كان البريد مسجّلاً، ستصلك خطوات الاستعادة.'
+            : 'If the address is registered, recovery instructions will arrive by email.',
+        );
       }
       if (mode === 'verify') {
-        unwrap(await api.POST('/api/v1/auth/verify-email', { body: { token } }));
-        setNotice(ar ? 'تم التحقق' : 'Email verified');
+        unwrap(await api.POST('/api/v1/auth/verify-email', { body: { token: token.trim() } }));
+        setNotice(
+          ar ? 'تم تأكيد البريد. تقدر تسجّل الدخول.' : 'Email verified. You can now sign in.',
+        );
       }
       if (mode === 'reset') {
-        unwrap(await api.POST('/api/v1/auth/reset-password', { body: { token, password } }));
+        unwrap(
+          await api.POST('/api/v1/auth/reset-password', {
+            body: { token: token.trim(), password },
+          }),
+        );
         changeMode('login');
+        setNotice(
+          ar ? 'تم تحديث كلمة المرور. سجّل دخولك.' : 'Password updated. Sign in to continue.',
+        );
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Request failed');
+      const code = e instanceof ApiError ? e.code : '';
+      setError(
+        code === 'AUTH_REQUIRED'
+          ? ar
+            ? 'البريد أو كلمة المرور غير صحيحين.'
+            : 'The email or password is incorrect.'
+          : code === 'ACCOUNT_RESTRICTED'
+            ? ar
+              ? 'الحساب مقيّد. راجع الدعم أو سجل حسابك.'
+              : 'This account is restricted. Review your account or contact support.'
+            : code === 'RATE_LIMITED'
+              ? ar
+                ? 'طلبات كثيرة. انتظر قليلاً ثم جرّب.'
+                : 'Too many attempts. Wait a little, then retry.'
+              : code === 'VERSION_CONFLICT'
+                ? ar
+                  ? 'تعذّر إنشاء الحساب بهذه البيانات. جرّب تسجيل الدخول أو الاستعادة.'
+                  : 'An account could not be created with these details. Try sign-in or recovery.'
+                : code === 'INVALID_INPUT'
+                  ? ar
+                    ? 'راجع البيانات وأعد المحاولة.'
+                    : 'Check the details and try again.'
+                  : ar
+                    ? 'تعذّر إتمام الطلب. تأكد من الاتصال وأعد المحاولة.'
+                    : 'Could not complete the request. Check your connection and retry.',
+      );
     } finally {
       setBusy(false);
     }
   }
-  const title = (action: Mode) => actions[action][ar ? 0 : 1];
+  const title = (m: Mode) => actions[m][ar ? 0 : 1];
+  const selectedRole = roles.find((r) => r[0] === role)!;
   return (
-    <Page backLabel={ar ? 'العودة للسوق' : 'Marketplace'}>
+    <Page backLabel={ar ? 'العودة إلى السوق' : 'Back to the marketplace'}>
+      <View style={s.intro}>
+        <Copy variant="label" style={s.eyebrow}>
+          {ar ? 'أهل الحارة أقرب' : 'A LITTLE CLOSER TO HOME'}
+        </Copy>
+        <Heading>
+          {mode === 'login'
+            ? ar
+              ? 'أهلاً برجعتك'
+              : 'Good to have you back'
+            : mode === 'register'
+              ? ar
+                ? 'مكانك بين أهل الحارة'
+                : 'Make yourself at home'
+              : title(mode)}
+        </Heading>
+        <Copy variant="muted">
+          {mode === 'register'
+            ? ar
+              ? 'حساب واحد لتشتري، تطلب خدمة، أو تبدأ شغلك.'
+              : 'One account to shop, find a service or start your business.'
+            : ar
+              ? 'شغل محلي، ناس قريبين، وكل التفاصيل بمكان واحد.'
+              : 'Local skills, familiar faces. Your details in one place.'}
+        </Copy>
+      </View>
       <Card>
-        <Heading>{title(mode)}</Heading>
-        {mode === 'login' && (
-          <>
-            <Copy variant="muted">{ar ? 'أهلاً بعودتك' : 'Welcome back'}</Copy>
-            <Copy variant="muted">
-              {ar
-                ? 'سجّل دخولك لإرسال الطلبات ومتابعتها من حسابك.'
-                : 'Sign in to send and track requests from your account.'}
-            </Copy>
-          </>
-        )}
-        {mode === 'register' && (
-          <>
-            <Copy variant="muted">
-              {ar ? 'اختر دورك في دكّان و حارة.' : 'Choose your role on Dukkan & Hara.'}
-            </Copy>
-            <View accessibilityRole="radiogroup" style={s.roles}>
-              {roles.map(([value, a, en, descAr, descEn]) => (
+        <View style={s.form}>
+          {mode === 'register' && (
+            <Field
+              label={ar ? 'الاسم' : 'Display name'}
+              value={name}
+              onChangeText={setName}
+              inputRef={nameRef}
+              autoComplete="name"
+              textContentType="name"
+              maxLength={120}
+              error={errors.name}
+              returnKeyType="next"
+              onSubmitEditing={() => emailRef.current?.focus()}
+            />
+          )}
+          {['login', 'register', 'forgot'].includes(mode) && (
+            <Field
+              label={ar ? 'البريد الإلكتروني' : 'Email'}
+              value={email}
+              onChangeText={setEmail}
+              inputRef={emailRef}
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="email-address"
+              autoComplete="email"
+              textContentType="emailAddress"
+              placeholder="name@example.com"
+              style={s.mixedInput}
+              error={errors.email}
+              returnKeyType="next"
+              onSubmitEditing={() => passwordRef.current?.focus()}
+            />
+          )}
+          {['verify', 'reset'].includes(mode) && (
+            <Field
+              label={ar ? 'رمز البريد' : 'Email token'}
+              value={token}
+              onChangeText={setToken}
+              inputRef={tokenRef}
+              autoCapitalize="none"
+              autoCorrect={false}
+              style={s.mixedInput}
+              error={errors.token}
+            />
+          )}
+          {['login', 'register', 'reset'].includes(mode) && (
+            <Field
+              label={ar ? 'كلمة المرور' : 'Password'}
+              value={password}
+              onChangeText={setPassword}
+              inputRef={passwordRef}
+              secureTextEntry={!visible}
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+              textContentType={mode === 'login' ? 'password' : 'newPassword'}
+              style={s.mixedInput}
+              error={errors.password}
+              hint={
+                mode === 'login'
+                  ? undefined
+                  : ar
+                    ? '12 حرفاً على الأقل. العربية والإنكليزية مدعومتان.'
+                    : 'At least 12 characters. Arabic and English are supported.'
+              }
+              returnKeyType="done"
+              onSubmitEditing={() => void submit()}
+              trailing={
                 <Pressable
-                  key={value ?? 'customer'}
-                  accessibilityRole="radio"
-                  accessibilityState={{ selected: value === role }}
-                  onPress={() => setRole(value)}
-                  style={[s.role, value === role && s.selected]}
+                  accessibilityRole="button"
+                  accessibilityLabel={
+                    visible
+                      ? ar
+                        ? 'إخفاء كلمة المرور'
+                        : 'Hide password'
+                      : ar
+                        ? 'إظهار كلمة المرور'
+                        : 'Show password'
+                  }
+                  accessibilityState={{ selected: visible }}
+                  onPress={() => setVisible(!visible)}
+                  style={s.visibility}
                 >
-                  <Copy variant="label">{ar ? a : en}</Copy>
-                  <Copy variant="muted" style={s.roleDescription}>
-                    {ar ? descAr : descEn}
+                  <Copy variant="label">
+                    {visible ? (ar ? 'إخفاء' : 'Hide') : ar ? 'إظهار' : 'Show'}
                   </Copy>
                 </Pressable>
-              ))}
+              }
+            />
+          )}
+          {mode === 'login' && (
+            <Button
+              variant="link"
+              title={ar ? 'نسيت كلمة المرور؟' : 'Forgot your password?'}
+              disabled={busy}
+              onPress={() => changeMode('forgot')}
+            />
+          )}
+          {mode === 'register' && (
+            <View style={s.roleSection}>
+              <Copy variant="label">{ar ? 'كيف حابب تبدأ؟' : 'How would you like to start?'}</Copy>
+              <Button
+                variant="outline"
+                title={(ar ? selectedRole[1] : selectedRole[2]) + ' ⌄'}
+                onPress={() => setRoleOpen(!roleOpen)}
+                disabled={busy}
+              />
+              {roleOpen && (
+                <View accessibilityRole="radiogroup">
+                  {roles.map(([value, a, en]) => (
+                    <Pressable
+                      key={value ?? 'customer'}
+                      accessibilityRole="radio"
+                      accessibilityState={{ checked: role === value }}
+                      style={[s.role, role === value && s.selected]}
+                      onPress={() => {
+                        setRole(value);
+                        setRoleOpen(false);
+                      }}
+                    >
+                      <Copy>{ar ? a : en}</Copy>
+                      <Copy>{role === value ? '✓' : ''}</Copy>
+                    </Pressable>
+                  ))}
+                </View>
+              )}
+              <Copy variant="muted">
+                {ar
+                  ? 'كل أصحاب الأعمال بيقدروا يشتروا كمان.'
+                  : 'Every business account can shop, too.'}
+              </Copy>
             </View>
-            <Field label={ar ? 'الاسم' : 'Name'} value={name} onChangeText={setName} />
-          </>
-        )}
-        {error && <Failure message={error} />}
-        {notice && <Copy>{notice}</Copy>}
-        {['login', 'register', 'forgot'].includes(mode) && (
-          <Field
-            label={ar ? 'البريد الإلكتروني' : 'Email'}
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            autoComplete="email"
-            placeholder="name@example.com"
-          />
-        )}
-        {['login', 'register', 'reset'].includes(mode) && (
-          <Field
-            label={ar ? 'كلمة المرور' : 'Password'}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoCapitalize="none"
-            autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-            placeholder="••••••••"
-          />
-        )}
-        {['verify', 'reset'].includes(mode) && (
-          <Field
-            label={ar ? 'رمز البريد' : 'Email token'}
-            value={token}
-            onChangeText={setToken}
-            autoCapitalize="none"
-          />
-        )}
-        <Button title={title(mode)} disabled={busy} onPress={() => void submit()} />
-        {mode === 'login' ? (
-          <>
-            <Button
-              variant="link"
-              title={ar ? 'جديد في السوق؟ أنشئ حساباً' : 'New to the marketplace? Create an account'}
-              disabled={busy}
-              onPress={() => changeMode('register')}
-            />
-            <Button
-              variant="outline"
-              title={ar ? 'تابع التصفّح كضيف' : 'Continue as a guest'}
-              disabled={busy}
-              onPress={() => router.navigate('/')}
-            />
-          </>
-        ) : (
+          )}
+          {error && <Failure message={error} />}
+          {notice && (
+            <View accessibilityLiveRegion="polite">
+              <Copy>{notice}</Copy>
+              {mode === 'register' && (
+                <Button
+                  variant="link"
+                  title={title('verify')}
+                  onPress={() => changeMode('verify')}
+                />
+              )}
+            </View>
+          )}
           <Button
-            variant="link"
-            title={title('login')}
+            title={busy ? (ar ? 'لحظة…' : 'One moment…') : title(mode)}
             disabled={busy}
-            onPress={() => changeMode('login')}
+            onPress={() => void submit()}
           />
-        )}
+        </View>
       </Card>
+      <View style={s.switch}>
+        <Copy variant="muted">
+          {mode === 'login'
+            ? ar
+              ? 'أول مرة هون؟'
+              : 'New around here?'
+            : ar
+              ? 'عندك حساب؟'
+              : 'Already part of the neighbourhood?'}
+        </Copy>
+        <Button
+          variant="link"
+          title={title(mode === 'login' ? 'register' : 'login')}
+          disabled={busy}
+          onPress={() => changeMode(mode === 'login' ? 'register' : 'login')}
+        />
+      </View>
       <View style={s.recovery}>
-        {(['forgot', 'verify', 'reset'] as const)
-          .filter((action) => action !== mode)
-          .map((action) => (
+        {(['verify', 'reset'] as const)
+          .filter((m) => m !== mode)
+          .map((m) => (
             <Button
-              key={action}
+              key={m}
               variant="link"
-              title={title(action)}
+              title={title(m)}
               disabled={busy}
-              onPress={() => changeMode(action)}
+              onPress={() => changeMode(m)}
             />
           ))}
       </View>
+      <Copy variant="muted" style={s.footnote}>
+        {ar
+          ? 'الدفع تجريبي بالمحاكاة. لا تُستخدم أموال حقيقية.'
+          : 'Payments are simulated. No real money is used.'}
+      </Copy>
     </Page>
   );
 }
-
-const s = StyleSheet.create({
-  roles: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  role: {
-    width: '48%',
-    minHeight: 66,
-    justifyContent: 'center',
-    padding: 8,
-    borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: 11,
-    gap: 3,
-  },
-  selected: { backgroundColor: colors.mint, borderColor: colors.green },
-  roleDescription: { fontSize: 11, lineHeight: 17 },
-  recovery: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-});
+const useStyles = themedStyles((colors) =>
+  StyleSheet.create({
+    intro: { gap: 8, marginBottom: 8 },
+    eyebrow: { color: colors.green, fontSize: 12 },
+    form: { gap: 14 },
+    mixedInput: { writingDirection: 'ltr', textAlign: 'left' },
+    visibility: {
+      minHeight: 44,
+      minWidth: 62,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 10,
+    },
+    roleSection: { gap: 8 },
+    role: {
+      minHeight: 50,
+      padding: 12,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      borderWidth: 1,
+      borderColor: colors.line,
+      borderRadius: 10,
+      marginBottom: 6,
+    },
+    selected: { backgroundColor: colors.mint, borderColor: colors.green },
+    switch: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 4,
+    },
+    recovery: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8 },
+    footnote: { fontSize: 11, textAlign: 'center', marginBottom: 12 },
+  }),
+);

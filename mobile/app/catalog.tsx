@@ -1,3 +1,4 @@
+import { themedStyles } from '../src/appearance';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
@@ -8,7 +9,6 @@ import { useSession } from '../src/state/session';
 import { useBrowseLocation } from '../src/state/browse-location';
 import { Page, Field, Card, Copy, Button, Busy, Failure } from '../src/ui';
 import { CatalogCard } from '../src/catalog-card';
-import { colors } from '../src/theme';
 import { listingQuery, productQuery } from '../src/catalog-query';
 
 export default function Catalog() {
@@ -30,6 +30,7 @@ function CatalogPage({
   workspace: string;
   startWithSearch: boolean;
 }) {
+  const s = useStyles();
   const { locale } = useSession();
   const { location, setLocation } = useBrowseLocation();
   const ar = locale === 'ar';
@@ -213,6 +214,7 @@ function FilterTag({
   active: boolean;
   onPress: () => void;
 }) {
+  const s = useStyles();
   return (
     <Pressable
       accessibilityRole="button"
@@ -227,25 +229,27 @@ function FilterTag({
   );
 }
 
-const s = StyleSheet.create({
-  filters: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  tag: {
-    minHeight: 44,
-    maxWidth: '100%',
-    paddingHorizontal: 12,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.line,
-    justifyContent: 'center',
-    backgroundColor: colors.paper,
-  },
-  tagText: { color: colors.green },
-  selected: { backgroundColor: colors.mint },
-  resultBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 8,
-  },
-  results: { gap: 10 },
-});
+const useStyles = themedStyles((colors) =>
+  StyleSheet.create({
+    filters: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+    tag: {
+      minHeight: 44,
+      maxWidth: '100%',
+      paddingHorizontal: 12,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: colors.line,
+      justifyContent: 'center',
+      backgroundColor: colors.paper,
+    },
+    tagText: { color: colors.green },
+    selected: { backgroundColor: colors.mint },
+    resultBar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 8,
+    },
+    results: { gap: 10 },
+  }),
+);

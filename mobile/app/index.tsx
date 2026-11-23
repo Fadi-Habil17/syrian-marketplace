@@ -1,3 +1,4 @@
+import { themedStyles, useAppearance } from '../src/appearance';
 import { useState } from 'react';
 import { router } from 'expo-router';
 import { View, Text, Pressable, StyleSheet, type ViewStyle } from 'react-native';
@@ -5,7 +6,7 @@ import { Image } from 'expo-image';
 import { MobileShell } from '../src/shell';
 import { useSession } from '../src/state/session';
 import { useBrowseLocation } from '../src/state/browse-location';
-import { colors, design, readingStyle } from '../src/theme';
+import { design, readingStyle } from '../src/theme';
 import { Busy, Copy, Heading } from '../src/ui';
 
 const atlas = require('../assets/design/souk.png');
@@ -18,6 +19,7 @@ const crops = {
 } as const;
 
 function HomePhoto({ crop, style }: { crop: keyof typeof crops; style: ViewStyle }) {
+  const s = useStyles();
   const [size, setSize] = useState({ width: 0, height: 0 });
   const rect = crops[crop];
   const scale = Math.max(size.width / rect.width, size.height / rect.height);
@@ -73,6 +75,8 @@ const entries = [
 ] as const;
 
 export default function Home() {
+  const s = useStyles();
+  const { colors } = useAppearance();
   const { ready, locale } = useSession();
   const { location } = useBrowseLocation();
   const ar = locale === 'ar';
@@ -102,7 +106,7 @@ export default function Home() {
             onPress={() => router.push({ pathname: '/catalog', params: { showSearch: '1' } })}
             style={s.search}
           >
-            <Image source={design.search} style={s.searchIcon} />
+            <Image tintColor={colors.green} source={design.search} style={s.searchIcon} />
             <Text style={[s.searchLabel, readingStyle(locale)]}>{searchLabel}</Text>
           </Pressable>
           <Pressable
@@ -111,9 +115,9 @@ export default function Home() {
             onPress={() => router.push('/location')}
             style={s.location}
           >
-            <Image source={design.pin} style={s.pin} />
+            <Image tintColor={colors.green} source={design.pin} style={s.pin} />
             <Text style={[s.locationLabel, readingStyle(locale, true)]}>{chooseLocation}</Text>
-            <Image source={design.chevron} style={s.chevron} />
+            <Image tintColor={colors.green} source={design.chevron} style={s.chevron} />
           </Pressable>
         </View>
       </View>
@@ -134,7 +138,11 @@ export default function Home() {
               {ar ? descA : descE}
             </Copy>
           </View>
-          <Image source={design.arrow} style={[s.arrow, !ar && s.mirror]} />
+          <Image
+            tintColor={colors.green}
+            source={design.arrow}
+            style={[s.arrow, !ar && s.mirror]}
+          />
         </Pressable>
       ))}
       {!ready && <Busy />}
@@ -145,56 +153,58 @@ export default function Home() {
   );
 }
 
-const s = StyleSheet.create({
-  hero: {
-    borderRadius: 17,
-    borderWidth: 1,
-    borderColor: colors.line,
-    overflow: 'hidden',
-    backgroundColor: colors.paper,
-  },
-  photo: { overflow: 'hidden', backgroundColor: colors.mint, direction: 'ltr' },
-  heroPhoto: { height: 96 },
-  heroContent: { paddingHorizontal: 13, paddingVertical: 12, gap: 5 },
-  search: {
-    minHeight: 46,
-    borderRadius: 11,
-    borderWidth: 1,
-    borderColor: colors.line,
-    paddingHorizontal: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  searchIcon: { width: 18, height: 18 },
-  searchLabel: { flex: 1, fontSize: 13, lineHeight: 22, color: colors.muted },
-  location: {
-    minHeight: 38,
-    alignSelf: 'flex-start',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-  },
-  locationLabel: { fontSize: 12, lineHeight: 20, color: colors.green },
-  pin: { width: 17, height: 17 },
-  chevron: { width: 14, height: 14 },
-  card: {
-    minHeight: 95,
-    padding: 8,
-    gap: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.paper,
-    borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: 15,
-  },
-  thumb: { width: 86, height: 77, borderRadius: 11 },
-  cardContent: { flex: 1, minWidth: 0, gap: 4 },
-  cardTitle: { fontSize: 16, lineHeight: 22 },
-  cardDescription: { fontSize: 12, lineHeight: 19 },
-  arrow: { width: 16, height: 16 },
-  mirror: { transform: [{ scaleX: -1 }] },
-  pressed: { backgroundColor: colors.mint },
-  simulated: { marginTop: 8, fontSize: 12 },
-});
+const useStyles = themedStyles((colors) =>
+  StyleSheet.create({
+    hero: {
+      borderRadius: 17,
+      borderWidth: 1,
+      borderColor: colors.line,
+      overflow: 'hidden',
+      backgroundColor: colors.paper,
+    },
+    photo: { overflow: 'hidden', backgroundColor: colors.mint, direction: 'ltr' },
+    heroPhoto: { height: 96 },
+    heroContent: { paddingHorizontal: 13, paddingVertical: 12, gap: 5 },
+    search: {
+      minHeight: 46,
+      borderRadius: 11,
+      borderWidth: 1,
+      borderColor: colors.line,
+      paddingHorizontal: 10,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    searchIcon: { width: 18, height: 18 },
+    searchLabel: { flex: 1, fontSize: 13, lineHeight: 22, color: colors.muted },
+    location: {
+      minHeight: 38,
+      alignSelf: 'flex-start',
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 5,
+    },
+    locationLabel: { fontSize: 12, lineHeight: 20, color: colors.green },
+    pin: { width: 17, height: 17 },
+    chevron: { width: 14, height: 14 },
+    card: {
+      minHeight: 95,
+      padding: 8,
+      gap: 10,
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.paper,
+      borderWidth: 1,
+      borderColor: colors.line,
+      borderRadius: 15,
+    },
+    thumb: { width: 86, height: 77, borderRadius: 11 },
+    cardContent: { flex: 1, minWidth: 0, gap: 4 },
+    cardTitle: { fontSize: 16, lineHeight: 22 },
+    cardDescription: { fontSize: 12, lineHeight: 19 },
+    arrow: { width: 16, height: 16 },
+    mirror: { transform: [{ scaleX: -1 }] },
+    pressed: { backgroundColor: colors.mint },
+    simulated: { marginTop: 8, fontSize: 12 },
+  }),
+);
