@@ -7,9 +7,20 @@
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "experiments": { "autolinkingModuleResolution": true },
-    "ios": { "supportsTablet": true, "bundleIdentifier": "com.syrianmarketplace.app" },
-    "android": { "package": "com.syrianmarketplace.app" },
-    "extra": { "supportsRTL": true }
+    "experiments": {
+      "autolinkingModuleResolution": true
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.syrianmarketplace.app"
+    },
+    "android": {
+      "package": "com.syrianmarketplace.app"
+    },
+    "extra": {
+      "supportsRTL": true
+    },
+    "scheme": "dukkanhara",
+    "plugins": ["expo-router", "expo-secure-store", "expo-notifications", "expo-font"]
   }
 }
