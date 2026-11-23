@@ -1,0 +1,2463 @@
+{
+  "operations": {
+    "getHealth": {
+      "path": "/health",
+      "method": "GET",
+      "public": true,
+      "route": [],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "register": {
+      "path": "/auth/register",
+      "method": "POST",
+      "public": true,
+      "route": [],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "RegisterInput" }
+    },
+    "login": {
+      "path": "/auth/login",
+      "method": "POST",
+      "public": true,
+      "route": [],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "LoginInput" }
+    },
+    "refreshSession": {
+      "path": "/auth/refresh",
+      "method": "POST",
+      "public": true,
+      "route": [],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "RefreshInput" }
+    },
+    "verifyEmail": {
+      "path": "/auth/verify-email",
+      "method": "POST",
+      "public": true,
+      "route": [],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "TokenInput" }
+    },
+    "forgotPassword": {
+      "path": "/auth/forgot-password",
+      "method": "POST",
+      "public": true,
+      "route": [],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "EmailInput" }
+    },
+    "resetPassword": {
+      "path": "/auth/reset-password",
+      "method": "POST",
+      "public": true,
+      "route": [],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ResetPasswordInput" }
+    },
+    "logout": {
+      "path": "/auth/logout",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "RefreshInput" }
+    },
+    "getSessionUser": {
+      "path": "/auth/me",
+      "method": "GET",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "getMe": {
+      "path": "/me",
+      "method": "GET",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "updateMe": {
+      "path": "/me",
+      "method": "PATCH",
+      "public": false,
+      "route": [],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "MeInput" }
+    },
+    "listOwnBusinessProfiles": {
+      "path": "/business-profiles",
+      "method": "GET",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "createBusinessProfile": {
+      "path": "/business-profiles",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "CreateProfileInput" }
+    },
+    "updateBusinessProfile": {
+      "path": "/business-profiles/{profileId}",
+      "method": "PATCH",
+      "public": false,
+      "route": ["profileId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ProfileInput" }
+    },
+    "switchBusinessWorkspace": {
+      "path": "/business-profiles/switch",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "SwitchInput" }
+    },
+    "reactivateBusinessProfile": {
+      "path": "/business-profiles/{profileId}/reactivate",
+      "method": "POST",
+      "public": false,
+      "route": ["profileId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AcceptInput" }
+    },
+    "getPublicProfile": {
+      "path": "/profiles/{profileId}",
+      "method": "GET",
+      "public": true,
+      "route": ["profileId"],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "createPortfolioItem": {
+      "path": "/business-profiles/{profileId}/portfolio",
+      "method": "POST",
+      "public": false,
+      "route": ["profileId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "PortfolioInput" }
+    },
+    "removePortfolioItem": {
+      "path": "/business-profiles/{profileId}/portfolio/{itemId}",
+      "method": "DELETE",
+      "public": false,
+      "route": ["profileId", "itemId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "listServiceAreas": {
+      "path": "/business-profiles/{profileId}/service-areas",
+      "method": "GET",
+      "public": false,
+      "route": ["profileId"],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "addServiceArea": {
+      "path": "/business-profiles/{profileId}/service-areas",
+      "method": "POST",
+      "public": false,
+      "route": ["profileId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ServiceAreaInput" }
+    },
+    "removeServiceArea": {
+      "path": "/business-profiles/{profileId}/service-areas/{areaId}",
+      "method": "DELETE",
+      "public": false,
+      "route": ["profileId", "areaId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "listGovernorates": {
+      "path": "/geography/governorates",
+      "method": "GET",
+      "public": true,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "listCities": {
+      "path": "/geography/cities",
+      "method": "GET",
+      "public": true,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "governorateId": { "type": "string", "format": "uuid" }
+      },
+      "requiredQuery": ["governorateId"],
+      "body": null
+    },
+    "listAreas": {
+      "path": "/geography/areas",
+      "method": "GET",
+      "public": true,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "cityId": { "type": "string", "format": "uuid" }
+      },
+      "requiredQuery": ["cityId"],
+      "body": null
+    },
+    "listAddresses": {
+      "path": "/me/addresses",
+      "method": "GET",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "createAddress": {
+      "path": "/me/addresses",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AddressInput" }
+    },
+    "updateAddress": {
+      "path": "/me/addresses/{addressId}",
+      "method": "PATCH",
+      "public": false,
+      "route": ["addressId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AddressInput" }
+    },
+    "archiveAddress": {
+      "path": "/me/addresses/{addressId}",
+      "method": "DELETE",
+      "public": false,
+      "route": ["addressId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "listCategories": {
+      "path": "/categories",
+      "method": "GET",
+      "public": true,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "workspace": { "ref": "Workspace" }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "listListings": {
+      "path": "/listings",
+      "method": "GET",
+      "public": true,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "categoryId": { "type": "string", "format": "uuid" },
+        "cityId": { "type": "string", "format": "uuid" },
+        "governorateId": { "type": "string", "format": "uuid" },
+        "currency": { "ref": "Currency" },
+        "minPriceUnits": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,11}|[1-8][0-9]{12}|9000000000000)$",
+          "description": "Price/allocation in stored units, maximum 9000000000000. SYP whole pounds, USD cents."
+        },
+        "maxPriceUnits": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,11}|[1-8][0-9]{12}|9000000000000)$",
+          "description": "Price/allocation in stored units, maximum 9000000000000. SYP whole pounds, USD cents."
+        },
+        "sort": {
+          "enum": [
+            "createdAt:desc",
+            "priceUnits:asc",
+            "priceUnits:desc",
+            "rating:desc",
+            "deliveryDays:asc"
+          ]
+        },
+        "maxDeliveryDays": { "type": "integer", "minimum": 1, "maximum": 365 },
+        "minRating": { "type": "number", "minimum": 1, "maximum": 5 },
+        "workspace": { "enum": ["FREELANCE", "PROFESSIONALS"] },
+        "q": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "mine": { "type": "boolean" }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "createListing": {
+      "path": "/listings",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ListingInput" }
+    },
+    "getListing": {
+      "path": "/listings/{listingId}",
+      "method": "GET",
+      "public": true,
+      "route": ["listingId"],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "updateListing": {
+      "path": "/listings/{listingId}",
+      "method": "PATCH",
+      "public": false,
+      "route": ["listingId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ListingPatchInput" }
+    },
+    "publishListing": {
+      "path": "/listings/{listingId}/publish",
+      "method": "POST",
+      "public": false,
+      "route": ["listingId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AcceptInput" }
+    },
+    "deactivateListing": {
+      "path": "/listings/{listingId}/deactivate",
+      "method": "POST",
+      "public": false,
+      "route": ["listingId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ReasonInput" }
+    },
+    "listStores": {
+      "path": "/stores",
+      "method": "GET",
+      "public": true,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "cityId": { "type": "string", "format": "uuid" },
+        "governorateId": { "type": "string", "format": "uuid" },
+        "sort": { "enum": ["createdAt:desc", "nameEn:asc"] },
+        "q": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "mine": { "type": "boolean" }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "createStore": {
+      "path": "/stores",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "StoreInput" }
+    },
+    "getStore": {
+      "path": "/stores/{storeId}",
+      "method": "GET",
+      "public": true,
+      "route": ["storeId"],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "updateStore": {
+      "path": "/stores/{storeId}",
+      "method": "PATCH",
+      "public": false,
+      "route": ["storeId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "StorePatchInput" }
+    },
+    "publishStore": {
+      "path": "/stores/{storeId}/publish",
+      "method": "POST",
+      "public": false,
+      "route": ["storeId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AcceptInput" }
+    },
+    "deactivateStore": {
+      "path": "/stores/{storeId}/deactivate",
+      "method": "POST",
+      "public": false,
+      "route": ["storeId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ReasonInput" }
+    },
+    "listProducts": {
+      "path": "/products",
+      "method": "GET",
+      "public": true,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "categoryId": { "type": "string", "format": "uuid" },
+        "cityId": { "type": "string", "format": "uuid" },
+        "governorateId": { "type": "string", "format": "uuid" },
+        "currency": { "ref": "Currency" },
+        "minPriceUnits": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,11}|[1-8][0-9]{12}|9000000000000)$",
+          "description": "Price/allocation in stored units, maximum 9000000000000. SYP whole pounds, USD cents."
+        },
+        "maxPriceUnits": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,11}|[1-8][0-9]{12}|9000000000000)$",
+          "description": "Price/allocation in stored units, maximum 9000000000000. SYP whole pounds, USD cents."
+        },
+        "sort": { "enum": ["createdAt:desc", "priceUnits:asc", "priceUnits:desc", "rating:desc"] },
+        "storeId": { "type": "string", "format": "uuid" },
+        "q": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "mine": { "type": "boolean" }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "createProduct": {
+      "path": "/products",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ProductInput" }
+    },
+    "getProduct": {
+      "path": "/products/{productId}",
+      "method": "GET",
+      "public": true,
+      "route": ["productId"],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "updateProduct": {
+      "path": "/products/{productId}",
+      "method": "PATCH",
+      "public": false,
+      "route": ["productId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ProductPatchInput" }
+    },
+    "publishProduct": {
+      "path": "/products/{productId}/publish",
+      "method": "POST",
+      "public": false,
+      "route": ["productId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AcceptInput" }
+    },
+    "deactivateProduct": {
+      "path": "/products/{productId}/deactivate",
+      "method": "POST",
+      "public": false,
+      "route": ["productId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ReasonInput" }
+    },
+    "setProductStock": {
+      "path": "/products/{productId}/stock",
+      "method": "PATCH",
+      "public": false,
+      "route": ["productId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "StockInput" }
+    },
+    "createFreelanceOrder": {
+      "path": "/orders/freelance",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "FreelanceOrderInput" }
+    },
+    "createBooking": {
+      "path": "/orders/professional-bookings",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "BookingInput" }
+    },
+    "requestInspectionQuote": {
+      "path": "/orders/inspection-requests",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "InspectionInput" }
+    },
+    "previewStoreCheckout": {
+      "path": "/orders/store-preview",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "StorePreviewInput" }
+    },
+    "checkoutStore": {
+      "path": "/orders/store-checkout",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "CheckoutInput" }
+    },
+    "listOrders": {
+      "path": "/orders",
+      "method": "GET",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "workspace": { "ref": "Workspace" },
+        "state": { "ref": "OrderState" },
+        "participation": { "enum": ["BUYER", "PROVIDER"] },
+        "sort": { "enum": ["createdAt:desc", "createdAt:asc"] }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "getOrder": {
+      "path": "/orders/{orderId}",
+      "method": "GET",
+      "public": false,
+      "route": ["orderId"],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "getOrderTimeline": {
+      "path": "/orders/{orderId}/timeline",
+      "method": "GET",
+      "public": false,
+      "route": ["orderId"],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "getAllowedOrderActions": {
+      "path": "/orders/{orderId}/actions",
+      "method": "GET",
+      "public": false,
+      "route": ["orderId"],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "agreeOrder": {
+      "path": "/orders/{orderId}/agree",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AgreementInput" }
+    },
+    "acceptBooking": {
+      "path": "/orders/{orderId}/accept-booking",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AcceptInput" }
+    },
+    "proposeSchedule": {
+      "path": "/orders/{orderId}/propose-schedule",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ScheduleInput" }
+    },
+    "acceptSchedule": {
+      "path": "/orders/{orderId}/accept-schedule",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AcceptInput" }
+    },
+    "rejectOrder": {
+      "path": "/orders/{orderId}/reject",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ReasonInput" }
+    },
+    "startWork": {
+      "path": "/orders/{orderId}/start",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AcceptInput" }
+    },
+    "recordProgress": {
+      "path": "/orders/{orderId}/progress",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ProgressInput" }
+    },
+    "markReady": {
+      "path": "/orders/{orderId}/ready",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ReadinessInput" }
+    },
+    "deliverService": {
+      "path": "/orders/{orderId}/deliver",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "DeliverInput" }
+    },
+    "confirmReceipt": {
+      "path": "/orders/{orderId}/confirm",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AcceptInput" }
+    },
+    "cancelOrder": {
+      "path": "/orders/{orderId}/cancel",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "CancelInput" }
+    },
+    "requestExtension": {
+      "path": "/orders/{orderId}/request-extension",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ExtensionInput" }
+    },
+    "acceptExtension": {
+      "path": "/orders/{orderId}/accept-extension",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AcceptInput" }
+    },
+    "acceptStoreOrder": {
+      "path": "/orders/{orderId}/accept-store",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AcceptInput" }
+    },
+    "markStoreReady": {
+      "path": "/orders/{orderId}/ready-for-delivery",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AcceptInput" }
+    },
+    "requestPlatformDriver": {
+      "path": "/orders/{orderId}/delivery/request-driver",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AcceptInput" }
+    },
+    "createMilestone": {
+      "path": "/orders/{orderId}/milestones",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "MilestoneInput" }
+    },
+    "listMilestones": {
+      "path": "/orders/{orderId}/milestones",
+      "method": "GET",
+      "public": false,
+      "route": ["orderId"],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "listSubmissions": {
+      "path": "/orders/{orderId}/submissions",
+      "method": "GET",
+      "public": false,
+      "route": ["orderId"],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "listOrderQuotes": {
+      "path": "/orders/{orderId}/quotes",
+      "method": "GET",
+      "public": false,
+      "route": ["orderId"],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "sendQuote": {
+      "path": "/orders/{orderId}/quotes",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "QuoteInput" }
+    },
+    "agreeInspectionSchedule": {
+      "path": "/orders/{orderId}/inspection-schedule",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "InspectionScheduleInput" }
+    },
+    "approveQuote": {
+      "path": "/quotes/{quoteId}/approve",
+      "method": "POST",
+      "public": false,
+      "route": ["quoteId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AcceptInput" }
+    },
+    "rejectQuote": {
+      "path": "/quotes/{quoteId}/reject",
+      "method": "POST",
+      "public": false,
+      "route": ["quoteId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ReasonInput" }
+    },
+    "listWallets": {
+      "path": "/wallets",
+      "method": "GET",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "listWalletTransactions": {
+      "path": "/wallets/{currency}/transactions",
+      "method": "GET",
+      "public": false,
+      "route": ["currency"],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "listOrderPayments": {
+      "path": "/orders/{orderId}/payments",
+      "method": "GET",
+      "public": false,
+      "route": ["orderId"],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "getSettlement": {
+      "path": "/orders/{orderId}/settlement",
+      "method": "GET",
+      "public": false,
+      "route": ["orderId"],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "getOperation": {
+      "path": "/operations/{operationId}",
+      "method": "GET",
+      "public": false,
+      "route": ["operationId"],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "holdDeposit": {
+      "path": "/orders/{orderId}/payments/deposit",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "PaymentInput" }
+    },
+    "holdBalance": {
+      "path": "/orders/{orderId}/payments/balance",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "PaymentInput" }
+    },
+    "getDeliveryOptions": {
+      "path": "/delivery-options",
+      "method": "GET",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {
+        "storeId": { "type": "string", "format": "uuid" },
+        "addressId": { "type": "string", "format": "uuid" },
+        "currency": { "ref": "Currency" }
+      },
+      "requiredQuery": ["storeId", "addressId", "currency"],
+      "body": null
+    },
+    "listDriverJobs": {
+      "path": "/driver/jobs",
+      "method": "GET",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "listDriverAssignments": {
+      "path": "/driver/assignments",
+      "method": "GET",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "getDelivery": {
+      "path": "/deliveries/{deliveryId}",
+      "method": "GET",
+      "public": false,
+      "route": ["deliveryId"],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "acceptDeliveryJob": {
+      "path": "/deliveries/{deliveryId}/accept",
+      "method": "POST",
+      "public": false,
+      "route": ["deliveryId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AcceptInput" }
+    },
+    "releaseDriverAssignment": {
+      "path": "/deliveries/{deliveryId}/release-assignment",
+      "method": "POST",
+      "public": false,
+      "route": ["deliveryId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ReasonInput" }
+    },
+    "recordPickup": {
+      "path": "/deliveries/{deliveryId}/pickup",
+      "method": "POST",
+      "public": false,
+      "route": ["deliveryId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "DeliveryRecordInput" }
+    },
+    "recordDropoff": {
+      "path": "/deliveries/{deliveryId}/dropoff",
+      "method": "POST",
+      "public": false,
+      "route": ["deliveryId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "DeliveryRecordInput" }
+    },
+    "reportDeliveryException": {
+      "path": "/deliveries/{deliveryId}/exception",
+      "method": "POST",
+      "public": false,
+      "route": ["deliveryId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "DeliveryExceptionInput" }
+    },
+    "chooseDeliveryFallback": {
+      "path": "/deliveries/{deliveryId}/fallback",
+      "method": "POST",
+      "public": false,
+      "route": ["deliveryId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "FallbackInput" }
+    },
+    "proposeDeliveryTerms": {
+      "path": "/deliveries/{deliveryId}/terms",
+      "method": "POST",
+      "public": false,
+      "route": ["deliveryId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "DeliveryTermsInput" }
+    },
+    "approveDeliveryTerms": {
+      "path": "/deliveries/{deliveryId}/terms/{revisionId}/approve",
+      "method": "POST",
+      "public": false,
+      "route": ["deliveryId", "revisionId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AcceptInput" }
+    },
+    "getOrderRooms": {
+      "path": "/orders/{orderId}/chat-rooms",
+      "method": "GET",
+      "public": false,
+      "route": ["orderId"],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "listMessages": {
+      "path": "/orders/{orderId}/messages",
+      "method": "GET",
+      "public": false,
+      "route": ["orderId"],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "roomId": { "type": "string", "format": "uuid" }
+      },
+      "requiredQuery": ["roomId"],
+      "body": null
+    },
+    "sendMessage": {
+      "path": "/orders/{orderId}/messages",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "MessageInput" }
+    },
+    "uploadFile": {
+      "path": "/files/uploads",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "getFileStatus": {
+      "path": "/files/{fileId}/status",
+      "method": "GET",
+      "public": false,
+      "route": ["fileId"],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "downloadFile": {
+      "path": "/files/{fileId}/download",
+      "method": "GET",
+      "public": false,
+      "route": ["fileId"],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "listOrderCases": {
+      "path": "/orders/{orderId}/cases",
+      "method": "GET",
+      "public": false,
+      "route": ["orderId"],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "openCase": {
+      "path": "/orders/{orderId}/cases",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "CaseInput" }
+    },
+    "getCase": {
+      "path": "/cases/{caseId}",
+      "method": "GET",
+      "public": false,
+      "route": ["caseId"],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "submitEvidence": {
+      "path": "/cases/{caseId}/evidence",
+      "method": "POST",
+      "public": false,
+      "route": ["caseId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "EvidenceInput" }
+    },
+    "listEvidence": {
+      "path": "/cases/{caseId}/evidence",
+      "method": "GET",
+      "public": false,
+      "route": ["caseId"],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "listProposals": {
+      "path": "/cases/{caseId}/proposals",
+      "method": "GET",
+      "public": false,
+      "route": ["caseId"],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "proposeResolution": {
+      "path": "/cases/{caseId}/proposals",
+      "method": "POST",
+      "public": false,
+      "route": ["caseId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ProposalInput" }
+    },
+    "acceptResolutionProposal": {
+      "path": "/cases/{caseId}/proposals/{proposalId}/accept",
+      "method": "POST",
+      "public": false,
+      "route": ["caseId", "proposalId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AcceptInput" }
+    },
+    "rejectResolutionProposal": {
+      "path": "/cases/{caseId}/proposals/{proposalId}/reject",
+      "method": "POST",
+      "public": false,
+      "route": ["caseId", "proposalId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ReasonInput" }
+    },
+    "acceptRevisionPlan": {
+      "path": "/cases/{caseId}/revisions/accept",
+      "method": "POST",
+      "public": false,
+      "route": ["caseId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "AcceptInput" }
+    },
+    "listVerifiedReviews": {
+      "path": "/profiles/{profileId}/reviews",
+      "method": "GET",
+      "public": true,
+      "route": ["profileId"],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "sort": { "enum": ["createdAt:desc", "stars:desc", "stars:asc"] }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "createReview": {
+      "path": "/orders/{orderId}/review",
+      "method": "POST",
+      "public": false,
+      "route": ["orderId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ReviewInput" }
+    },
+    "editReview": {
+      "path": "/reviews/{reviewId}",
+      "method": "PATCH",
+      "public": false,
+      "route": ["reviewId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ReviewInput" }
+    },
+    "listNotifications": {
+      "path": "/notifications",
+      "method": "GET",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "unread": { "type": "boolean" }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "readNotification": {
+      "path": "/notifications/{notificationId}/read",
+      "method": "POST",
+      "public": false,
+      "route": ["notificationId"],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "readAllNotifications": {
+      "path": "/notifications/read-all",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "registerDevice": {
+      "path": "/devices",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "DeviceInput" }
+    },
+    "revokeDevice": {
+      "path": "/devices/{deviceId}",
+      "method": "DELETE",
+      "public": false,
+      "route": ["deviceId"],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "createRealtimeTicket": {
+      "path": "/realtime/ticket",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "RealtimeTicketInput" }
+    },
+    "listAuditHistory": {
+      "path": "/admin/audit",
+      "method": "GET",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "listModerationQueue": {
+      "path": "/admin/moderation",
+      "method": "GET",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "listAdminCases": {
+      "path": "/admin/cases",
+      "method": "GET",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "listCommissionRates": {
+      "path": "/admin/commission-rates",
+      "method": "GET",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "configureCommission": {
+      "path": "/admin/commission-rates",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "CommissionRateInput" }
+    },
+    "listDeliveryRates": {
+      "path": "/admin/delivery-rates",
+      "method": "GET",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "configureDeliveryRate": {
+      "path": "/admin/delivery-rates",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "DeliveryRateInput" }
+    },
+    "listDriverZones": {
+      "path": "/admin/driver-zones",
+      "method": "GET",
+      "public": false,
+      "route": [],
+      "headers": [],
+      "query": {
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+      },
+      "requiredQuery": [],
+      "body": null
+    },
+    "assignDriverZone": {
+      "path": "/admin/driver-zones",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "DriverZoneInput" }
+    },
+    "moderateResource": {
+      "path": "/admin/moderation/{resourceId}/decision",
+      "method": "POST",
+      "public": false,
+      "route": ["resourceId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ModerationDecisionInput" }
+    },
+    "restrictAccount": {
+      "path": "/admin/users/{userId}/restrictions",
+      "method": "POST",
+      "public": false,
+      "route": ["userId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "RestrictionInput" }
+    },
+    "assignAdminCase": {
+      "path": "/admin/cases/{caseId}/assign",
+      "method": "POST",
+      "public": false,
+      "route": ["caseId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ReasonInput" }
+    },
+    "resolveAdminCase": {
+      "path": "/admin/cases/{caseId}/resolve",
+      "method": "POST",
+      "public": false,
+      "route": ["caseId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ResolveCaseInput" }
+    },
+    "reassignDelivery": {
+      "path": "/admin/deliveries/{deliveryId}/reassign",
+      "method": "POST",
+      "public": false,
+      "route": ["deliveryId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ReassignInput" }
+    },
+    "moderateReview": {
+      "path": "/admin/reviews/{reviewId}/moderate",
+      "method": "POST",
+      "public": false,
+      "route": ["reviewId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ModerationDecisionInput" }
+    },
+    "simulateWalletTopUp": {
+      "path": "/admin/simulator/topups",
+      "method": "POST",
+      "public": false,
+      "route": [],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "TopUpInput" }
+    },
+    "revokeRestriction": {
+      "path": "/admin/restrictions/{restrictionId}/revoke",
+      "method": "POST",
+      "public": false,
+      "route": ["restrictionId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ReasonInput" }
+    },
+    "removeDriverZone": {
+      "path": "/admin/driver-zones/{zoneId}",
+      "method": "DELETE",
+      "public": false,
+      "route": ["zoneId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "resumeOverdueFinalPayment": {
+      "path": "/admin/cases/{caseId}/resume-final-payment",
+      "method": "POST",
+      "public": false,
+      "route": ["caseId"],
+      "headers": ["idempotency-key", "if-match"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "ExtensionInput" }
+    }
+  },
+  "schemas": {
+    "RegisterInput": {
+      "type": "object",
+      "required": ["email", "password", "displayName", "locale"],
+      "properties": {
+        "email": { "type": "string", "format": "email", "maxLength": 254 },
+        "password": {
+          "type": "string",
+          "minLength": 12,
+          "maxLength": 72,
+          "pattern": "\\S",
+          "description": "Server also enforces maximum 72 UTF-8 bytes before bcrypt hashing."
+        },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 120, "pattern": "\\S" },
+        "locale": { "enum": ["ar", "en"] },
+        "businessRole": { "variants": [{ "ref": "BusinessType" }, { "type": "null" }] }
+      }
+    },
+    "BusinessType": {
+      "type": "string",
+      "enum": ["FREELANCER", "PROFESSIONAL", "STORE_OWNER", "DELIVERY_DRIVER"]
+    },
+    "LoginInput": {
+      "type": "object",
+      "required": ["email", "password", "client"],
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "password": { "type": "string", "minLength": 1, "maxLength": 72, "pattern": "\\S" },
+        "client": { "enum": ["WEB", "IOS", "ANDROID"] }
+      }
+    },
+    "RefreshInput": {
+      "type": "object",
+      "required": ["refreshToken"],
+      "properties": {
+        "refreshToken": { "type": "string", "minLength": 1, "maxLength": 8192, "pattern": "\\S" }
+      }
+    },
+    "TokenInput": {
+      "type": "object",
+      "required": ["token"],
+      "properties": {
+        "token": { "type": "string", "minLength": 1, "maxLength": 512, "pattern": "\\S" }
+      }
+    },
+    "EmailInput": {
+      "type": "object",
+      "required": ["email"],
+      "properties": { "email": { "type": "string", "format": "email" } }
+    },
+    "ResetPasswordInput": {
+      "type": "object",
+      "required": ["token", "password"],
+      "properties": {
+        "token": { "type": "string", "minLength": 1, "maxLength": 512, "pattern": "\\S" },
+        "password": { "type": "string", "minLength": 12, "maxLength": 72, "pattern": "\\S" }
+      }
+    },
+    "MeInput": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 120, "pattern": "\\S" },
+        "locale": { "enum": ["ar", "en"] }
+      }
+    },
+    "CreateProfileInput": {
+      "type": "object",
+      "required": ["type", "title", "bio", "skills", "languages"],
+      "properties": {
+        "type": { "ref": "BusinessType" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S" },
+        "bio": { "type": "string", "minLength": 1, "maxLength": 10000, "pattern": "\\S" },
+        "cityId": { "variants": [{ "type": "string", "format": "uuid" }, { "type": "null" }] },
+        "trade": {
+          "variants": [
+            { "type": "string", "minLength": 1, "maxLength": 100, "pattern": "\\S" },
+            { "type": "null" }
+          ]
+        },
+        "experienceYears": {
+          "variants": [{ "type": "integer", "minimum": 0, "maximum": 80 }, { "type": "null" }]
+        },
+        "skills": {
+          "type": "array",
+          "maxItems": 50,
+          "items": { "type": "string", "minLength": 1, "maxLength": 100, "pattern": "\\S" }
+        },
+        "languages": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "required": ["languageCode", "proficiency"],
+            "properties": {
+              "languageCode": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 10,
+                "pattern": "\\S"
+              },
+              "proficiency": { "type": "string", "minLength": 1, "maxLength": 40, "pattern": "\\S" }
+            }
+          }
+        }
+      }
+    },
+    "ProfileInput": {
+      "type": "object",
+      "required": ["title", "bio", "skills", "languages"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S" },
+        "bio": { "type": "string", "minLength": 1, "maxLength": 10000, "pattern": "\\S" },
+        "cityId": { "variants": [{ "type": "string", "format": "uuid" }, { "type": "null" }] },
+        "trade": {
+          "variants": [
+            { "type": "string", "minLength": 1, "maxLength": 100, "pattern": "\\S" },
+            { "type": "null" }
+          ]
+        },
+        "experienceYears": {
+          "variants": [{ "type": "integer", "minimum": 0, "maximum": 80 }, { "type": "null" }]
+        },
+        "skills": {
+          "type": "array",
+          "maxItems": 50,
+          "items": { "type": "string", "minLength": 1, "maxLength": 100, "pattern": "\\S" }
+        },
+        "languages": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "required": ["languageCode", "proficiency"],
+            "properties": {
+              "languageCode": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 10,
+                "pattern": "\\S"
+              },
+              "proficiency": { "type": "string", "minLength": 1, "maxLength": 40, "pattern": "\\S" }
+            }
+          }
+        }
+      }
+    },
+    "SwitchInput": {
+      "type": "object",
+      "required": ["target"],
+      "properties": {
+        "target": { "variants": [{ "ref": "BusinessType" }, { "const": "CUSTOMER" }] }
+      }
+    },
+    "AcceptInput": {
+      "type": "object",
+      "required": ["accepted"],
+      "properties": { "accepted": { "const": true } }
+    },
+    "PortfolioInput": {
+      "type": "object",
+      "required": ["kind", "title", "position"],
+      "properties": {
+        "kind": { "enum": ["IMAGE", "FILE", "LINK"] },
+        "title": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S" },
+        "caption": { "type": "string", "minLength": 1, "maxLength": 2000, "pattern": "\\S" },
+        "url": { "type": "string", "format": "uri" },
+        "fileId": { "type": "string", "format": "uuid" },
+        "position": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "ServiceAreaInput": {
+      "type": "object",
+      "required": ["cityId"],
+      "properties": {
+        "cityId": { "type": "string", "format": "uuid" },
+        "areaId": { "variants": [{ "type": "string", "format": "uuid" }, { "type": "null" }] }
+      }
+    },
+    "AddressInput": {
+      "type": "object",
+      "required": ["label", "cityId", "details", "contactName", "contactPhone"],
+      "properties": {
+        "label": { "type": "string", "minLength": 1, "maxLength": 80, "pattern": "\\S" },
+        "cityId": { "type": "string", "format": "uuid" },
+        "areaId": { "variants": [{ "type": "string", "format": "uuid" }, { "type": "null" }] },
+        "details": { "type": "string", "minLength": 1, "maxLength": 2000, "pattern": "\\S" },
+        "contactName": { "type": "string", "minLength": 1, "maxLength": 120, "pattern": "\\S" },
+        "contactPhone": { "type": "string", "minLength": 1, "maxLength": 30, "pattern": "\\S" }
+      }
+    },
+    "Workspace": { "type": "string", "enum": ["FREELANCE", "PROFESSIONALS", "HOME_STORE"] },
+    "Currency": { "type": "string", "enum": ["SYP", "USD"] },
+    "ListingInput": {
+      "type": "object",
+      "required": ["categoryId", "kind", "price"],
+      "properties": {
+        "titleAr": { "type": "string", "maxLength": 200 },
+        "titleEn": { "type": "string", "maxLength": 200 },
+        "descriptionAr": { "type": "string", "maxLength": 10000 },
+        "descriptionEn": { "type": "string", "maxLength": 10000 },
+        "categoryId": { "type": "string", "format": "uuid" },
+        "kind": { "ref": "ListingKind" },
+        "price": { "ref": "ServicePrice" },
+        "deliveryDays": {
+          "variants": [{ "type": "integer", "minimum": 1, "maximum": 365 }, { "type": "null" }]
+        },
+        "durationMinutes": {
+          "variants": [{ "type": "integer", "minimum": 30, "maximum": 1440 }, { "type": "null" }]
+        },
+        "photoIds": {
+          "type": "array",
+          "maxItems": 10,
+          "items": { "type": "string", "format": "uuid" }
+        }
+      }
+    },
+    "ListingKind": { "type": "string", "enum": ["FREELANCE", "PROFESSIONAL_PACKAGE"] },
+    "ServicePrice": {
+      "type": "object",
+      "required": ["currency", "units"],
+      "properties": { "currency": { "ref": "Currency" }, "units": {} }
+    },
+    "ListingPatchInput": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "titleAr": { "type": "string", "maxLength": 200 },
+        "titleEn": { "type": "string", "maxLength": 200 },
+        "descriptionAr": { "type": "string", "maxLength": 10000 },
+        "descriptionEn": { "type": "string", "maxLength": 10000 },
+        "categoryId": { "type": "string", "format": "uuid" },
+        "kind": { "ref": "ListingKind" },
+        "price": { "ref": "ServicePrice" },
+        "deliveryDays": {
+          "variants": [{ "type": "integer", "minimum": 1, "maximum": 365 }, { "type": "null" }]
+        },
+        "durationMinutes": {
+          "variants": [{ "type": "integer", "minimum": 30, "maximum": 1440 }, { "type": "null" }]
+        },
+        "photoIds": {
+          "type": "array",
+          "maxItems": 10,
+          "items": { "type": "string", "format": "uuid" }
+        }
+      }
+    },
+    "ReasonInput": {
+      "type": "object",
+      "required": ["reason"],
+      "properties": {
+        "reason": { "type": "string", "minLength": 1, "maxLength": 5000, "pattern": "\\S" }
+      }
+    },
+    "StoreInput": {
+      "type": "object",
+      "required": ["cityId", "supportsSellerDelivery", "supportsPlatformDelivery"],
+      "properties": {
+        "nameAr": { "type": "string", "maxLength": 200 },
+        "nameEn": { "type": "string", "maxLength": 200 },
+        "descriptionAr": { "type": "string", "maxLength": 10000 },
+        "descriptionEn": { "type": "string", "maxLength": 10000 },
+        "cityId": { "type": "string", "format": "uuid" },
+        "logoId": { "variants": [{ "type": "string", "format": "uuid" }, { "type": "null" }] },
+        "supportsSellerDelivery": { "type": "boolean" },
+        "supportsPlatformDelivery": { "type": "boolean" }
+      }
+    },
+    "StorePatchInput": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "nameAr": { "type": "string", "maxLength": 200 },
+        "nameEn": { "type": "string", "maxLength": 200 },
+        "descriptionAr": { "type": "string", "maxLength": 10000 },
+        "descriptionEn": { "type": "string", "maxLength": 10000 },
+        "cityId": { "type": "string", "format": "uuid" },
+        "logoId": { "variants": [{ "type": "string", "format": "uuid" }, { "type": "null" }] },
+        "supportsSellerDelivery": { "type": "boolean" },
+        "supportsPlatformDelivery": { "type": "boolean" }
+      }
+    },
+    "ProductInput": {
+      "type": "object",
+      "required": ["categoryId", "price", "stockOnHand"],
+      "properties": {
+        "titleAr": { "type": "string", "maxLength": 200 },
+        "titleEn": { "type": "string", "maxLength": 200 },
+        "descriptionAr": { "type": "string", "maxLength": 10000 },
+        "descriptionEn": { "type": "string", "maxLength": 10000 },
+        "categoryId": { "type": "string", "format": "uuid" },
+        "price": { "ref": "PositiveMoney" },
+        "photoIds": {
+          "type": "array",
+          "maxItems": 10,
+          "items": { "type": "string", "format": "uuid" }
+        },
+        "stockOnHand": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "PositiveMoney": {
+      "type": "object",
+      "required": ["currency", "units"],
+      "properties": { "currency": { "ref": "Currency" }, "units": {} }
+    },
+    "ProductPatchInput": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "titleAr": { "type": "string", "maxLength": 200 },
+        "titleEn": { "type": "string", "maxLength": 200 },
+        "descriptionAr": { "type": "string", "maxLength": 10000 },
+        "descriptionEn": { "type": "string", "maxLength": 10000 },
+        "categoryId": { "type": "string", "format": "uuid" },
+        "price": { "ref": "PositiveMoney" },
+        "photoIds": {
+          "type": "array",
+          "maxItems": 10,
+          "items": { "type": "string", "format": "uuid" }
+        },
+        "stockOnHand": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "StockInput": {
+      "type": "object",
+      "required": ["stockOnHand", "reason"],
+      "properties": {
+        "stockOnHand": { "type": "integer", "minimum": 0 },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 1000, "pattern": "\\S" }
+      }
+    },
+    "FreelanceOrderInput": {
+      "type": "object",
+      "required": ["listingId", "description"],
+      "properties": {
+        "listingId": { "type": "string", "format": "uuid" },
+        "description": { "type": "string", "minLength": 1, "maxLength": 10000, "pattern": "\\S" }
+      }
+    },
+    "BookingInput": {
+      "type": "object",
+      "required": ["listingId", "addressId", "startsAt"],
+      "properties": {
+        "listingId": { "type": "string", "format": "uuid" },
+        "addressId": { "type": "string", "format": "uuid" },
+        "startsAt": { "type": "string", "format": "date-time" },
+        "description": { "type": "string", "minLength": 1, "maxLength": 10000, "pattern": "\\S" }
+      }
+    },
+    "InspectionInput": {
+      "type": "object",
+      "required": ["providerProfileId", "currency", "addressId", "description", "photoIds"],
+      "properties": {
+        "providerProfileId": { "type": "string", "format": "uuid" },
+        "currency": { "ref": "Currency" },
+        "addressId": { "type": "string", "format": "uuid" },
+        "description": { "type": "string", "minLength": 1, "maxLength": 10000, "pattern": "\\S" },
+        "photoIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": { "type": "string", "format": "uuid" }
+        }
+      }
+    },
+    "StorePreviewInput": {
+      "type": "object",
+      "required": ["storeId", "addressId", "method", "items"],
+      "properties": {
+        "storeId": { "type": "string", "format": "uuid" },
+        "addressId": { "type": "string", "format": "uuid" },
+        "method": { "ref": "DeliveryMethod" },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "required": ["productId", "quantity"],
+            "properties": {
+              "productId": { "type": "string", "format": "uuid" },
+              "quantity": { "type": "integer", "minimum": 1, "maximum": 1000 }
+            }
+          }
+        }
+      }
+    },
+    "DeliveryMethod": { "type": "string", "enum": ["SELLER", "PLATFORM_DRIVER"] },
+    "CheckoutInput": {
+      "type": "object",
+      "required": ["draftOrderId", "termsAccepted"],
+      "properties": {
+        "draftOrderId": { "type": "string", "format": "uuid" },
+        "termsAccepted": { "const": true },
+        "simulateFailure": { "type": "boolean" }
+      }
+    },
+    "OrderState": {
+      "type": "string",
+      "enum": [
+        "DRAFT",
+        "AWAITING_AGREEMENT",
+        "BOOKING_REQUESTED",
+        "SCHEDULE_PROPOSED",
+        "PENDING_QUOTE",
+        "QUOTE_SENT",
+        "APPROVED",
+        "AWAITING_DEPOSIT",
+        "DEPOSIT_HELD",
+        "IN_PROGRESS",
+        "EN_ROUTE",
+        "ON_SITE",
+        "READY_FOR_FINAL_PAYMENT",
+        "FINAL_PAYMENT_OVERDUE",
+        "FULLY_FUNDED",
+        "PAID_IN_ESCROW",
+        "PREPARING",
+        "READY_FOR_DELIVERY",
+        "OUT_FOR_DELIVERY",
+        "DELIVERED",
+        "DELIVERY_EXCEPTION",
+        "DELIVERY_REVIEW_REQUIRED",
+        "CANCELLATION_PENDING",
+        "EXTENSION_PENDING",
+        "DISPUTED",
+        "REVISION_IN_PROGRESS",
+        "RESOLVED",
+        "COMPLETED",
+        "CANCELLED",
+        "REJECTED",
+        "EXPIRED",
+        "REFUNDED"
+      ]
+    },
+    "AgreementInput": {
+      "type": "object",
+      "required": ["scope", "dueAt", "accepted"],
+      "properties": {
+        "scope": { "type": "string", "minLength": 1, "maxLength": 10000, "pattern": "\\S" },
+        "dueAt": { "type": "string", "format": "date-time" },
+        "accepted": { "const": true }
+      }
+    },
+    "ScheduleInput": {
+      "type": "object",
+      "required": ["startsAt"],
+      "properties": {
+        "startsAt": { "type": "string", "format": "date-time" },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 1000, "pattern": "\\S" }
+      }
+    },
+    "ProgressInput": {
+      "type": "object",
+      "required": ["kind", "note"],
+      "properties": {
+        "kind": { "enum": ["UPDATE", "EN_ROUTE", "ON_SITE"] },
+        "note": { "type": "string", "minLength": 1, "maxLength": 2000, "pattern": "\\S" },
+        "milestoneId": { "type": "string", "format": "uuid" },
+        "progress": { "type": "integer", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "ReadinessInput": {
+      "type": "object",
+      "required": ["note", "completedScope", "previewFileIds"],
+      "properties": {
+        "note": { "type": "string", "minLength": 1, "maxLength": 5000, "pattern": "\\S" },
+        "completedScope": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "items": { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "\\S" }
+        },
+        "previewFileIds": {
+          "type": "array",
+          "maxItems": 10,
+          "items": { "type": "string", "format": "uuid" }
+        }
+      }
+    },
+    "DeliverInput": {
+      "type": "object",
+      "required": ["kind", "note"],
+      "properties": {
+        "kind": { "enum": ["DIGITAL_FINAL", "ONSITE_HANDOVER"] },
+        "note": { "type": "string", "minLength": 1, "maxLength": 5000, "pattern": "\\S" },
+        "fileIds": {
+          "type": "array",
+          "maxItems": 10,
+          "items": { "type": "string", "format": "uuid" }
+        },
+        "proofFileId": { "type": "string", "format": "uuid" }
+      }
+    },
+    "CancelInput": {
+      "type": "object",
+      "required": ["reason"],
+      "properties": {
+        "reason": { "type": "string", "minLength": 1, "maxLength": 5000, "pattern": "\\S" },
+        "proposal": { "ref": "ProposalInput" },
+        "inventoryReturns": {
+          "type": "array",
+          "maxItems": 100,
+          "description": "Exact stock reconciliation agreed with this proposal; required after goods were collected.",
+          "items": { "ref": "InventoryReturn" }
+        }
+      }
+    },
+    "ProposalInput": {
+      "type": "object",
+      "required": ["kind", "reason"],
+      "properties": {
+        "kind": { "ref": "ProposalKind" },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 10000, "pattern": "\\S" },
+        "sellerAwardUnits": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,11}|[1-8][0-9]{12}|9000000000000)$",
+          "description": "Price/allocation in stored units, maximum 9000000000000. SYP whole pounds, USD cents."
+        },
+        "sellerDeliveryUnits": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,11}|[1-8][0-9]{12}|9000000000000)$",
+          "description": "Price/allocation in stored units, maximum 9000000000000. SYP whole pounds, USD cents."
+        },
+        "driverAwardUnits": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,11}|[1-8][0-9]{12}|9000000000000)$",
+          "description": "Price/allocation in stored units, maximum 9000000000000. SYP whole pounds, USD cents."
+        },
+        "scope": { "type": "string", "minLength": 1, "maxLength": 10000, "pattern": "\\S" },
+        "newDueAt": { "type": "string", "format": "date-time" },
+        "inventoryReturns": {
+          "type": "array",
+          "maxItems": 100,
+          "description": "Exact stock reconciliation agreed with this proposal; required after goods were collected.",
+          "items": { "ref": "InventoryReturn" }
+        }
+      }
+    },
+    "ProposalKind": {
+      "type": "string",
+      "enum": ["CANCELLATION_SPLIT", "REVISION", "EXTENSION", "DELIVERY_REMEDY"]
+    },
+    "InventoryReturn": {
+      "type": "object",
+      "required": ["reservationId", "reusableQuantity", "nonRestockableQuantity", "reason"],
+      "properties": {
+        "reservationId": { "type": "string", "format": "uuid" },
+        "reusableQuantity": { "type": "integer", "minimum": 0 },
+        "nonRestockableQuantity": { "type": "integer", "minimum": 0 },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 2000 }
+      }
+    },
+    "ExtensionInput": {
+      "type": "object",
+      "required": ["dueAt", "reason"],
+      "properties": {
+        "dueAt": { "type": "string", "format": "date-time" },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 5000, "pattern": "\\S" }
+      }
+    },
+    "MilestoneInput": {
+      "type": "object",
+      "required": ["description", "position"],
+      "properties": {
+        "description": { "type": "string", "minLength": 1, "maxLength": 2000, "pattern": "\\S" },
+        "position": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "QuoteInput": {
+      "type": "object",
+      "required": ["currency", "scope", "startsAt", "endsAt", "dueAt", "items"],
+      "properties": {
+        "currency": { "ref": "Currency" },
+        "scope": { "type": "string", "minLength": 1, "maxLength": 10000, "pattern": "\\S" },
+        "startsAt": { "type": "string", "format": "date-time" },
+        "endsAt": { "type": "string", "format": "date-time" },
+        "dueAt": { "type": "string", "format": "date-time" },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "required": ["description", "quantity", "unitPriceUnits"],
+            "properties": {
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000,
+                "pattern": "\\S"
+              },
+              "quantity": { "type": "integer", "minimum": 1, "maximum": 10000 },
+              "unitPriceUnits": {}
+            }
+          }
+        }
+      }
+    },
+    "InspectionScheduleInput": {
+      "type": "object",
+      "required": ["startsAt", "endsAt", "responseDeadlineAt", "accepted"],
+      "properties": {
+        "startsAt": { "type": "string", "format": "date-time" },
+        "endsAt": { "type": "string", "format": "date-time" },
+        "responseDeadlineAt": { "type": "string", "format": "date-time" },
+        "accepted": { "const": true }
+      }
+    },
+    "PaymentInput": {
+      "type": "object",
+      "required": ["termsAccepted"],
+      "properties": {
+        "termsAccepted": { "const": true },
+        "simulateFailure": {
+          "type": "boolean",
+          "description": "Only honored by development/test simulator; failure has no ledger/stock effect."
+        }
+      }
+    },
+    "DeliveryRecordInput": {
+      "type": "object",
+      "required": ["notes"],
+      "properties": {
+        "proofFileId": { "type": "string", "format": "uuid" },
+        "notes": { "type": "string", "minLength": 1, "maxLength": 2000, "pattern": "\\S" }
+      }
+    },
+    "DeliveryExceptionInput": {
+      "type": "object",
+      "required": ["kind", "reason", "evidenceFileIds"],
+      "properties": {
+        "kind": {
+          "enum": ["NO_DRIVER", "DELAY", "FAILED_PICKUP", "FAILED_DROPOFF", "LOST_GOODS", "CUSTODY"]
+        },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 5000, "pattern": "\\S" },
+        "evidenceFileIds": {
+          "type": "array",
+          "maxItems": 10,
+          "items": { "type": "string", "format": "uuid" }
+        }
+      }
+    },
+    "FallbackInput": {
+      "type": "object",
+      "required": ["choice", "reason"],
+      "properties": {
+        "choice": { "enum": ["SELLER_SAME_TERMS", "RESCHEDULE", "UNFULFILLABLE_REFUND"] },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 5000, "pattern": "\\S" },
+        "termsRevisionId": { "type": "string", "format": "uuid" }
+      }
+    },
+    "DeliveryTermsInput": {
+      "type": "object",
+      "required": ["method", "promisedAt", "reason"],
+      "properties": {
+        "method": { "ref": "DeliveryMethod" },
+        "promisedAt": { "type": "string", "format": "date-time" },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 5000, "pattern": "\\S" }
+      }
+    },
+    "MessageInput": {
+      "type": "object",
+      "required": ["roomId", "clientMessageId"],
+      "properties": {
+        "roomId": { "type": "string", "format": "uuid" },
+        "clientMessageId": { "type": "string", "format": "uuid" },
+        "text": { "type": "string", "maxLength": 10000 },
+        "attachmentIds": {
+          "type": "array",
+          "maxItems": 10,
+          "items": { "type": "string", "format": "uuid" }
+        }
+      }
+    },
+    "CaseInput": {
+      "type": "object",
+      "required": ["kind", "reason"],
+      "properties": {
+        "kind": { "enum": ["DISPUTE", "CANCELLATION", "DELIVERY_REVIEW", "SUPPORT"] },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 10000, "pattern": "\\S" },
+        "evidenceFileIds": {
+          "type": "array",
+          "maxItems": 10,
+          "items": { "type": "string", "format": "uuid" }
+        }
+      }
+    },
+    "EvidenceInput": {
+      "type": "object",
+      "required": ["visibility"],
+      "properties": {
+        "text": { "type": "string", "minLength": 1, "maxLength": 10000, "pattern": "\\S" },
+        "fileIds": {
+          "type": "array",
+          "maxItems": 10,
+          "items": { "type": "string", "format": "uuid" }
+        },
+        "visibility": { "ref": "EvidenceVisibility" },
+        "lateReason": { "type": "string", "minLength": 1, "maxLength": 2000, "pattern": "\\S" }
+      }
+    },
+    "EvidenceVisibility": { "type": "string", "enum": ["SHARED", "PRIVATE_ADMIN"] },
+    "ReviewInput": {
+      "type": "object",
+      "required": ["stars"],
+      "properties": {
+        "stars": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "body": { "type": "string", "maxLength": 5000 }
+      }
+    },
+    "DeviceInput": {
+      "type": "object",
+      "required": ["token", "platform"],
+      "properties": {
+        "token": { "type": "string", "minLength": 1, "maxLength": 1000, "pattern": "\\S" },
+        "platform": { "ref": "DevicePlatform" }
+      }
+    },
+    "DevicePlatform": { "type": "string", "enum": ["IOS", "ANDROID"] },
+    "RealtimeTicketInput": {
+      "type": "object",
+      "required": ["orderId"],
+      "properties": { "orderId": { "type": "string", "format": "uuid" } }
+    },
+    "CommissionRateInput": {
+      "type": "object",
+      "required": ["workspace", "basisPoints"],
+      "properties": {
+        "workspace": { "variants": [{ "ref": "Workspace" }, { "type": "null" }] },
+        "basisPoints": { "type": "integer", "minimum": 0, "maximum": 10000 }
+      }
+    },
+    "DeliveryRateInput": {
+      "type": "object",
+      "required": ["cityId", "method", "currency", "feeUnits"],
+      "properties": {
+        "cityId": { "type": "string", "format": "uuid" },
+        "method": { "ref": "DeliveryMethod" },
+        "currency": { "ref": "Currency" },
+        "feeUnits": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,11}|[1-8][0-9]{12}|9000000000000)$",
+          "description": "Price/allocation in stored units, maximum 9000000000000. SYP whole pounds, USD cents."
+        }
+      }
+    },
+    "DriverZoneInput": {
+      "type": "object",
+      "required": ["driverProfileId", "governorateId"],
+      "properties": {
+        "driverProfileId": { "type": "string", "format": "uuid" },
+        "governorateId": { "type": "string", "format": "uuid" },
+        "cityId": { "variants": [{ "type": "string", "format": "uuid" }, { "type": "null" }] }
+      }
+    },
+    "ModerationDecisionInput": {
+      "type": "object",
+      "required": ["outcome", "reason"],
+      "properties": {
+        "outcome": { "ref": "ModerationOutcome" },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 5000, "pattern": "\\S" }
+      }
+    },
+    "ModerationOutcome": { "type": "string", "enum": ["APPROVE", "HIDE", "REJECT", "RESTORE"] },
+    "RestrictionInput": {
+      "type": "object",
+      "required": ["kind", "reason"],
+      "properties": {
+        "kind": { "ref": "RestrictionKind" },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 5000, "pattern": "\\S" },
+        "expiresAt": {
+          "variants": [{ "type": "string", "format": "date-time" }, { "type": "null" }]
+        }
+      }
+    },
+    "RestrictionKind": {
+      "type": "string",
+      "enum": ["SUSPENSION", "PURCHASING", "PUBLISHING", "MESSAGING"]
+    },
+    "ResolveCaseInput": {
+      "type": "object",
+      "required": [
+        "reason",
+        "substantiation",
+        "sellerAwardUnits",
+        "sellerDeliveryUnits",
+        "driverAwardUnits",
+        "outcome"
+      ],
+      "properties": {
+        "reason": { "type": "string", "minLength": 1, "maxLength": 10000, "pattern": "\\S" },
+        "substantiation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10000,
+          "pattern": "\\S"
+        },
+        "sellerAwardUnits": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,11}|[1-8][0-9]{12}|9000000000000)$",
+          "description": "Price/allocation in stored units, maximum 9000000000000. SYP whole pounds, USD cents."
+        },
+        "sellerDeliveryUnits": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,11}|[1-8][0-9]{12}|9000000000000)$",
+          "description": "Price/allocation in stored units, maximum 9000000000000. SYP whole pounds, USD cents."
+        },
+        "driverAwardUnits": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,11}|[1-8][0-9]{12}|9000000000000)$",
+          "description": "Price/allocation in stored units, maximum 9000000000000. SYP whole pounds, USD cents."
+        },
+        "driverAssignmentId": { "type": "string", "format": "uuid" },
+        "outcome": { "enum": ["COMPLETED", "CANCELLED", "REFUNDED"] },
+        "inventoryReturns": {
+          "type": "array",
+          "maxItems": 100,
+          "description": "Required for cancelled/refunded store orders: reconcile every reserved/consumed item once, including non-restockable units.",
+          "items": { "ref": "InventoryReturn" }
+        }
+      }
+    },
+    "ReassignInput": {
+      "type": "object",
+      "required": ["driverProfileId", "reason"],
+      "properties": {
+        "driverProfileId": { "type": "string", "format": "uuid" },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 5000, "pattern": "\\S" },
+        "custodyEvidenceFileIds": {
+          "type": "array",
+          "maxItems": 10,
+          "items": { "type": "string", "format": "uuid" }
+        }
+      }
+    },
+    "TopUpInput": {
+      "type": "object",
+      "required": ["userId", "amount", "reason"],
+      "properties": {
+        "userId": { "type": "string", "format": "uuid" },
+        "amount": { "ref": "PositiveMoney" },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 5000, "pattern": "\\S" }
+      }
+    }
+  }
+}
