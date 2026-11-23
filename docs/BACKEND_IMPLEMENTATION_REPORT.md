@@ -1,5 +1,7 @@
 # Backend implementation and verification
 
+This records the completed backend increment before the later partial mobile merge. See [mobile merge review](MOBILE_MERGE_REVIEW.md) for current client coverage; the backend test evidence below is historical to that increment.
+
 This increment implements the NestJS backend. Web and mobile still have setup screens and shared generated contracts; their marketplace/admin screens, device push acceptance, deployment and B4F submission artifacts remain separate work. The original requirements and hackathon PDF are unchanged.
 
 All **145 OpenAPI operations have actual registered Nest handlers**, verified by reflecting the running Nest module/controller table and comparing every method, path and operation ID with the canonical contract. This is registration coverage, not a claim that every possible branch has an acceptance test. No business endpoint returns a scaffold/mock response. Payments deliberately use the local simulator and actual PostgreSQL double-entry postings.

@@ -35,7 +35,8 @@
     "db:erd:check": "node scripts/generate-erd.mjs --check",
     "db:test": "node scripts/require-test-database.mjs",
     "format:check": "prettier --check .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:mobile": "node --test mobile/tests/client.test.cjs mobile/tests/checkout.test.cjs mobile/tests/realtime.test.cjs"
   },
   "overrides": {
     "body-parser": "1.20.9",
