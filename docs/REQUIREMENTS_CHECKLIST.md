@@ -2,7 +2,7 @@
 
 Source of truth: complete `MARKETPLACE_REQUIREMENTS.md` revision 1.2, complete nine-page `B4F_HACKATHON_RULES.pdf`, and owner's stack/setup instruction. No source policy is optional unless explicitly labelled. All three workspaces, both clients/admin, both delivery paths and both locales belong to release one.
 
-Status: **D/P** = full-release implementation or client acceptance pending (backend delivery is separately mapped below); **S** = setup artifact present, see `SETUP_REPORT.md` for actual checks; **P** = later deliverable pending; **O** = explicitly optional; **X** = explicitly outside release. A design is never counted as a running feature. Product rows include all clauses; A01-A14 separately retain every minimum scenario. Targets/defaults are distinguished in BUSINESS_RULES.
+Status: **D/P** = full-release implementation or client acceptance pending (backend delivery is separately mapped below); **S** = setup artifact present, see `SETUP_REPORT.md` for actual checks; **P** = later deliverable pending; **O** = explicitly optional; **X** = explicitly outside release. A design is never counted as a running feature. Current verification uses PASS / FAIL / BLOCKED / NOT RUN in [TEST_REPORT.md](TEST_REPORT.md); D/P rows below remain full-release gates, not backend test failures. Product rows include all clauses; A01-A14 separately retain every minimum scenario. Targets/defaults are distinguished in BUSINESS_RULES.
 
 Document abbreviations: BR=`BUSINESS_RULES.md`, SD=`SYSTEM_DESIGN.md`, MB=`MODULE_BOUNDARIES.md`, DF=`DATA_FLOW.md`, PM=`PERMISSIONS_MATRIX.md`, SM=`ORDER_STATE_MACHINES.md`, ERD=`ERD.md`, API=`API_CONVENTIONS.md`, PLAN=`IMPLEMENTATION_PLAN.md`, SUB=`SUBMISSION_GUIDE.md`. All paths relative to `docs/`.
 
@@ -100,27 +100,27 @@ Document abbreviations: BR=`BUSINESS_RULES.md`, SD=`SYSTEM_DESIGN.md`, MB=`MODUL
 
 ## Shared features and handoff
 
-| ID   | Source     | Requirement                                                                                                                                        | Design / delivery gate                            | Status |
-| ---- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- | ------ |
-| R078 | §9         | One Syria/governorate/city-or-district/area hierarchy reused profiles/drivers/addresses                                                            | BR D05; ERD                                       | D/P    |
-| R079 | §9         | Private per-order chat for buyer/provider/assigned driver/handling admin; text/images/files, immutable audit                                       | BR D15; PM/API                                    | D/P    |
-| R080 | §9         | Define driver access to attachments/details                                                                                                        | BR D15; PM delivery thread                        | S      |
-| R081 | §9         | Completed-order verified buyer reviews, 1-5 stars; defined limits/edit policy                                                                      | BR D16; ERD                                       | D/P    |
-| R082 | §9         | Relevant order/payment/chat notices; channels and client permissions defined                                                                       | BR D18; API                                       | D/P    |
-| R083 | §9 + owner | bcrypt (owner choice) and JWT access/refresh for both clients                                                                                      | SD/PM; PLAN 1                                     | D/P    |
-| R084 | §9         | Server authorization HTTP/sockets/downloads                                                                                                        | PM/API/DF; A09                                    | D/P    |
-| R085 | §9         | Server MIME/extension/size validation; file limits/storage decided before upload implementation                                                    | BR D17; PM                                        | D/P    |
-| R086 | §10.1      | ERD + role/ownership matrix + workspace transitions with actor/preconditions/state/escrow/inventory/notices                                        | ERD/PM/SM                                         | S      |
-| R087 | §10.2      | OpenAPI agreement and WebSocket events before either client connects; errors/pagination/payment retry                                              | API; PLAN contract gate                           | D/P    |
-| R088 | §10.3      | Vertical slices auth/listings -> orders/payments -> chat/delivery/disputes/reviews/notifications                                                   | PLAN                                              | S      |
-| R089 | §10.3      | All workspaces/admin both clients, seller delivery and optional platform driver in first delivery                                                  | SD/PLAN; no deferral                              | D/P    |
-| R090 | §10.4      | Local setup/env templates/migrations and seed for EVERY role and BOTH currencies                                                                   | README + foundation migration; full seed PLAN 1-6 | D/P    |
-| R091 | §10.4      | Commands for web/mobile/API/automatic-completion worker                                                                                            | README; worker shell only; PLAN 4                 | D/P    |
-| R092 | §10.5,11   | Resolve stack, booking/logistics/rate administration, sign-in/verification/reactivation/languages/geography, file/retention/notification decisions | BR D01-D19; SD stack                              | S      |
+| ID   | Source     | Requirement                                                                                                                                        | Design / delivery gate                                                  | Status |
+| ---- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------ |
+| R078 | §9         | One Syria/governorate/city-or-district/area hierarchy reused profiles/drivers/addresses                                                            | BR D05; ERD                                                             | D/P    |
+| R079 | §9         | Private per-order chat for buyer/provider/assigned driver/handling admin; text/images/files, immutable audit                                       | BR D15; PM/API                                                          | D/P    |
+| R080 | §9         | Define driver access to attachments/details                                                                                                        | BR D15; PM delivery thread                                              | S      |
+| R081 | §9         | Completed-order verified buyer reviews, 1-5 stars; defined limits/edit policy                                                                      | BR D16; ERD                                                             | D/P    |
+| R082 | §9         | Relevant order/payment/chat notices; channels and client permissions defined                                                                       | BR D18; API                                                             | D/P    |
+| R083 | §9 + owner | bcrypt (owner choice) and JWT access/refresh for both clients                                                                                      | SD/PM; PLAN 1                                                           | D/P    |
+| R084 | §9         | Server authorization HTTP/sockets/downloads                                                                                                        | PM/API/DF; A09                                                          | D/P    |
+| R085 | §9         | Server MIME/extension/size validation; file limits/storage decided before upload implementation                                                    | BR D17; PM                                                              | D/P    |
+| R086 | §10.1      | ERD + role/ownership matrix + workspace transitions with actor/preconditions/state/escrow/inventory/notices                                        | ERD/PM/SM                                                               | S      |
+| R087 | §10.2      | OpenAPI agreement and WebSocket events before either client connects; errors/pagination/payment retry                                              | API; PLAN contract gate                                                 | D/P    |
+| R088 | §10.3      | Vertical slices auth/listings -> orders/payments -> chat/delivery/disputes/reviews/notifications                                                   | PLAN                                                                    | S      |
+| R089 | §10.3      | All workspaces/admin both clients, seller delivery and optional platform driver in first delivery                                                  | SD/PLAN; no deferral                                                    | D/P    |
+| R090 | §10.4      | Local setup/env templates/migrations and seed for EVERY role and BOTH currencies                                                                   | README; nine actual migrations; six-role/two-currency seed; TEST_REPORT | D/P    |
+| R091 | §10.4      | Commands for web/mobile/API/automatic-completion worker                                                                                            | README; actual due workers tested; remaining branches in TEST_REPORT    | D/P    |
+| R092 | §10.5,11   | Resolve stack, booking/logistics/rate administration, sign-in/verification/reactivation/languages/geography, file/retention/notification decisions | BR D01-D19; SD stack                                                    | S      |
 
 ## Every minimum acceptance scenario
 
-All pending executable feature verification. See PLAN A01-A14 for test approach.
+Backend and client evidence is mapped below and in TEST_REPORT.md. PASS is limited to executed scenarios; full client/device acceptance remains separate. A11 declined-booking rejection is NOT RUN as a complete end-to-end scenario. A14 has passing HTML/contract checks, with visual/device checks NOT RUN/BLOCKED.
 
 | ID  | Requirement section 10 scenario                                        | Status |
 | --- | ---------------------------------------------------------------------- | ------ |
@@ -164,7 +164,7 @@ All pending executable feature verification. See PLAN A01-A14 for test approach.
 | B019 | 4        | Every member uses main GitHub account and appears as actual contributor                             | AGENTS; final team history check                                          | P      |
 | B020 | 4        | Git user.email linked to own primary GitHub; never one author for team work                         | Current configured contributor only; owner confirmation; AGENTS           | S      |
 | B021 | 4        | Avoid squash/history hiding; brief contributions match commits                                      | AGENTS; final team review                                                 | P      |
-| B022 | 4        | Public repo OR reviewer collaborator with code/contributor/history access                           | Not published; SUB                                                        | P      |
+| B022 | 4        | Public repo OR reviewer collaborator with code/contributor/history access                           | GitHub repository configured; reviewer access unverified; SUB             | P      |
 | B023 | 5        | README overview/team/main features/stack/structure/prerequisites                                    | README present; roster pending                                            | D/P    |
 | B024 | 5        | README env/install/backend/frontend/mobile run/db migration & seed                                  | README foundation commands; final feature seed pending                    | D/P    |
 | B025 | 5        | README API overview/Swagger/Postman                                                                 | README current vs planned; collection                                     | S      |
@@ -178,14 +178,14 @@ All pending executable feature verification. See PLAN A01-A14 for test approach.
 | B033 | 7        | No actual secrets/real values in templates; browser NEXT_PUBLIC_, Expo EXPO_PUBLIC_ as needed       | Templates/.gitignore; final audit                                         | S      |
 | B034 | 7        | Never Git database passwords/JWT secrets/private keys/production API keys                           | AGENTS/.gitignore; final scan                                             | S      |
 | B035 | 7,9      | Actual review-only demo login credentials incl. passwords in README when auth exists                | Actual isolated seed accounts and working HTTP login documented in README | P      |
-| B036 | 7,9      | Repeatable demo account seed preferred (project requirement makes all-role/currency seed mandatory) | Foundation seed only; PLAN 1-6                                            | D/P    |
+| B036 | 7,9      | Repeatable demo account seed preferred (project requirement makes all-role/currency seed mandatory) | Actual six-role/two-currency seed; rerun verified in TEST_REPORT          | D/P    |
 | B037 | 8        | README important endpoints grouped by domain with HTTP method/path; Swagger/Postman full detail     | README + API table; update every slice                                    | S      |
 | B038 | 8,9      | @nestjs/swagger at /api/docs                                                                        | Backend bootstrap                                                         | S      |
-| B039 | 8        | Swagger DTO/auth/body/response schemas and main errors                                              | Health schema now; domain schemas/errors pending                          | D/P    |
-| B040 | 8,9      | Postman Collection v2.1                                                                             | docs/postman/syrian-marketplace.postman_collection.json                   | S      |
+| B039 | 8        | Swagger DTO/auth/body/response schemas and main errors                                              | Live OpenAPI 3.1: 145 operations / 188 schemas; TEST_REPORT               | D/P    |
+| B040 | 8,9      | Postman Collection v2.1                                                                             | docs/postman/marketplace.postman_collection.json                          | S      |
 | B041 | 8        | Use {{baseUrl}}/{{token}} variables, no hardcoded values/secrets/tokens                             | Collection variable declarations and noauth health                        | S      |
-| B042 | 8        | Postman covers ALL backend endpoints incl. auth/body/examples                                       | Current health covered; future all-route gate                             | D/P    |
-| B043 | 8        | Collection domain folders match README overview                                                     | Infrastructure now; API planned domain folders                            | S      |
+| B042 | 8        | Postman covers ALL backend endpoints incl. auth/body/examples                                       | All 145 method/path pairs verified; collection execution NOT RUN          | D/P    |
+| B043 | 8        | Collection domain folders match README overview                                                     | All current API domain folders; contract route coverage PASS              | S      |
 | B044 | 9        | Submit four Word docs plus GitHub repository link                                                   | SUB                                                                       | P      |
 | B045 | 9        | Demo URL if available                                                                               | Deployment pending                                                        | P      |
 | B046 | 9        | Short demo video optional                                                                           | SUB                                                                       | O      |
@@ -213,21 +213,21 @@ Live funds and official ShamCash Sandbox: **X** per requirements §7. Optional v
 
 These are source/contract implementation statuses, not end-to-end release acceptance. Product rows above stay D/P until complete backend/client behavior and live PostgreSQL tests pass.
 
-| ID    | Deliverable                                                                                                           | Status                                                                                 |
-| ----- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| DB01  | 72 domain Prisma models / UUID identifiers / complete role and workspace relationships                                | Implemented; Prisma schema/client checked                                              |
-| DB02  | BIGINT currency-safe money, order specializations, financial journal/entry/escrow/allocation relationships            | Implemented; migrations applied on PostgreSQL 16.16                                    |
-| DB03  | FK/query indexes, partial uniqueness, schedule exclusion, stock/geography/quote/review constraints                    | Applied; selected guards covered by real DB tests                                      |
-| DB04  | Immutable balanced ledger, controlled balance updates, installment/settlement/adjustment uniqueness                   | Implemented; seven real PostgreSQL tests passed                                        |
-| DB05  | Atomic holds, failed-attempt idempotency, store reservations, freeze/dispute, completion and admin partial resolution | HTTP orchestration implemented; financial/race tests passed                            |
-| DB06  | Nonproduction idempotent six-role/two-currency seed and README credentials                                            | Executed twice in dev and once in test; no duplicate topups observed                   |
-| DB07  | ERD generated from complete Prisma model                                                                              | Generated; drift command provided                                                      |
-| API01 | OpenAPI 3.1, JWT, all release-one operations/DTOs/error schemas                                                       | Implemented and schema validated                                                       |
-| API02 | Pagination/filter/sort, If-Match and Idempotency-Key conventions                                                      | Defined per operation                                                                  |
-| API03 | Every source transition actor/guards/effects and per-operation permissions                                            | 75 transition rows linked to canonical state tables                                    |
-| API04 | WebSocket event/command/ack and room/push/replay policy                                                               | Documented and typed in canonical contract                                             |
-| API05 | Generated HTTP/WebSocket types shared by web/mobile, drift checks                                                     | Implemented; web/mobile business screens remain unconnected to the implemented backend |
-| API06 | Matching-domain Postman v2.1 for every target operation                                                               | Generated; 145 implemented routes covered and checked                                  |
+| ID    | Deliverable                                                                                                           | Status                                                                            |
+| ----- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| DB01  | 72 domain Prisma models / UUID identifiers / complete role and workspace relationships                                | Implemented; Prisma schema/client checked                                         |
+| DB02  | BIGINT currency-safe money, order specializations, financial journal/entry/escrow/allocation relationships            | Implemented; migrations applied on PostgreSQL 16.16                               |
+| DB03  | FK/query indexes, partial uniqueness, schedule exclusion, stock/geography/quote/review constraints                    | Applied; selected guards covered by real DB tests                                 |
+| DB04  | Immutable balanced ledger, controlled balance updates, installment/settlement/adjustment uniqueness                   | Implemented; seven real PostgreSQL tests passed                                   |
+| DB05  | Atomic holds, failed-attempt idempotency, store reservations, freeze/dispute, completion and admin partial resolution | HTTP orchestration implemented; financial/race tests passed                       |
+| DB06  | Nonproduction idempotent six-role/two-currency seed and README credentials                                            | Executed twice in dev and once in test; no duplicate topups observed              |
+| DB07  | ERD generated from complete Prisma model                                                                              | Generated; drift command provided                                                 |
+| API01 | OpenAPI 3.1, JWT, all release-one operations/DTOs/error schemas                                                       | Implemented and schema validated                                                  |
+| API02 | Pagination/filter/sort, If-Match and Idempotency-Key conventions                                                      | Defined per operation                                                             |
+| API03 | Every source transition actor/guards/effects and per-operation permissions                                            | 75 transition rows linked to canonical state tables                               |
+| API04 | WebSocket event/command/ack and room/push/replay policy                                                               | Documented and typed in canonical contract                                        |
+| API05 | Generated HTTP/WebSocket types shared by web/mobile, drift checks                                                     | Implemented; actual web and mobile transport checks PASS; full mobile parity FAIL |
+| API06 | Matching-domain Postman v2.1 for every target operation                                                               | Generated; 145 implemented routes covered and checked                             |
 
 Historical schema-increment results are in the [database/contract report](DATABASE_CONTRACT_REPORT.md); current backend results are in the [implementation report](BACKEND_IMPLEMENTATION_REPORT.md).
 
@@ -269,3 +269,21 @@ The `feature/mobile` client increment is **partial**. Existing release-one accep
 ## Combined merge verification
 
 Both contributed client increments retain their original authors. The [combined review](FRONTEND_MERGE_REVIEW.md) records 128 passing automated tests, actual web role/auth HTTP checks, real mobile API/checkout replay and native exports. Mobile filtering uses canonical workspace/q fields, and USD wallet balances format cents correctly. Remaining API/client/device/submission acceptance is tracked separately.
+
+## Comprehensive verification, 2026-11-23
+
+[TEST_REPORT.md](TEST_REPORT.md), [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) and [FINAL_VERIFICATION.md](FINAL_VERIFICATION.md) supersede historical check counts, health-only statements and unconnected-client claims. Earlier increment reports retain their original scope.
+
+| Scope                                                               | Status  | Actual evidence                                                                                                                                       |
+| ------------------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Installation/build/typechecks/contracts/ERD                         | PASS    | Final clean installation, Nest/Next builds, all workspace types, 145-route contract checks                                                            |
+| Executed automated suites                                           | PASS    | 291 tests: 38 backend unit + 217 PostgreSQL integration + 21 mobile + 15 web; zero skipped                                                            |
+| Database/media/seed and financial invariants                        | PASS    | Nine applied migrations, real private storage/scan, six named roles and both currencies, seed rerun without new postings; all eleven final invariants |
+| A01/A02/A03/A05/A06/A07/A08/A09/A10/A12/A13 backend scenarios       | PASS    | Explicit assertions in docs/verification/AUTOMATED_RESULTS.md; no claim of every branch or client journey                                             |
+| A04 full shared client acceptance / R008 full mobile administration | FAIL    | Mobile parity incomplete; see LIM-01 and LIM-04                                                                                                       |
+| A11 complete declined fixed-booking journey                         | NOT RUN | Confirmation gate tested, distinct decline-and-funding path not executed end to end                                                                   |
+| A14 complete bilingual device/visual acceptance                     | BLOCKED | Web document direction and bundles pass; physical native/visual acceptance not established                                                            |
+| Exhaustive 75-row transition / remaining worker branches            | NOT RUN | Detailed scope and gaps in TEST_REPORT; 42 observed edges do not certify all guards                                                                   |
+| Official remote Postman schema / native push                        | BLOCKED | Schema host HTTP 403; native project/provider/device unavailable                                                                                      |
+| Production dependency security                                      | FAIL    | 27 affected production dependency nodes (20 moderate, 7 high)                                                                                         |
+| Complete first release and B4F submission                           | FAIL    | Product/client gaps and missing four Word deliverables; reviewer/publishing details BLOCKED                                                           |

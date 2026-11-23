@@ -7,6 +7,7 @@ import { AppModule } from '../../app.module';
 import { configureApp } from '../../bootstrap';
 import { PrismaService } from '../../infrastructure/database/prisma.service';
 import { OutboxWorker } from '../jobs/outbox-worker.service';
+import { JwtService } from '@nestjs/jwt';
 const run = process.env.DATABASE_TEST_URL ? describe : describe.skip;
 run('Private order chat and notification ownership', () => {
   let app: INestApplication,
@@ -205,6 +206,75 @@ run('Private order chat and notification ownership', () => {
       const replay = (await post('orders/' + order.id + '/messages', buyer, body).expect(201)).body;
       expect(replay.id).toBe(sent.data.id);
       await expect(connect({ ticket: ticket.ticket })).rejects.toThrow('AUTH_REQUIRED');
+    } finally {
+      socket.disconnect();
+    }
+  });
+  it('denies outsider REST/tickets, invalid socket JWTs and commands after live session revocation', async () => {
+    const outsider = (
+      await http()
+        .post('/api/v1/auth/login')
+        .send({
+          email: 'customer@demo.marketplace.test',
+          password: 'Marketplace123!',
+          client: 'ANDROID',
+        })
+        .expect(200)
+    ).body;
+    await http()
+      .get('/api/v1/orders/' + order.id + '/messages')
+      .query({ roomId: room.id })
+      .auth(outsider.accessToken, { type: 'bearer' })
+      .expect(404);
+    await post('realtime/ticket', outsider.accessToken, { orderId: order.id }).expect(404);
+    const address = app.getHttpServer().address();
+    const connect = (auth: any) =>
+      new Promise<Socket>((resolve, reject) => {
+        const socket = io(`http://127.0.0.1:${address.port}/orders`, {
+          auth,
+          transports: ['websocket'],
+          reconnection: false,
+          timeout: 3000,
+        });
+        socket.once('connect', () => resolve(socket));
+        socket.once('connect_error', (error) => {
+          socket.disconnect();
+          reject(error);
+        });
+      });
+    await expect(connect({ accessToken: outsider.refreshToken })).rejects.toThrow('AUTH_REQUIRED');
+    const claims = app.get(JwtService).decode(outsider.accessToken);
+    const expired = await app.get(JwtService).signAsync(
+      { sub: claims.sub, sid: claims.sid, authTime: claims.authTime, kind: 'access' },
+      {
+        secret: process.env.JWT_ACCESS_SECRET,
+        issuer: 'syrian-marketplace',
+        audience: 'marketplace-api',
+        expiresIn: -1,
+      },
+    );
+    await expect(connect({ accessToken: expired })).rejects.toThrow('AUTH_REQUIRED');
+    const socket = await connect({ accessToken: outsider.accessToken });
+    try {
+      const denied = await socket.timeout(3000).emitWithAck('command', {
+        type: 'order.subscribe',
+        data: { orderId: order.id, lastSeenVersion: 0 },
+      });
+      expect(denied.ok).toBe(false);
+      await http()
+        .post('/api/v1/auth/logout')
+        .auth(outsider.accessToken, { type: 'bearer' })
+        .send({ refreshToken: outsider.refreshToken })
+        .expect(200);
+      // Command-time authorization must fail even if polling has not disconnected it yet.
+      if (socket.connected) {
+        const rejected = await socket.timeout(3000).emitWithAck('command', {
+          type: 'order.subscribe',
+          data: { orderId: order.id, lastSeenVersion: 0 },
+        });
+        expect(rejected.ok).toBe(false);
+      }
+      await expect(connect({ accessToken: outsider.accessToken })).rejects.toThrow('AUTH_REQUIRED');
     } finally {
       socket.disconnect();
     }

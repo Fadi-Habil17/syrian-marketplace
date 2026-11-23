@@ -1,0 +1,2082 @@
+{
+  "recordedUtc": "2026-11-23T19:34:39.209Z",
+  "baselineCommit": "868282775cab4ec6d02cbbc168fd3645ea8e89f2",
+  "scope": "Final working tree; only executed Jest cases below. Client tests and other acceptance gates are reported separately in TEST_REPORT.md. Not a full release approval.",
+  "statusDefinitions": {
+    "PASS": "Executed and met the stated assertion",
+    "FAIL": "Executed and did not meet the assertion",
+    "BLOCKED": "Could not execute because a prerequisite/access was unavailable",
+    "NOT RUN": "Not executed; no pass claim"
+  },
+  "counts": {
+    "PASS": 255,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "NOT RUN": 0
+  },
+  "checks": [
+    {
+      "check": "backend",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:07:17.393Z",
+      "log": "backend.log"
+    },
+    {
+      "check": "frontend",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:08:07.646Z",
+      "log": "frontend.log"
+    },
+    {
+      "check": "contracts",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:11:44.106Z",
+      "log": "contracts.log"
+    },
+    {
+      "check": "generated",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:11:46.791Z",
+      "log": "generated.log"
+    },
+    {
+      "check": "erd",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:11:48.031Z",
+      "log": "erd.log"
+    },
+    {
+      "check": "setup",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:11:49.011Z",
+      "log": "setup.log"
+    },
+    {
+      "check": "schema",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:11:52.090Z",
+      "log": "schema.log"
+    },
+    {
+      "check": "seed-types",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:11:58.958Z",
+      "log": "seed-types.log"
+    },
+    {
+      "check": "typecheck",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:28:09.020Z",
+      "log": "typecheck.log"
+    },
+    {
+      "check": "unit",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:27:40.450Z",
+      "log": "unit.log"
+    },
+    {
+      "check": "database",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:15:29.678Z",
+      "log": "database.log"
+    },
+    {
+      "check": "mobile",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:12:01.557Z",
+      "log": "mobile.log"
+    },
+    {
+      "check": "web",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:12:03.610Z",
+      "log": "web.log"
+    },
+    {
+      "check": "lint",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:12:15.512Z",
+      "log": "lint.log"
+    },
+    {
+      "check": "FINAL_CLEAN_INSTALL",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:19:04.0134897Z",
+      "log": "install-final.log"
+    },
+    {
+      "check": "LIVE_WEB",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:30:07.8042552Z",
+      "log": "live-web.log"
+    },
+    {
+      "check": "LIVE_MOBILE_TRANSPORT",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:30:42.8562142Z",
+      "log": "live-mobile.log"
+    },
+    {
+      "check": "EXPO_NATIVE_JS_EXPORT",
+      "status": "PASS",
+      "exitCode": 0,
+      "finishedUtc": "2026-11-23T19:30:33.4127921Z",
+      "log": "expo-export.log"
+    }
+  ],
+  "cases": [
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/files/file-validation.spec.ts",
+      "name": "Bounded final ZIP validation preserves an ordinary deflated final deliverable",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/files/file-validation.spec.ts",
+      "name": "Bounded final ZIP validation rejects a forged signature without a central directory",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/files/file-validation.spec.ts",
+      "name": "Bounded final ZIP validation rejects encrypted entries that antivirus cannot inspect",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/files/file-validation.spec.ts",
+      "name": "Bounded final ZIP validation rejects a corrupt CRC instead of accepting an unverified payload",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/files/file-validation.spec.ts",
+      "name": "Bounded final ZIP validation rejects declared expansion over the per-entry resource limit",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/files/file-validation.spec.ts",
+      "name": "Bounded final ZIP validation rejects unsafe archive metadata: path",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/files/file-validation.spec.ts",
+      "name": "Bounded final ZIP validation rejects unsafe archive metadata: symlink",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/files/file-validation.spec.ts",
+      "name": "Bounded final ZIP validation rejects unsafe archive metadata: local-encryption",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/files/file-validation.spec.ts",
+      "name": "Bounded final ZIP validation rejects unsafe archive metadata: actual-size",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/files/file-validation.spec.ts",
+      "name": "Upload validation before private persistence decodes and sanitizes a genuine PNG",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/files/file-validation.spec.ts",
+      "name": "Upload validation before private persistence rejects mismatched metadata or traversal: demo.jpg",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/files/file-validation.spec.ts",
+      "name": "Upload validation before private persistence rejects mismatched metadata or traversal: demo.png",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/files/file-validation.spec.ts",
+      "name": "Upload validation before private persistence rejects mismatched metadata or traversal: ../demo.png",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/files/file-validation.spec.ts",
+      "name": "Upload validation before private persistence rejects mismatched metadata or traversal: demo.svg",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/files/file-validation.spec.ts",
+      "name": "Upload validation before private persistence rejects active PDF content without invoking an external parser",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/infrastructure/http/contracts.spec.ts",
+      "name": "Canonical DTO projection retains allowlisted audit metadata while stripping undeclared response fields",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/infrastructure/http/contracts.spec.ts",
+      "name": "Canonical DTO projection selects a matching structured union branch instead of projecting the first shape",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/auth/auth-timing.spec.ts",
+      "name": "Login credential failure work performs bcrypt comparison for missing and existing identities (null)",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/auth/auth-timing.spec.ts",
+      "name": "Login credential failure work performs bcrypt comparison for missing and existing identities ({\"passwordHash\": \"$2b$12$existing\"})",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/common/security-policies.spec.ts",
+      "name": "Request replay boundaries binds a signed cursor to the actor and filters, independently of query-key order",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/common/security-policies.spec.ts",
+      "name": "Request replay boundaries enforces a fixed window and reopens it at the exact deadline",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/orders/domain/order-state-machine.spec.ts",
+      "name": "Order financial and time gates rejects skipping agreement, funding and final-payment phases",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/orders/domain/order-state-machine.spec.ts",
+      "name": "Order financial and time gates allows the funded handover and review path",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/orders/domain/order-state-machine.spec.ts",
+      "name": "Order financial and time gates gives the deadline boundary to expiry, using UTC server timestamps",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/payments/domain/money.spec.ts",
+      "name": "required minor-unit financial policies splits 2n without losing a stored unit",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/payments/domain/money.spec.ts",
+      "name": "required minor-unit financial policies splits 100n without losing a stored unit",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/payments/domain/money.spec.ts",
+      "name": "required minor-unit financial policies splits 101n without losing a stored unit",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/payments/domain/money.spec.ts",
+      "name": "required minor-unit financial policies splits 9000000000000n without losing a stored unit",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/payments/domain/money.spec.ts",
+      "name": "required minor-unit financial policies rejects invalid service total 0n",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/payments/domain/money.spec.ts",
+      "name": "required minor-unit financial policies rejects invalid service total 1n",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/payments/domain/money.spec.ts",
+      "name": "required minor-unit financial policies rejects invalid service total -1n",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/payments/domain/money.spec.ts",
+      "name": "required minor-unit financial policies rejects invalid service total 9000000000001n",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/payments/domain/money.spec.ts",
+      "name": "required minor-unit financial policies rounds commission half-up once and honors an explicit zero",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/payments/domain/money.spec.ts",
+      "name": "required minor-unit financial policies excludes refunds and delivery from commission and conserves every held unit",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/modules/payments/domain/money.spec.ts",
+      "name": "required minor-unit financial policies never allocates an unfunded balance or negative awards",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/infrastructure/config/environment.spec.ts",
+      "name": "infrastructure environment validation rejects invalid listener ports and excessively fast worker polling",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/infrastructure/config/environment.spec.ts",
+      "name": "infrastructure environment validation rejects a live gateway configuration in this simulated-only release",
+      "status": "PASS"
+    },
+    {
+      "kind": "unit",
+      "file": "backend/src/infrastructure/config/environment.spec.ts",
+      "name": "infrastructure environment validation accepts multiple explicit origins but rejects wildcard, path and non-HTTP origins",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/bookings/service-entry.db.spec.ts",
+      "name": "Freelance, confirmed bookings and approved itemized quote convergence fixes a freelance price on the backend and requires both scope approvals",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/bookings/service-entry.db.spec.ts",
+      "name": "Freelance, confirmed bookings and approved itemized quote convergence does not allow a professional deposit before provider schedule confirmation",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/bookings/service-entry.db.spec.ts",
+      "name": "Freelance, confirmed bookings and approved itemized quote convergence requires buyer acceptance of an alternative slot",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/bookings/service-entry.db.spec.ts",
+      "name": "Freelance, confirmed bookings and approved itemized quote convergence claims private inspection photos and sends an itemized backend-calculated quote",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/bookings/service-entry.db.spec.ts",
+      "name": "Freelance, confirmed bookings and approved itemized quote convergence approves an exact quote version then enters the same deposit-held workflow",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/bookings/service-entry.db.spec.ts",
+      "name": "Freelance, confirmed bookings and approved itemized quote convergence runs the real two-hold freelance workflow and releases the ledger once",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/bookings/service-entry.db.spec.ts",
+      "name": "Freelance, confirmed bookings and approved itemized quote convergence refunds a prestart deposit completely and releases it only once",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/bookings/service-entry.db.spec.ts",
+      "name": "Freelance, confirmed bookings and approved itemized quote convergence freezes a working order until both parties accept the same split",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/bookings/service-entry.db.spec.ts",
+      "name": "Freelance, confirmed bookings and approved itemized quote convergence sends 24h and 48h final-balance reminders exactly once without moving money",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/bookings/service-entry.db.spec.ts",
+      "name": "Freelance, confirmed bookings and approved itemized quote convergence preserves immutable evidence deadlines and never escalates or awards early",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/bookings/service-entry.db.spec.ts",
+      "name": "Freelance, confirmed bookings and approved itemized quote convergence expires unanswered 72h requests and unpaid 48h agreements without charging",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/bookings/service-entry.db.spec.ts",
+      "name": "Freelance, confirmed bookings and approved itemized quote convergence retains the deposit and opens one frozen admin case at balance expiry, even on worker retries",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/bookings/service-entry.db.spec.ts",
+      "name": "Freelance, confirmed bookings and approved itemized quote convergence keeps private case evidence from the other party and blocks early admin allocation",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/bookings/service-entry.db.spec.ts",
+      "name": "Freelance, confirmed bookings and approved itemized quote convergence adjudicates an expired evidence-window fixture through the assigned admin REST command once",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/bookings/service-entry.db.spec.ts",
+      "name": "Freelance, confirmed bookings and approved itemized quote convergence turns an actual quarantined S3 upload clean through the outbox worker",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/stores/stores.db.spec.ts",
+      "name": "Store and product publication with actual private image storage creates a private draft store then publishes valid bilingual content",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/stores/stores.db.spec.ts",
+      "name": "Store and product publication with actual private image storage creates and publishes a real priced product with stock",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/stores/stores.db.spec.ts",
+      "name": "Store and product publication with actual private image storage updates stock with ownership enforcement and an audit reason",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/stores/stores.db.spec.ts",
+      "name": "Store and product publication with actual private image storage serves an authenticated management view without exposing drafts publicly",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/stores/stores.db.spec.ts",
+      "name": "Store and product publication with actual private image storage prices a store checkout on the server and atomically reserves full funds and stock",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/stores/stores.db.spec.ts",
+      "name": "Store and product publication with actual private image storage allows one concurrent driver acceptance and revokes delivery access on reassignment and completion",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/stores/stores.db.spec.ts",
+      "name": "Store and product publication with actual private image storage allows one verified buyer review and one immutable edit, with a database rating cache",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/stores/stores.db.spec.ts",
+      "name": "Store and product publication with actual private image storage holds and refunds only approved delivery-fee deltas, preserving the first commission snapshot",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/stores/stores.db.spec.ts",
+      "name": "Store and product publication with actual private image storage reconciles reusable collected goods exactly once with an immutable mutual cancellation plan",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/stores/stores.db.spec.ts",
+      "name": "Store and product publication with actual private image storage routes an expired unproven physical handover to admin review without releasing held funds",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/stores/stores.db.spec.ts",
+      "name": "Store and product publication with actual private image storage settles verified delivery once through the actual expired-review worker",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/stores/stores.db.spec.ts",
+      "name": "Store and product publication with actual private image storage serializes a buyer dispute against two actual auto-completion worker ticks",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/stores/stores.db.spec.ts",
+      "name": "Store and product publication with actual private image storage refunds items and delivery and releases stock once after the actual 24h acceptance worker",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/chat/chat.db.spec.ts",
+      "name": "Private order chat and notification ownership deduplicates a sender message across different transport idempotency keys",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/chat/chat.db.spec.ts",
+      "name": "Private order chat and notification ownership enforces recipient ownership and stores notification read state",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/chat/chat.db.spec.ts",
+      "name": "Private order chat and notification ownership registers an Expo device without exposing its token and permits only its owner to revoke",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/chat/chat.db.spec.ts",
+      "name": "Private order chat and notification ownership materializes durable recipient notices once when an outbox event is retried",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/chat/chat.db.spec.ts",
+      "name": "Private order chat and notification ownership uses real Socket.IO authorization and shares message deduplication with REST",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/chat/chat.db.spec.ts",
+      "name": "Private order chat and notification ownership denies outsider REST/tickets, invalid socket JWTs and commands after live session revocation",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/payments/application/marketplace-finance.db.spec.ts",
+      "name": "PostgreSQL financial invariants (real transactions, no repository mocks) does not post money or advance state on insufficient funds, including retries",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/payments/application/marketplace-finance.db.spec.ts",
+      "name": "PostgreSQL financial invariants (real transactions, no repository mocks) serializes competing request keys into one successful installment",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/payments/application/marketplace-finance.db.spec.ts",
+      "name": "PostgreSQL financial invariants (real transactions, no repository mocks) rolls back an unbalanced journal and forbids direct balance changes",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/payments/application/marketplace-finance.db.spec.ts",
+      "name": "PostgreSQL financial invariants (real transactions, no repository mocks) rejects mixed-currency entries and later journal edits/appends",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/payments/application/marketplace-finance.db.spec.ts",
+      "name": "PostgreSQL financial invariants (real transactions, no repository mocks) settles once across competing completion requests and conserves held units",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/payments/application/marketplace-finance.db.spec.ts",
+      "name": "PostgreSQL financial invariants (real transactions, no repository mocks) serializes an accepted dispute against buyer completion without paying frozen funds",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/payments/application/marketplace-finance.db.spec.ts",
+      "name": "PostgreSQL financial invariants (real transactions, no repository mocks) blocks workspace archival during buyer/provider commitments",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/payments/application/marketplace-finance.db.spec.ts",
+      "name": "PostgreSQL financial invariants (real transactions, no repository mocks) keeps the first-hold commission snapshot after a rate change and rounds the final award once",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/auth/auth.db.spec.ts",
+      "name": "Identity HTTP against PostgreSQL protects private routes and serves public health",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/auth/auth.db.spec.ts",
+      "name": "Identity HTTP against PostgreSQL validates DTOs and prevents admin self-registration",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/auth/auth.db.spec.ts",
+      "name": "Identity HTTP against PostgreSQL registers a real account with separate empty currency wallets",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/auth/auth.db.spec.ts",
+      "name": "Identity HTTP against PostgreSQL consumes the delivered verification token once",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/auth/auth.db.spec.ts",
+      "name": "Identity HTTP against PostgreSQL logs in with bcrypt and returns a JWT that authorizes only its own identity",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/auth/auth.db.spec.ts",
+      "name": "Identity HTTP against PostgreSQL rotates refresh tokens and commits family revocation on reuse",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/auth/auth.db.spec.ts",
+      "name": "Identity HTTP against PostgreSQL rejects a password beyond bcrypt UTF-8 byte limits without truncating it",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/auth/auth.db.spec.ts",
+      "name": "Identity HTTP against PostgreSQL registers exactly the 145 canonical REST operations with matching paths and methods",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/auth/auth.db.spec.ts",
+      "name": "Identity HTTP against PostgreSQL logs out a session family and consumes a delivered password-reset token only once",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/admin/admin.db.spec.ts",
+      "name": "Audited admin configuration and moderation denies customer access to admin data and versions explicit zero commission overrides",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/admin/admin.db.spec.ts",
+      "name": "Audited admin configuration and moderation hides catalog content, blocks owner republishing and records the reason",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/admin/admin.db.spec.ts",
+      "name": "Audited admin configuration and moderation applies and revokes a publishing restriction without deleting account history",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/admin/admin.db.spec.ts",
+      "name": "Audited admin configuration and moderation preserves controlled history access while suspending writes and refresh",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/profiles/profiles.db.spec.ts",
+      "name": "Profiles, roles, geography and address ownership HTTP reads actual seeded geography and rejects invalid pagination",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/profiles/profiles.db.spec.ts",
+      "name": "Profiles, roles, geography and address ownership HTTP creates owned private addresses and denies other users",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/profiles/profiles.db.spec.ts",
+      "name": "Profiles, roles, geography and address ownership HTTP replays profile creation and activates a configured business role",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/profiles/profiles.db.spec.ts",
+      "name": "Profiles, roles, geography and address ownership HTTP prevents profile ownership abuse",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/profiles/profiles.db.spec.ts",
+      "name": "Profiles, roles, geography and address ownership HTTP archives and reactivates the same identity without deleting history",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/wallets/wallets.db.spec.ts",
+      "name": "Wallet HTTP reads and authorized simulator funding returns actual own currency balances and restricts the funding endpoint",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/wallets/wallets.db.spec.ts",
+      "name": "Wallet HTTP reads and authorized simulator funding posts one balanced journal across concurrent retries of an admin topup",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/wallets/wallets.db.spec.ts",
+      "name": "Wallet HTTP reads and authorized simulator funding lists only the current wallet entries with no arbitrary account selection",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/catalog/catalog.db.spec.ts",
+      "name": "Catalog HTTP publication, ownership and filters creates an owned unpublished listing and validates publication",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/catalog/catalog.db.spec.ts",
+      "name": "Catalog HTTP publication, ownership and filters publishes only complete bilingual content and never exposes internal owner data",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/catalog/catalog.db.spec.ts",
+      "name": "Catalog HTTP publication, ownership and filters denies other users and rejects invalid query ranges",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/catalog/catalog.db.spec.ts",
+      "name": "Catalog HTTP publication, ownership and filters filters actual stored prices and uses bound signed cursors",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/catalog/catalog.db.spec.ts",
+      "name": "Catalog HTTP publication, ownership and filters deactivates without deleting the listing or its audit history",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/files/files.db.spec.ts",
+      "name": "Actual S3, ClamAV and HTTP upload authorization quarantines real bytes and replays the same upload key",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/files/files.db.spec.ts",
+      "name": "Actual S3, ClamAV and HTTP upload authorization scans the actual stored object and downloads only clean owned content",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/files/files.db.spec.ts",
+      "name": "Actual S3, ClamAV and HTTP upload authorization rejects MIME/extension spoofing before persistence",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/modules/files/files.db.spec.ts",
+      "name": "Actual S3, ClamAV and HTTP upload authorization rejects harmless EICAR test content through the real S3 and ClamAV pipeline",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/auth/logout",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/auth/me",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/me",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for patch /api/v1/me",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/business-profiles",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/business-profiles",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for patch /api/v1/business-profiles/{profileId}",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/business-profiles/switch",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/business-profiles/{profileId}/reactivate",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/business-profiles/{profileId}/portfolio",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for delete /api/v1/business-profiles/{profileId}/portfolio/{itemId}",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/business-profiles/{profileId}/service-areas",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/business-profiles/{profileId}/service-areas",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for delete /api/v1/business-profiles/{profileId}/service-areas/{areaId}",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/me/addresses",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/me/addresses",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for patch /api/v1/me/addresses/{addressId}",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for delete /api/v1/me/addresses/{addressId}",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/listings",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for patch /api/v1/listings/{listingId}",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/listings/{listingId}/publish",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/listings/{listingId}/deactivate",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/stores",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for patch /api/v1/stores/{storeId}",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/stores/{storeId}/publish",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/stores/{storeId}/deactivate",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/products",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for patch /api/v1/products/{productId}",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/products/{productId}/publish",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/products/{productId}/deactivate",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for patch /api/v1/products/{productId}/stock",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/freelance",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/professional-bookings",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/inspection-requests",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/store-preview",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/store-checkout",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/orders",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/orders/{orderId}",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/orders/{orderId}/timeline",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/orders/{orderId}/actions",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/agree",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/accept-booking",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/propose-schedule",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/accept-schedule",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/reject",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/start",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/progress",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/ready",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/deliver",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/confirm",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/cancel",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/request-extension",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/accept-extension",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/accept-store",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/ready-for-delivery",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/delivery/request-driver",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/milestones",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/orders/{orderId}/milestones",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/orders/{orderId}/submissions",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/orders/{orderId}/quotes",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/quotes",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/inspection-schedule",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/quotes/{quoteId}/approve",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/quotes/{quoteId}/reject",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/wallets",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/wallets/{currency}/transactions",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/orders/{orderId}/payments",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/orders/{orderId}/settlement",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/operations/{operationId}",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/payments/deposit",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/payments/balance",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/delivery-options",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/driver/jobs",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/driver/assignments",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/deliveries/{deliveryId}",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/deliveries/{deliveryId}/accept",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/deliveries/{deliveryId}/release-assignment",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/deliveries/{deliveryId}/pickup",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/deliveries/{deliveryId}/dropoff",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/deliveries/{deliveryId}/exception",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/deliveries/{deliveryId}/fallback",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/deliveries/{deliveryId}/terms",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/deliveries/{deliveryId}/terms/{revisionId}/approve",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/orders/{orderId}/chat-rooms",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/orders/{orderId}/messages",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/messages",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/files/uploads",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/files/{fileId}/status",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/orders/{orderId}/cases",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/cases",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/cases/{caseId}",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/cases/{caseId}/evidence",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/cases/{caseId}/evidence",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/cases/{caseId}/proposals",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/cases/{caseId}/proposals",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/cases/{caseId}/proposals/{proposalId}/accept",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/cases/{caseId}/proposals/{proposalId}/reject",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/cases/{caseId}/revisions/accept",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/orders/{orderId}/review",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for patch /api/v1/reviews/{reviewId}",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/notifications",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/notifications/{notificationId}/read",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/notifications/read-all",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/devices",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for delete /api/v1/devices/{deviceId}",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/realtime/ticket",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/admin/audit",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/admin/moderation",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/admin/cases",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/admin/commission-rates",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/admin/commission-rates",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/admin/delivery-rates",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/admin/delivery-rates",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for get /api/v1/admin/driver-zones",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/admin/driver-zones",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/admin/moderation/{resourceId}/decision",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/admin/users/{userId}/restrictions",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/admin/cases/{caseId}/assign",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/admin/cases/{caseId}/resolve",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/admin/deliveries/{deliveryId}/reassign",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/admin/reviews/{reviewId}/moderate",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/admin/simulator/topups",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/admin/restrictions/{restrictionId}/revoke",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for delete /api/v1/admin/driver-zones/{zoneId}",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC requires authentication for post /api/v1/admin/cases/{caseId}/resume-final-payment",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for get /api/v1/admin/audit",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for get /api/v1/admin/moderation",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for get /api/v1/admin/cases",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for get /api/v1/admin/commission-rates",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for post /api/v1/admin/commission-rates",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for get /api/v1/admin/delivery-rates",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for post /api/v1/admin/delivery-rates",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for get /api/v1/admin/driver-zones",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for post /api/v1/admin/driver-zones",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for post /api/v1/admin/moderation/{resourceId}/decision",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for post /api/v1/admin/users/{userId}/restrictions",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for post /api/v1/admin/cases/{caseId}/assign",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for post /api/v1/admin/cases/{caseId}/resolve",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for post /api/v1/admin/deliveries/{deliveryId}/reassign",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for post /api/v1/admin/reviews/{reviewId}/moderate",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for post /api/v1/admin/simulator/topups",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for post /api/v1/admin/restrictions/{restrictionId}/revoke",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for delete /api/v1/admin/driver-zones/{zoneId}",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC rejects customer permissions for post /api/v1/admin/cases/{caseId}/resume-final-payment",
+      "status": "PASS"
+    },
+    {
+      "kind": "database",
+      "file": "backend/src/infrastructure/http/security-verification.db.spec.ts",
+      "name": "Complete contract authentication boundary and admin RBAC serves live Swagger with the canonical OpenAPI 3.1 contract",
+      "status": "PASS"
+    }
+  ],
+  "financialChecks": [
+    {
+      "name": "Every journal balances and has at least two entries",
+      "status": "PASS"
+    },
+    {
+      "name": "Every cached account balance equals immutable entries",
+      "status": "PASS"
+    },
+    {
+      "name": "Escrow held amount equals its ledger liability account",
+      "status": "PASS"
+    },
+    {
+      "name": "All settlement units are allocated exactly once",
+      "status": "PASS"
+    },
+    {
+      "name": "Spendable/escrow/commission balances are nonnegative",
+      "status": "PASS"
+    },
+    {
+      "name": "Inventory bounds hold",
+      "status": "PASS"
+    },
+    {
+      "name": "No delivery has two active assignments",
+      "status": "PASS"
+    },
+    {
+      "name": "No driver has two active assignments",
+      "status": "PASS"
+    },
+    {
+      "name": "No service installment or delivery revision is funded twice",
+      "status": "PASS"
+    },
+    {
+      "name": "No unfinished or rolled-back migration",
+      "status": "PASS"
+    },
+    {
+      "name": "Six fictional roles each have SYP and USD wallets",
+      "status": "PASS"
+    }
+  ],
+  "observedDatabase": {
+    "accounts": 210,
+    "journals": 169,
+    "entries": 358,
+    "settlements": 39,
+    "orders": 100,
+    "workspaces": [
+      {
+        "workspace": "FREELANCE",
+        "orders": 61
+      },
+      {
+        "workspace": "PROFESSIONALS",
+        "orders": 13
+      },
+      {
+        "workspace": "HOME_STORE",
+        "orders": 26
+      }
+    ],
+    "transitions": [
+      {
+        "fromState": "DRAFT",
+        "toState": "DRAFT",
+        "occurrences": 24
+      },
+      {
+        "fromState": "DRAFT",
+        "toState": "AWAITING_AGREEMENT",
+        "occurrences": 38
+      },
+      {
+        "fromState": "DRAFT",
+        "toState": "BOOKING_REQUESTED",
+        "occurrences": 8
+      },
+      {
+        "fromState": "DRAFT",
+        "toState": "PENDING_QUOTE",
+        "occurrences": 5
+      },
+      {
+        "fromState": "DRAFT",
+        "toState": "PAID_IN_ESCROW",
+        "occurrences": 24
+      },
+      {
+        "fromState": "AWAITING_AGREEMENT",
+        "toState": "AWAITING_DEPOSIT",
+        "occurrences": 28
+      },
+      {
+        "fromState": "AWAITING_AGREEMENT",
+        "toState": "EXPIRED",
+        "occurrences": 3
+      },
+      {
+        "fromState": "BOOKING_REQUESTED",
+        "toState": "SCHEDULE_PROPOSED",
+        "occurrences": 3
+      },
+      {
+        "fromState": "BOOKING_REQUESTED",
+        "toState": "AWAITING_DEPOSIT",
+        "occurrences": 3
+      },
+      {
+        "fromState": "SCHEDULE_PROPOSED",
+        "toState": "AWAITING_DEPOSIT",
+        "occurrences": 3
+      },
+      {
+        "fromState": "PENDING_QUOTE",
+        "toState": "QUOTE_SENT",
+        "occurrences": 3
+      },
+      {
+        "fromState": "QUOTE_SENT",
+        "toState": "APPROVED",
+        "occurrences": 3
+      },
+      {
+        "fromState": "APPROVED",
+        "toState": "AWAITING_DEPOSIT",
+        "occurrences": 3
+      },
+      {
+        "fromState": "AWAITING_DEPOSIT",
+        "toState": "DEPOSIT_HELD",
+        "occurrences": 42
+      },
+      {
+        "fromState": "AWAITING_DEPOSIT",
+        "toState": "EXPIRED",
+        "occurrences": 3
+      },
+      {
+        "fromState": "DEPOSIT_HELD",
+        "toState": "IN_PROGRESS",
+        "occurrences": 19
+      },
+      {
+        "fromState": "DEPOSIT_HELD",
+        "toState": "READY_FOR_FINAL_PAYMENT",
+        "occurrences": 8
+      },
+      {
+        "fromState": "DEPOSIT_HELD",
+        "toState": "CANCELLED",
+        "occurrences": 3
+      },
+      {
+        "fromState": "IN_PROGRESS",
+        "toState": "READY_FOR_FINAL_PAYMENT",
+        "occurrences": 8
+      },
+      {
+        "fromState": "IN_PROGRESS",
+        "toState": "CANCELLATION_PENDING",
+        "occurrences": 3
+      },
+      {
+        "fromState": "IN_PROGRESS",
+        "toState": "DISPUTED",
+        "occurrences": 8
+      },
+      {
+        "fromState": "READY_FOR_FINAL_PAYMENT",
+        "toState": "FINAL_PAYMENT_OVERDUE",
+        "occurrences": 3
+      },
+      {
+        "fromState": "READY_FOR_FINAL_PAYMENT",
+        "toState": "FULLY_FUNDED",
+        "occurrences": 14
+      },
+      {
+        "fromState": "FINAL_PAYMENT_OVERDUE",
+        "toState": "READY_FOR_FINAL_PAYMENT",
+        "occurrences": 3
+      },
+      {
+        "fromState": "FINAL_PAYMENT_OVERDUE",
+        "toState": "FINAL_PAYMENT_OVERDUE",
+        "occurrences": 6
+      },
+      {
+        "fromState": "FULLY_FUNDED",
+        "toState": "DELIVERED",
+        "occurrences": 11
+      },
+      {
+        "fromState": "PAID_IN_ESCROW",
+        "toState": "PREPARING",
+        "occurrences": 21
+      },
+      {
+        "fromState": "PAID_IN_ESCROW",
+        "toState": "REFUNDED",
+        "occurrences": 3
+      },
+      {
+        "fromState": "PREPARING",
+        "toState": "PREPARING",
+        "occurrences": 12
+      },
+      {
+        "fromState": "PREPARING",
+        "toState": "READY_FOR_DELIVERY",
+        "occurrences": 18
+      },
+      {
+        "fromState": "PREPARING",
+        "toState": "REFUNDED",
+        "occurrences": 3
+      },
+      {
+        "fromState": "READY_FOR_DELIVERY",
+        "toState": "READY_FOR_DELIVERY",
+        "occurrences": 12
+      },
+      {
+        "fromState": "READY_FOR_DELIVERY",
+        "toState": "OUT_FOR_DELIVERY",
+        "occurrences": 18
+      },
+      {
+        "fromState": "OUT_FOR_DELIVERY",
+        "toState": "DELIVERED",
+        "occurrences": 15
+      },
+      {
+        "fromState": "OUT_FOR_DELIVERY",
+        "toState": "CANCELLATION_PENDING",
+        "occurrences": 3
+      },
+      {
+        "fromState": "DELIVERED",
+        "toState": "DELIVERY_REVIEW_REQUIRED",
+        "occurrences": 3
+      },
+      {
+        "fromState": "DELIVERED",
+        "toState": "DISPUTED",
+        "occurrences": 2
+      },
+      {
+        "fromState": "DELIVERED",
+        "toState": "COMPLETED",
+        "occurrences": 21
+      },
+      {
+        "fromState": "CANCELLATION_PENDING",
+        "toState": "CANCELLATION_PENDING",
+        "occurrences": 6
+      },
+      {
+        "fromState": "CANCELLATION_PENDING",
+        "toState": "CANCELLED",
+        "occurrences": 6
+      },
+      {
+        "fromState": "DISPUTED",
+        "toState": "RESOLVED",
+        "occurrences": 3
+      },
+      {
+        "fromState": "RESOLVED",
+        "toState": "REFUNDED",
+        "occurrences": 3
+      }
+    ],
+    "jobs": [
+      {
+        "kind": "RESPONSE_EXPIRY",
+        "status": "READY",
+        "jobs": 57
+      },
+      {
+        "kind": "RESPONSE_EXPIRY",
+        "status": "DONE",
+        "jobs": 3
+      },
+      {
+        "kind": "DEPOSIT_EXPIRY",
+        "status": "READY",
+        "jobs": 37
+      },
+      {
+        "kind": "DEPOSIT_EXPIRY",
+        "status": "DONE",
+        "jobs": 3
+      },
+      {
+        "kind": "BALANCE_REMINDER_24",
+        "status": "READY",
+        "jobs": 11
+      },
+      {
+        "kind": "BALANCE_REMINDER_24",
+        "status": "DONE",
+        "jobs": 2
+      },
+      {
+        "kind": "BALANCE_REMINDER_48",
+        "status": "READY",
+        "jobs": 11
+      },
+      {
+        "kind": "BALANCE_REMINDER_48",
+        "status": "DONE",
+        "jobs": 2
+      },
+      {
+        "kind": "BALANCE_EXPIRY",
+        "status": "READY",
+        "jobs": 11
+      },
+      {
+        "kind": "BALANCE_EXPIRY",
+        "status": "DONE",
+        "jobs": 3
+      },
+      {
+        "kind": "STORE_ACCEPTANCE_EXPIRY",
+        "status": "READY",
+        "jobs": 24
+      },
+      {
+        "kind": "STORE_ACCEPTANCE_EXPIRY",
+        "status": "DONE",
+        "jobs": 2
+      },
+      {
+        "kind": "CANCELLATION_EXPIRY",
+        "status": "READY",
+        "jobs": 9
+      },
+      {
+        "kind": "EVIDENCE_EXPIRY",
+        "status": "READY",
+        "jobs": 17
+      },
+      {
+        "kind": "EVIDENCE_EXPIRY",
+        "status": "DONE",
+        "jobs": 3
+      },
+      {
+        "kind": "DELIVERY_REVIEW",
+        "status": "READY",
+        "jobs": 18
+      },
+      {
+        "kind": "DELIVERY_REVIEW",
+        "status": "DONE",
+        "jobs": 9
+      },
+      {
+        "kind": "DISPATCH_ESCALATION",
+        "status": "READY",
+        "jobs": 6
+      },
+      {
+        "kind": "SERVICE_DUE",
+        "status": "READY",
+        "jobs": 42
+      }
+    ],
+    "migrations": [
+      {
+        "migration_name": "20261122000000_setup"
+      },
+      {
+        "migration_name": "20261123010000_domain_schema"
+      },
+      {
+        "migration_name": "20261123020000_domain_constraints"
+      },
+      {
+        "migration_name": "20261123030000_policy_guards"
+      },
+      {
+        "migration_name": "20261123040000_backend_runtime"
+      },
+      {
+        "migration_name": "20261123050000_deadline_workers"
+      },
+      {
+        "migration_name": "20261123060000_push_receipts"
+      },
+      {
+        "migration_name": "20261123070000_resolution_snapshots"
+      },
+      {
+        "migration_name": "20261123080000_explicit_payment_resumption"
+      }
+    ]
+  }
+}

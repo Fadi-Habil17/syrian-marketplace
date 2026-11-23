@@ -164,9 +164,10 @@ run('PostgreSQL financial invariants (real transactions, no repository mocks)', 
       idempotencyKey: key,
       termsAccepted: true,
     });
-  async function deliveredFixture() {
+  async function deliveredFixture(afterDeposit?: () => Promise<void>) {
     const f = await fixture();
     await deposit(f);
+    await afterDeposit?.();
     await db.$transaction(async (tx) => {
       const now = new Date();
       await tx.serviceOrder.update({
@@ -397,5 +398,42 @@ run('PostgreSQL financial invariants (real transactions, no repository mocks)', 
     await expect(
       db.businessProfile.update({ where: { id: f.profile.id }, data: { status: 'ARCHIVED' } }),
     ).rejects.toThrow();
+  });
+  it('keeps the first-hold commission snapshot after a rate change and rounds the final award once', async () => {
+    const previous = await db.commissionRate.findFirst({
+      where: { workspace: 'FREELANCE' },
+      orderBy: [{ effectiveAt: 'desc' }, { version: 'desc' }],
+    });
+    let version =
+      (
+        await db.commissionRate.aggregate({
+          where: { workspace: 'FREELANCE' },
+          _max: { version: true },
+        })
+      )._max.version ?? 0;
+    const rate = async (basisPoints: number) => {
+      await db.commissionRate.create({
+        data: { workspace: 'FREELANCE', version: ++version, basisPoints, adminId },
+      });
+    };
+    try {
+      await rate(375);
+      const f = await deliveredFixture(() => rate(900));
+      expect(
+        (await db.marketOrder.findUniqueOrThrow({ where: { id: f.order.id } }))
+          .commissionBpsSnapshot,
+      ).toBe(375);
+      const settled = await finance.complete({
+        orderId: f.order.id,
+        actorId: f.buyer.id,
+        expectedVersion: 5,
+        idempotencyKey: randomUUID(),
+      });
+      const allocations = await db.allocation.findMany({ where: { settlementId: settled.id } });
+      expect(allocations.find((a) => a.kind === 'COMMISSION')!.units).toBe(113n);
+      expect(allocations.reduce((sum, a) => sum + a.units, 0n)).toBe(3002n);
+    } finally {
+      await rate(previous?.basisPoints ?? 0);
+    }
   });
 });

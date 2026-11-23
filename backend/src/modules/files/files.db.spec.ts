@@ -6,6 +6,7 @@ import sharp from 'sharp';
 import { AppModule } from '../../app.module';
 import { configureApp } from '../../bootstrap';
 import { FilesService } from './files.service';
+import { PrismaService } from '../../infrastructure/database/prisma.service';
 const run =
   process.env.DATABASE_TEST_URL && process.env.STORAGE_ENDPOINT && process.env.CLAMAV_HOST
     ? describe
@@ -92,5 +93,41 @@ run('Actual S3, ClamAV and HTTP upload authorization', () => {
       .field('accessClass', 'PUBLIC_CATALOG')
       .attach('file', png, { filename: 'spoof.jpg', contentType: 'image/jpeg' })
       .expect(415);
+  });
+  it('rejects harmless EICAR test content through the real S3 and ClamAV pipeline', async () => {
+    // Python zipfile fixture containing the official 68-byte harmless EICAR pattern.
+    // A PDF-prefixed pattern is not the standard fixture (ClamAV correctly did not match it).
+    const bytes = Buffer.from(
+      'UEsDBBQAAAAIACqxd108z1FoRgAAAEQAAAAQAAAAc2Nhbm5lci10ZXN0LnR4dIsw9VcMUHVwDIg2iQmIijA10QiI0zR3dtY0r1Vx9XR2DNINDnH0c3EMctF19AvxDPMMCg3WDXENDtF18/RxVVTx0PbQAgBQSwECFAAUAAAACAAqsXddPM9RaEYAAABEAAAAEAAAAAAAAAAAAAAAgAEAAAAAc2Nhbm5lci10ZXN0LnR4dFBLBQYAAAAAAQABAD4AAAB0AAAAAAA=',
+      'base64',
+    );
+    const listing = await app.get(PrismaService).listing.findFirstOrThrow({
+      where: {
+        kind: 'FREELANCE',
+        status: 'PUBLISHED',
+        profile: { user: { email: 'freelancer@demo.marketplace.test' } },
+      },
+    });
+    const order = (
+      await http()
+        .post('/api/v1/orders/freelance')
+        .auth(other, { type: 'bearer' })
+        .set('Idempotency-Key', randomUUID())
+        .send({ listingId: listing.id, description: 'Isolated antivirus fixture' })
+        .expect(201)
+    ).body;
+    const upload = await http()
+      .post('/api/v1/files/uploads')
+      .auth(token, { type: 'bearer' })
+      .set('Idempotency-Key', randomUUID())
+      .field('accessClass', 'FINAL_DELIVERABLE')
+      .field('orderId', order.id)
+      .attach('file', bytes, { filename: 'scanner-test.zip', contentType: 'application/zip' })
+      .expect(202);
+    expect((await files.scan(upload.body.id)).scanStatus).toBe('REJECTED');
+    await http()
+      .get('/api/v1/files/' + upload.body.id + '/download')
+      .auth(token, { type: 'bearer' })
+      .expect(403);
   });
 });

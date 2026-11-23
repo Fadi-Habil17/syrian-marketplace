@@ -493,6 +493,66 @@ run('Freelance, confirmed bookings and approved itemized quote convergence', () 
         .toString(),
     ).toBe(o.held.units);
   });
+  it('sends 24h and 48h final-balance reminders exactly once without moving money', async () => {
+    let o = await funded(true);
+    o = (
+      await post(
+        'orders/' + o.id + '/ready',
+        freelancer,
+        { note: 'Ready for reminders', completedScope: ['Agreed work'], previewFileIds: [] },
+        o.version,
+      ).expect(200)
+    ).body.order;
+    const ready = new Date(Date.now() - 49 * 3600000);
+    const before = await db.ledgerJournal.count({ where: { orderId: o.id } });
+    await db.atomic(async (tx) => {
+      await tx.serviceOrder.update({
+        where: { orderId: o.id },
+        data: { readyAt: ready, balanceDeadlineAt: new Date(ready.getTime() + 72 * 3600000) },
+      });
+      for (const hour of [24, 48] as const)
+        await app
+          .get(OrderLifecycle)
+          .deadlines.schedule(
+            tx,
+            o.id,
+            hour === 24 ? 'BALANCE_REMINDER_24' : 'BALANCE_REMINDER_48',
+            new Date(ready.getTime() + hour * 3600000),
+            o.version,
+          );
+    });
+    await app.get(ScheduledJobsService).tick(200);
+    await app.get(ScheduledJobsService).tick(200);
+    expect(
+      await db.outboxEvent.count({ where: { aggregateId: o.id, type: 'order.payment.reminder' } }),
+    ).toBe(2);
+    expect(await db.ledgerJournal.count({ where: { orderId: o.id } })).toBe(before);
+    expect((await db.marketOrder.findUniqueOrThrow({ where: { id: o.id } })).state).toBe(
+      'READY_FOR_FINAL_PAYMENT',
+    );
+  });
+  it('preserves immutable evidence deadlines and never escalates or awards early', async () => {
+    const o = await funded(true);
+    const c = (
+      await post(
+        'orders/' + o.id + '/cases',
+        buyer,
+        { kind: 'DISPUTE', reason: 'Evidence deadline worker fixture' },
+        o.version,
+      ).expect(201)
+    ).body;
+    const deadline = new Date(Date.now() - 1000);
+    await expect(
+      db.caseParty.updateMany({ where: { caseId: c.id }, data: { evidenceDeadlineAt: deadline } }),
+    ).rejects.toThrow('append-only');
+    await app.get(ScheduledJobsService).tick(200);
+    await app.get(ScheduledJobsService).tick(200);
+    expect((await db.caseRecord.findUniqueOrThrow({ where: { id: c.id } })).status).toBe('OPEN');
+    expect(await db.settlement.count({ where: { orderId: o.id } })).toBe(0);
+    expect(
+      (await db.escrow.findUniqueOrThrow({ where: { orderId: o.id } })).heldUnits.toString(),
+    ).toBe(o.deposit.units);
+  });
   async function expireFixture(
     orderId: string,
     kind: 'RESPONSE_EXPIRY' | 'DEPOSIT_EXPIRY' | 'BALANCE_EXPIRY',

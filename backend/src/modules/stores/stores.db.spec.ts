@@ -530,7 +530,7 @@ run('Store and product publication with actual private image storage', () => {
     expect(cached.ratingAverage).toBe(5);
     expect(cached.reviewCount).toBe(1);
   });
-  async function paidStore() {
+  async function paidStore(accept = true) {
     const address = await db.address.findFirstOrThrow({
       where: { userId: buyerUserId, archivedAt: null, cityId: city },
     });
@@ -564,7 +564,7 @@ run('Store and product publication with actual private image storage', () => {
       return result.body;
     };
     await command('orders/store-checkout', other, { draftOrderId: order.id, termsAccepted: true });
-    await command('orders/' + order.id + '/accept-store', token, { accepted: true });
+    if (accept) await command('orders/' + order.id + '/accept-store', token, { accepted: true });
     return { read: () => order, command };
   }
   it('holds and refunds only approved delivery-fee deltas, preserving the first commission snapshot', async () => {
@@ -671,7 +671,7 @@ run('Store and product publication with actual private image storage', () => {
       await db.stockReconciliation.count({ where: { reservationId: returns[0]!.reservationId } }),
     ).toBe(1);
   });
-  async function expiredReview(verified: boolean) {
+  async function expiredReview(verified: boolean, runWorker = true) {
     const flow = await paidStore(),
       id = flow.read().id;
     await flow.command('orders/' + id + '/ready-for-delivery', token, { accepted: true });
@@ -713,7 +713,7 @@ run('Store and product publication with actual private image storage', () => {
         .get(OrderLifecycle)
         .deadlines.schedule(tx, id, 'DELIVERY_REVIEW', deadline, o.deliveryVersion);
     });
-    await app.get(ScheduledJobsService).tick(200);
+    if (runWorker) await app.get(ScheduledJobsService).tick(200);
     return id;
   }
   it('routes an expired unproven physical handover to admin review without releasing held funds', async () => {
@@ -735,5 +735,59 @@ run('Store and product publication with actual private image storage', () => {
     );
     await app.get(ScheduledJobsService).tick(200);
     expect(await db.settlement.count({ where: { orderId: id } })).toBe(1);
+  });
+  it('serializes a buyer dispute against two actual auto-completion worker ticks', async () => {
+    const id = await expiredReview(true, false);
+    const order = await db.marketOrder.findUniqueOrThrow({ where: { id } });
+    const results = await Promise.allSettled([
+      http()
+        .post('/api/v1/orders/' + id + '/cases')
+        .auth(other, { type: 'bearer' })
+        .set('Idempotency-Key', key())
+        .set('If-Match', '"' + order.version + '"')
+        .send({ kind: 'DISPUTE', reason: 'Buyer disputes handover while auto-completion is due' }),
+      app.get(ScheduledJobsService).tick(200),
+      app.get(ScheduledJobsService).tick(200),
+    ]);
+    for (const result of results) expect(result.status).toBe('fulfilled');
+    const response = (results[0] as PromiseFulfilledResult<request.Response>).value;
+    expect([201, 409, 422]).toContain(response.status);
+    const cases = await db.caseRecord.count({ where: { orderId: id, kind: 'DISPUTE' } });
+    const settlements = await db.settlement.count({ where: { orderId: id } });
+    expect(cases + settlements).toBe(1);
+    if (response.status === 201) {
+      expect(settlements).toBe(0);
+      expect((await db.escrow.findUniqueOrThrow({ where: { orderId: id } })).status).toBe('FROZEN');
+    } else expect(settlements).toBe(1);
+    await app.get(ScheduledJobsService).tick(200);
+    expect(await db.settlement.count({ where: { orderId: id } })).toBe(settlements);
+  });
+  it('refunds items and delivery and releases stock once after the actual 24h acceptance worker', async () => {
+    const before = await db.product.findUniqueOrThrow({ where: { id: product } });
+    const flow = await paidStore(false),
+      id = flow.read().id;
+    const deadline = new Date(Date.now() - 1000);
+    await db.atomic(async (tx) => {
+      await tx.storeOrder.update({
+        where: { orderId: id },
+        data: { sellerAcceptanceDeadlineAt: deadline },
+      });
+      await app
+        .get(OrderLifecycle)
+        .deadlines.schedule(tx, id, 'STORE_ACCEPTANCE_EXPIRY', deadline, flow.read().version);
+    });
+    await app.get(ScheduledJobsService).tick(200);
+    await app.get(ScheduledJobsService).tick(200);
+    const settlement = await db.settlement.findUniqueOrThrow({
+      where: { orderId: id },
+      include: { allocation_settlement: true },
+    });
+    expect(settlement.mode).toBe('STORE_TIMEOUT');
+    expect(settlement.allocation_settlement).toHaveLength(1);
+    expect(settlement.allocation_settlement[0]!.kind).toBe('BUYER_REFUND');
+    expect(settlement.allocation_settlement[0]!.units.toString()).toBe(flow.read().total.units);
+    const after = await db.product.findUniqueOrThrow({ where: { id: product } });
+    expect(after.stockReserved).toBe(before.stockReserved);
+    expect(after.stockOnHand).toBe(before.stockOnHand);
   });
 });
