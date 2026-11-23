@@ -25,7 +25,7 @@ export function LocaleSwitch({ locale }: { locale: Locale }) {
   return (
     <Suspense
       fallback={
-        <Link className="button soft" href={locale === 'ar' ? '/en' : '/ar'}>
+        <Link className="button soft language" href={locale === 'ar' ? '/en' : '/ar'}>
           {locale === 'ar' ? 'English' : 'العربية'}
         </Link>
       }

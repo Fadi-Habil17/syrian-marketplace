@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Catalog, sectionOf, sectionTitle } from '../../../features/catalog';
 import { LoginPanel } from '../../../features/account/access';
 import { CommandForm } from '../../../features/command-form';
-import { Heading } from '../../../features/ui';
+import { Back, Heading } from '../../../features/ui';
 import { actionLabel } from '../../../lib/labels';
 import { choose, localeOf, queryOf, type RouteProps } from '../../../lib/locale';
 
@@ -91,5 +91,10 @@ export default async function SectionPage({ params, searchParams }: RouteProps) 
         )}
       </>
     );
-  return <Catalog locale={locale} section={sectionOf(section)} query={query} />;
+  return (
+    <div className="browse-page">
+      <Back locale={locale} path="" title={choose(locale, 'السوق', 'Marketplace')} />
+      <Catalog locale={locale} section={sectionOf(section)} query={query} />
+    </div>
+  );
 }

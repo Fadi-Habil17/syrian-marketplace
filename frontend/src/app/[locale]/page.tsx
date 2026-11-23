@@ -16,7 +16,7 @@ async function Workspaces({ locale }: { locale: Locale }) {
     ),
   ]);
   return (
-    <div className="catalog-grid">
+    <div className="workspace-grid">
       {[
         [
           'freelance',
@@ -101,7 +101,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             fill
             unoptimized
             priority
-            sizes="(max-width: 680px) 100vw, 50vw"
+            sizes="(max-width: 700px) calc(100vw - 32px), (min-width: 1332px) 616px, 48vw"
           />
         </div>
       </section>
@@ -109,7 +109,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         <h2>{choose(locale, 'استكشف السوق', 'Explore the marketplace')}</h2>
         <Suspense
           fallback={
-            <div className="skeletons" aria-busy="true">
+            <div className="workspace-grid skeletons" aria-busy="true">
               <span />
               <span />
               <span />

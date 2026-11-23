@@ -45,11 +45,11 @@ export default async function LocaleLayout({
               {choose(locale, 'انتقل إلى المحتوى', 'Skip to content')}
             </a>
             <Header locale={locale} />
-            <main id="content" className="container">
+            <main id="content" className="site-container site-main">
               {children}
             </main>
             <footer className="footer">
-              <div className="container footer-inner">
+              <div className="site-container footer-inner">
                 <Link className="brand" href={'/' + locale}>
                   {choose(locale, 'دكّان و حارة', 'Dukkan & Hara')}
                 </Link>

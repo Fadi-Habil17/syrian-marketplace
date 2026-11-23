@@ -20,7 +20,7 @@ export async function Header({ locale }: { locale: Locale }) {
   };
   return (
     <header className="site-header">
-      <div className="header-inner">
+      <div className="site-container header-inner">
         <Link href={root} className="brand">
           <span className="brand-mark" aria-hidden="true">
             <span />

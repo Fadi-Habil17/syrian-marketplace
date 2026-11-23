@@ -107,6 +107,56 @@ for (const s of [child.stdout, child.stderr])
     );
     assert.equal(absent.items.length, 0);
     console.log('LIVE_MOBILE_CATALOG_WORKSPACE_SEARCH passed');
+    const governorates = unwrap(await api.GET('/api/v1/geography/governorates'));
+    const governorate = governorates.items.find((item) => item.id === demoId('gov:HM'));
+    assert(governorate, 'Seeded governorate must be selectable');
+    const cities = unwrap(
+      await api.GET('/api/v1/geography/cities', {
+        params: { query: { governorateId: governorate.id, limit: 100 } },
+      }),
+    );
+    const city = cities.items.find((item) => item.id === demoId('city:Salamiyah'));
+    assert(city, 'Seeded service city must be available through the public geography API');
+    assert(filtered.items.length > 0, 'Seeded professional catalog must be nonempty');
+    const selected = {
+      cityId: city.id,
+      governorateId: city.governorateId,
+      categoryId: filtered.items[0].categoryId,
+    };
+    const located = unwrap(
+      await api.GET('/api/v1/listings', {
+        params: { query: queries.listingQuery('PROFESSIONAL', '', undefined, selected) },
+      }),
+    );
+    assert(
+      located.items.length > 0,
+      'Combined category/location filters must return seeded service coverage',
+    );
+    assert(
+      located.items.every(
+        (item) => item.categoryId === selected.categoryId && item.kind === 'PROFESSIONAL_PACKAGE',
+      ),
+    );
+    console.log('LIVE_MOBILE_CATEGORY_LOCATION_FILTERS passed');
+    const storeId = demoId('store');
+    const storefront = unwrap(
+      await api.GET('/api/v1/stores/{storeId}', { params: { path: { storeId } } }),
+    );
+    assert.equal(storefront.id, storeId);
+    const goods = unwrap(
+      await api.GET('/api/v1/products', { params: { query: { storeId, limit: 20 } } }),
+    );
+    assert(goods.items.length > 0);
+    assert(goods.items.every((item) => item.storeId === storeId));
+    const photo = goods.items.find((item) => item.photoIds.length)?.photoIds[0];
+    assert(photo, 'Public store goods have a seeded photo');
+    const photograph = await fetch(
+      `http://127.0.0.1:${port}/api/v1/files/${encodeURIComponent(photo)}/download`,
+    );
+    assert.equal(photograph.status, 200);
+    assert(photograph.headers.get('content-type').startsWith('image/'));
+    await photograph.arrayBuffer();
+    console.log('LIVE_MOBILE_PUBLIC_STOREFRONT_AND_PHOTO passed');
     const preview = unwrap(
       await api.POST('/api/v1/orders/store-preview', {
         params: { header: { 'Idempotency-Key': randomUUID() } },

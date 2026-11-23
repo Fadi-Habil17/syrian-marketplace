@@ -27,11 +27,11 @@ Expo Router, secure refresh storage/in-memory access, single-flight refresh and 
 - Driver assignment list/navigation, assignment release, exceptions, fallback, terms approval and custody workflows.
 - Full admin commissions/rates/zones, restrictions, audit, case assignment/evidence/resolution/resumption and simulator topups.
 - Dispute evidence/proposals/revisions, review editing, wallet transaction history.
-- Full list pagination/filter pickers, complete state/enum translations, app-wide native RTL/navigation/device accessibility and visual comparison beyond the home adaptation.
+- Remaining list pagination/filter pickers, complete state/enum translations, and app-wide native RTL/navigation accessibility and visual acceptance. The mobile storefront now uses the existing location and category filters and public store reads.
 - Push tap routing, token revocation lifecycle and real-device delivery/receipts acceptance.
 - Durable handling of ambiguous network outcomes for every mutation; checkout now persists its original key/draft/version per account across restart, and deposit/balance holds retain their key/version within the mounted screen; several other mutations still need durable coverage.
 - End-to-end API, authorization, offline/session races, screenshots and Android/iOS device acceptance. No APK was produced.
 
 Do not mark these features complete because a route, adapter, schema or TypeScript build exists. Coordinate any contract changes with the backend owner rather than changing shared packages.
 
-Combined review corrected canonical workspace/q filtering and USD wallet display. The current mobile suite has 21 tests; real catalog and checkout transport were checked against the isolated API. See the combined review for final evidence.
+Combined review corrected canonical workspace/q filtering and USD wallet display. The current mobile suite has 22 tests, including canonical category and location filters. The combined review records real catalog and checkout transport checks against the isolated API.

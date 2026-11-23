@@ -101,6 +101,7 @@ export async function Catalog({
           locale={locale}
           operation={operation}
           query={publicQuery}
+          resultCount={result.items.length}
           options={{
             categoryId: categories?.items.map(geo(locale)) ?? [],
             governorateId: governorates.items.map(geo(locale)),
@@ -108,7 +109,7 @@ export async function Catalog({
           }}
         />
         {result.items.length ? (
-          <div className="catalog-grid">
+          <div className="catalog-grid browse-grid">
             {result.items.map((item) => (
               <Card key={item.id} item={item} locale={locale} section={section} />
             ))}
@@ -167,8 +168,9 @@ export async function Detail({
   const profileId = 'profileId' in item ? item.profileId : null;
   const back = <Back locale={locale} path={'/' + section} title={sectionTitle(locale, section)} />;
   const files = 'photoIds' in item ? item.photoIds : item.logoId ? [item.logoId] : [];
+  const isStore = section === 'stores';
   return (
-    <>
+    <section className={isStore ? 'listing-detail store-detail' : 'listing-detail'}>
       {back}
       <Heading>{title}</Heading>
       <div className="detail-layout">
@@ -183,52 +185,55 @@ export async function Detail({
               ))}
             </div>
           )}
-          {section === 'stores' && <StoreProducts locale={locale} id={id} />}
-          {profileId && <Profile locale={locale} id={profileId} />}
-        </article>
-        <aside className="panel detail-aside">
-          {'price' in item && (
+          {isStore && (
             <>
-              <span>{field(locale, 'price')}</span>
-              <strong className="price large">{amount(locale, item.price)}</strong>
+              <p className="muted">
+                {[
+                  'supportsSellerDelivery' in item && item.supportsSellerDelivery
+                    ? enumLabel(locale, 'SELLER')
+                    : null,
+                  'supportsPlatformDelivery' in item && item.supportsPlatformDelivery
+                    ? enumLabel(locale, 'PLATFORM_DRIVER')
+                    : null,
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </p>
+              <StoreProducts locale={locale} id={id} />
             </>
           )}
-          {'deliveryDays' in item && item.deliveryDays !== null && (
-            <p>
-              {item.deliveryDays} {choose(locale, 'أيام للتسليم', 'days to deliver')}
-            </p>
-          )}
-          {'availableStock' in item && (
-            <p>
-              {item.availableStock} {choose(locale, 'متاح', 'in stock')}
-            </p>
-          )}
-          {section === 'stores' && (
-            <p>
-              {[
-                'supportsSellerDelivery' in item && item.supportsSellerDelivery
-                  ? enumLabel(locale, 'SELLER')
-                  : null,
-                'supportsPlatformDelivery' in item && item.supportsPlatformDelivery
-                  ? enumLabel(locale, 'PLATFORM_DRIVER')
-                  : null,
-              ]
-                .filter(Boolean)
-                .join(' · ')}
-            </p>
-          )}
-          {section !== 'stores' &&
-            (!viewer ? (
+          {profileId && <Profile locale={locale} id={profileId} />}
+        </article>
+        {!isStore && (
+          <aside className="panel detail-aside">
+            {'price' in item && (
+              <>
+                <span>{field(locale, 'price')}</span>
+                <strong className="price large">{amount(locale, item.price)}</strong>
+              </>
+            )}
+            {'deliveryDays' in item && item.deliveryDays !== null && (
+              <p>
+                {item.deliveryDays} {choose(locale, 'أيام للتسليم', 'days to deliver')}
+              </p>
+            )}
+            {'availableStock' in item && (
+              <p>
+                {item.availableStock} {choose(locale, 'متاح', 'in stock')}
+              </p>
+            )}
+            {!viewer ? (
               <SignInPrompt locale={locale} next={'/' + locale + '/' + section + '/' + id} />
             ) : (
               <Purchase
                 locale={locale}
                 item={item as ApiSchemas['Product'] | ApiSchemas['Listing']}
               />
-            ))}
-        </aside>
+            )}
+          </aside>
+        )}
       </div>
-    </>
+    </section>
   );
 }
 

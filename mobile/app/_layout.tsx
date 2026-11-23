@@ -1,7 +1,9 @@
 import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { SessionProvider } from '../src/state/session';
 import { CartProvider } from '../src/state/cart';
+import { BrowseLocationProvider } from '../src/state/browse-location';
 import {
   useFonts,
   NotoSansArabic_400Regular,
@@ -14,7 +16,10 @@ export default function Layout() {
     <SafeAreaProvider>
       <SessionProvider>
         <CartProvider>
-          <Stack screenOptions={{ headerShown: false }} />
+          <BrowseLocationProvider>
+            <StatusBar style="dark" />
+            <Stack screenOptions={{ headerShown: false }} />
+          </BrowseLocationProvider>
         </CartProvider>
       </SessionProvider>
     </SafeAreaProvider>
