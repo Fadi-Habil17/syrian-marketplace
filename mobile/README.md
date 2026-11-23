@@ -38,7 +38,7 @@ Configure `EXPO_PUBLIC_PROJECT_ID` with the real EAS project UUID, build a devel
 
 Access tokens stay in memory; rotating refresh tokens use Expo SecureStore. The typed client consumes the unchanged generated OpenAPI `paths`. A single in-flight refresh prevents ordinary concurrent refresh reuse; authenticated retries preserve request bodies, version and idempotency headers. No client calculates authoritative installments, escrow, fees, deadlines, permissions or order transitions. Redux persistence is not used. Context holds session/UI state and an ephemeral cart. Logout clears local session even if remote revocation fails; remote failure is shown. Session-generation checks prevent old-account retries and late refresh resurrection. Pending store-checkout command identities are isolated per user and stored in SecureStore before sending; authoritative prices, balances and order state are always fetched from the backend.
 
-Home design reference: Figma `Is0AUCFwf381hokeM2JUQ7`, frame `3:2`. Original image and SVG assets are local; Noto Sans Arabic is bundled. This is an adaptation, not a verified pixel match. Other flows need further design work. Views use explicit Arabic RTL/English LTR text and layout; full native navigation RTL remains unverified.
+The [Mobile App Figma page](https://www.figma.com/design/BdSdHj3FUoQVCGK6JLfNgb/?node-id=0-1) provides the 390 × 844 reference for the shared header and navigation, home, location picker, catalog, detail pages, and authentication. Home uses the bundled design imagery and icons. Catalog and detail photos come from the public catalog. Location and category choices use the existing geography and catalog endpoints. The selected browse location is held in memory for the current session.
 
 ## Checks run
 
@@ -50,4 +50,4 @@ Home design reference: Figma `Is0AUCFwf381hokeM2JUQ7`, frame `3:2`. Original ima
 - Setup verification: passed.
 - Production dependency audit during merge review: 27 affected nodes (20 moderate/seven high), no critical. No force-upgrades or root overrides changed.
 
-No emulator or real-device run or native SecureStore verification, push delivery, OS permission/restart testing or full visual QA was performed. Do not infer any of these from successful compilation. The [merge review](../docs/MOBILE_MERGE_REVIEW.md) records the later live transport/checkout check with mocked native storage; full device/end-to-end acceptance remains pending. Existing backend validation reports describe the earlier backend increment.
+Pixel 8 emulator checks with Expo Go SDK 54 covered home at 320, 390, and 411 dp, and exercised the location picker, filtered catalog, service and product details, storefront, and sign-in and registration screens at 390 dp. iOS layout, real-device push delivery, and full device acceptance remain pending. The [merge review](../docs/MOBILE_MERGE_REVIEW.md) records the earlier live transport/checkout check with mocked native storage.

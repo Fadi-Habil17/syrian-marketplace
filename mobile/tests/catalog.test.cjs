@@ -33,3 +33,14 @@ test('product search and cursor conform to the same backend contract', () => {
   assert.equal(query.q, 'bread');
   assert.equal(query.cursor, 'cursor-value');
 });
+test('mobile category and location selections use canonical filters for both catalogs', () => {
+  const filters = { categoryId: 'category', governorateId: 'governorate', cityId: 'city' };
+  const listing = exportsObject.listingQuery('PROFESSIONAL', '', undefined, filters);
+  const product = exportsObject.productQuery('', undefined, filters);
+  check('/api/v1/listings', listing);
+  check('/api/v1/products', product);
+  for (const [key, value] of Object.entries(filters)) {
+    assert.equal(listing[key], value);
+    assert.equal(product[key], value);
+  }
+});
