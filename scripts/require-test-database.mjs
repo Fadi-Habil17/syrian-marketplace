@@ -19,6 +19,8 @@ const result = spawnSync(
     fileURLToPath(new URL('../node_modules/jest/bin/jest.js', import.meta.url)),
     '--runInBand',
     '--testPathPattern=\\.db\\.spec\\.ts$',
+    // Real PostgreSQL, bcrypt, S3 and antivirus scenarios need an integration timeout.
+    '--testTimeout=30000',
     ...process.argv.slice(2),
   ],
   {

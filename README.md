@@ -1,10 +1,10 @@
 # Syrian Marketplace | السوق السوري
 
-A B4F Syrian marketplace for freelance services, professional bookings/quotes and home-produced goods. **Current increment: implemented NestJS backend, 145 REST operations, authorized Socket.IO, PostgreSQL transactions and durable workers.** Payments are deliberately simulated with actual wallet/escrow/ledger records. Web business screens remain a later increment. The merged [Expo mobile client](mobile/README.md) adds partial marketplace screens; full mobile/admin parity remains unfinished. See the [backend implementation and actual validation report](docs/BACKEND_IMPLEMENTATION_REPORT.md).
+A B4F Syrian marketplace for freelance services, professional bookings/quotes and home-produced goods. **Current increment: implemented NestJS backend, 145 REST operations, authorized Socket.IO, PostgreSQL transactions and durable workers.** Payments are deliberately simulated with actual wallet/escrow/ledger records. The reviewed [Next.js web client](frontend/README.md) adds bilingual marketplace/admin workflows with [known API gaps](docs/FRONTEND_API_ISSUES.md). The [Expo mobile client](mobile/README.md) is partial; full client parity and release acceptance remain unfinished. See the [backend implementation and actual validation report](docs/BACKEND_IMPLEMENTATION_REPORT.md).
 
 ## Team members
 
-The owner deferred the team name, full roster, primary roles, contributions and GitHub usernames. The original setup commit retains Mustafa Alshaar's attribution; subsequent backend/review work uses the verified repository-local Fadi-Habil17 identity. The mobile contribution retains its observed Git author nagham-jaza55. This does not establish a team roster. No other contributors or GitHub usernames are inferred. Before submission, replace this paragraph with each real member's name, role, actual main contribution and primary GitHub username; match both Word briefs and Git history. Never copy the PDF's illustrative roster.
+The owner deferred the team name, full roster, primary roles, contributions and GitHub usernames. The original setup commit retains Mustafa Alshaar's attribution; subsequent backend/review work uses the verified repository-local Fadi-Habil17 identity. The mobile contribution retains its observed Git author nagham-jaza55, and the web contribution retains its author Molham alkaseer. This does not establish a team roster. No other contributors or GitHub usernames are inferred. Before submission, replace this paragraph with each real member's name, role, actual main contribution and primary GitHub username; match both Word briefs and Git history. Never copy the PDF's illustrative roster.
 
 ## Main features in release one
 
@@ -123,7 +123,7 @@ API health: `http://localhost:4000/api/v1/health`. Swagger: `http://localhost:40
 
 ## Frontend setup and run
 
-Separate root terminal: `npm run dev:frontend`. Per-folder equivalent: `cd frontend`, `npm install`, `npm run dev`. Open `http://localhost:3000` (redirects to `/ar`); English `/en`. These are setup pages only. `npm run start --workspace frontend` serves a completed production build.
+Separate root terminal: `npm run dev:frontend`. Per-folder equivalent: `cd frontend`, `npm install`, `npm run dev`. Open `http://localhost:3000` (redirects to `/ar`); English `/en`. These pages now include marketplace/customer/business/admin workflows; see [combined merge verification](docs/FRONTEND_MERGE_REVIEW.md) for actual tests and remaining limits. `npm run start --workspace frontend` serves a completed production build.
 
 ## Mobile setup and run
 

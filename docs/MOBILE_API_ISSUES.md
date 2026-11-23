@@ -1,6 +1,6 @@
 ﻿# Mobile API integration issues and remaining work
 
-This is a partial mobile implementation originating on `feature/mobile`, reviewed for merge into main; it is not the complete requested mobile release. See [review fixes and current verification](MOBILE_MERGE_REVIEW.md). Backend and frontend source, Prisma models, migrations and shared contracts are unchanged.
+This is a partial mobile implementation originating on `feature/mobile`, reviewed for merge into main; it is not the complete requested mobile release. See [review fixes and current verification](MOBILE_MERGE_REVIEW.md). The original mobile contribution left backend/frontend source and shared contracts unchanged. The companion web integration is covered in [combined review](FRONTEND_MERGE_REVIEW.md); backend business modules, Prisma models/migrations and API contracts remain unchanged.
 
 ## Contract review
 
@@ -33,3 +33,5 @@ Expo Router, secure refresh storage/in-memory access, single-flight refresh and 
 - End-to-end API, authorization, offline/session races, screenshots and Android/iOS device acceptance. No APK was produced.
 
 Do not mark these features complete because a route, adapter, schema or TypeScript build exists. Coordinate any contract changes with the backend owner rather than changing shared packages.
+
+Combined review corrected canonical workspace/q filtering and USD wallet display. The current mobile suite has 21 tests; real catalog and checkout transport were checked against the isolated API. See the combined review for final evidence.

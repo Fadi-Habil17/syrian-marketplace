@@ -2,6 +2,7 @@ import { api, unwrap } from '../src/api/client';
 import { useLoad } from '../src/use-load';
 import { useSession } from '../src/state/session';
 import { Page, Copy, Card, Busy, Failure } from '../src/ui';
+import { money } from '../src/money';
 export default function Wallet() {
   const { locale, user } = useSession();
   const result = useLoad(
@@ -15,7 +16,7 @@ export default function Wallet() {
       {result.data?.items.map((wallet) => (
         <Card key={wallet.currency}>
           <Copy>{wallet.currency}</Copy>
-          <Copy>{wallet.availableUnits}</Copy>
+          <Copy>{money({ currency: wallet.currency, units: wallet.availableUnits })}</Copy>
         </Card>
       ))}
     </Page>

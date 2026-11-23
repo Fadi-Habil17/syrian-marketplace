@@ -5,6 +5,7 @@ import { useLoad } from '../src/use-load';
 import { useSession } from '../src/state/session';
 import { Page, Field, Card, Copy, Button, Busy, Failure } from '../src/ui';
 import { money } from '../src/money';
+import { listingQuery, productQuery } from '../src/catalog-query';
 export default function Catalog() {
   const { workspace = 'FREELANCE' } = useLocalSearchParams<{ workspace: string }>();
   const { locale } = useSession();
@@ -18,18 +19,13 @@ export default function Catalog() {
       products
         ? unwrap(
             await api.GET('/api/v1/products', {
-              params: { query: { search: query || undefined, cursor, limit: 20 } },
+              params: { query: productQuery(query, cursor) },
             }),
           )
         : unwrap(
             await api.GET('/api/v1/listings', {
               params: {
-                query: {
-                  kind: workspace === 'PROFESSIONAL' ? 'PROFESSIONAL_PACKAGE' : 'FREELANCE',
-                  search: query || undefined,
-                  cursor,
-                  limit: 20,
-                },
+                query: listingQuery(workspace, query, cursor),
               },
             }),
           ),
