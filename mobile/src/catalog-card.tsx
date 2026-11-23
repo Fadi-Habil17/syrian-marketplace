@@ -1,13 +1,14 @@
+import { themedStyles } from './appearance';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import type { ApiSchemas } from './api/contracts';
 import { CatalogPhoto } from './catalog-photo';
 import { money } from './money';
 import { useSession } from './state/session';
-import { colors } from './theme';
 import { Copy } from './ui';
 
 export function CatalogCard({ item }: { item: ApiSchemas['Listing' | 'Product'] }) {
+  const s = useStyles();
   const { locale } = useSession();
   const ar = locale === 'ar';
   return (
@@ -42,20 +43,22 @@ export function CatalogCard({ item }: { item: ApiSchemas['Listing' | 'Product'] 
   );
 }
 
-const s = StyleSheet.create({
-  card: {
-    minHeight: 136,
-    flexDirection: 'row',
-    padding: 7,
-    gap: 10,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: 17,
-    backgroundColor: colors.paper,
-  },
-  thumb: { width: 104, height: 120 },
-  copy: { flex: 1, minWidth: 0, gap: 4, paddingEnd: 4 },
-  title: { fontSize: 15, lineHeight: 22 },
-  pressed: { backgroundColor: colors.mint },
-});
+const useStyles = themedStyles((colors) =>
+  StyleSheet.create({
+    card: {
+      minHeight: 136,
+      flexDirection: 'row',
+      padding: 7,
+      gap: 10,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: colors.line,
+      borderRadius: 17,
+      backgroundColor: colors.paper,
+    },
+    thumb: { width: 104, height: 120 },
+    copy: { flex: 1, minWidth: 0, gap: 4, paddingEnd: 4 },
+    title: { fontSize: 15, lineHeight: 22 },
+    pressed: { backgroundColor: colors.mint },
+  }),
+);

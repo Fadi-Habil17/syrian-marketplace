@@ -1,0 +1,93 @@
+[
+  {
+    "name": "web-first",
+    "pass": 43,
+    "fail": 5,
+    "failures": [
+      {
+        "name": "appearance persistence, OS changes and pre-hydration render",
+        "error": "Expected values to be strictly equal:"
+      },
+      {
+        "name": "login validation/failure/persistence/success en light",
+        "error": "The expression evaluated to a falsy value:"
+      },
+      {
+        "name": "login validation/failure/persistence/success en dark",
+        "error": "The expression evaluated to a falsy value:"
+      },
+      {
+        "name": "login validation/failure/persistence/success ar light",
+        "error": "The expression evaluated to a falsy value:"
+      },
+      {
+        "name": "login validation/failure/persistence/success ar dark",
+        "error": "The expression evaluated to a falsy value:"
+      }
+    ],
+    "disposition": "Superseded by 50-case final web pass; harness storage reset and early cookie assertion corrected."
+  },
+  {
+    "name": "android-appearance-first",
+    "pass": 0,
+    "fail": 1,
+    "failures": [
+      {
+        "name": "Android Dark preference survives process restart",
+        "error": "Expected visible UI: المظهر: داكن"
+      }
+    ],
+    "disposition": "Superseded by synchronous activity-launch appearance pass."
+  },
+  {
+    "name": "android-auth-interrupted",
+    "pass": 1,
+    "fail": 1,
+    "failures": [
+      {
+        "name": "Android real login and signed-in account",
+        "error": "Command '['C:\\\\Users\\\\musta\\\\AppData\\\\Local\\\\Android\\\\Sdk\\\\platform-tools\\\\adb.exe', '-s', 'emulator-5554', 'shell', 'uiautomator', 'dump', '/sdcard/marketplace-ui.xml']' returned non-zero exit status 137."
+      }
+    ],
+    "disposition": "Credential rejection passed; accessibility dump was interrupted. Signed-in account/logout verified in final native follow-up."
+  },
+  {
+    "name": "android-final-initial",
+    "pass": 1,
+    "fail": 1,
+    "failures": [
+      {
+        "name": "Android Arabic Light actual login success/failure and retained email",
+        "error": "Cannot reach تسجيل الدخول"
+      }
+    ],
+    "disposition": "Account/logout passed. Arabic harness scrolling corrected and rerun."
+  },
+  {
+    "name": "android-arabic-followup",
+    "pass": 1,
+    "fail": 1,
+    "failures": [
+      {
+        "name": "Android hardware back, recovery action, 200% text and keyboard navigation",
+        "error": "Expected visible UI: أهلاً برجعتك"
+      }
+    ],
+    "disposition": "Actual Arabic login passed. Keyboard-first Back expectation corrected and accessibility rerun."
+  },
+  {
+    "name": "native a11y initial attempts",
+    "status": "FAIL",
+    "disposition": "Wrong keyboard Back assumption, then Expo Go configuration reload/splash/home state. Final explicit auth-route 200% check passed; retained in report."
+  },
+  {
+    "name": "Android font configuration then appearance",
+    "status": "FAIL",
+    "disposition": "Reproduced on the exact final source; retained as High UI-01 with screenshot and machine results. Client-level workarounds did not establish a fix."
+  },
+  {
+    "name": "Locale numbering and build helper",
+    "status": "FAIL",
+    "disposition": "Initial numbering-system assumption and helper working directory were wrong; corrected locale-aware assertion and correctly copied final build passed."
+  }
+]

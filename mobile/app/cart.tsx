@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert } from 'react-native';
 import { router } from 'expo-router';
 import * as Crypto from 'expo-crypto';
 import type { ApiSchemas } from '../src/api/contracts';
@@ -14,7 +13,7 @@ import { useCart } from '../src/state/cart';
 import { useSession } from '../src/state/session';
 import { useLoad } from '../src/use-load';
 import { money } from '../src/money';
-import { Page, Card, Copy, Button, Failure, Busy } from '../src/ui';
+import { Page, Card, Copy, Button, Failure, Busy, ConfirmDialog } from '../src/ui';
 export default function Cart() {
   const { lines, remove, clear } = useCart();
   const { locale, user } = useSession();
@@ -24,12 +23,14 @@ export default function Cart() {
   const [preview, setPreview] = useState<ApiSchemas['StorePreview'] | null>(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const pending = useRef<CheckoutIntent | null>(null);
   const [paymentPending, setPaymentPending] = useState(false);
   const [checkingPayment, setCheckingPayment] = useState(true);
   const cartFingerprint = JSON.stringify(lines.map((line) => [line.product.id, line.quantity]));
   useEffect(() => {
     setPreview(null);
+    setConfirmOpen(false);
   }, [cartFingerprint]);
   useEffect(() => {
     let active = true;
@@ -191,16 +192,19 @@ export default function Cart() {
           <Button
             title={ar ? 'تأكيد الدفع التجريبي' : 'Confirm simulated payment'}
             disabled={busy}
-            onPress={() =>
-              Alert.alert(
-                ar ? 'تأكيد الشروط' : 'Confirm terms',
-                `${preview.order.terms.scope}\n${money(preview.order.total)}`,
-                [
-                  { text: ar ? 'رجوع' : 'Back', style: 'cancel' },
-                  { text: ar ? 'أوافق' : 'Accept', onPress: () => void checkout() },
-                ],
-              )
-            }
+            onPress={() => setConfirmOpen(true)}
+          />
+          <ConfirmDialog
+            visible={confirmOpen}
+            title={ar ? 'تأكيد الشروط' : 'Confirm terms'}
+            message={`${preview.order.terms.scope}\n${money(preview.order.total)}`}
+            cancelLabel={ar ? 'رجوع' : 'Back'}
+            confirmLabel={ar ? 'أوافق' : 'Accept'}
+            onCancel={() => setConfirmOpen(false)}
+            onConfirm={() => {
+              setConfirmOpen(false);
+              void checkout();
+            }}
           />
         </Card>
       )}

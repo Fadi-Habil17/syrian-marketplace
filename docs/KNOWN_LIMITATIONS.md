@@ -45,3 +45,9 @@ Current counts are from the actual audit captured for this working tree, not old
 | Installation failure from cache state    | PASS   | Fresh registry metadata and cached artifacts enabled a final clean offline `npm ci`. No lockfile package was downgraded to hide an installation failure.                                                                                                                                    |
 
 The financial workflow remains the original local simulator: one currency per order, two service holds, full store checkout, first-hold commission snapshot, conserved refunds/settlements and no real ShamCash integration. No commercial policy was weakened to get tests passing.
+
+# UI increment — 2026-11-24
+
+**UI-01 — High / FAIL:** Android Expo Go 54.0.8 (SDK 54 / project React Native 0.81.5 New Architecture) can show a native Fabric `Unable to find viewState for tag … Surface stopped: false` error after a system font-scale/activity recreation followed by an app appearance change. Repeated client-level workarounds did not establish a fix. Ordinary auth/theme and 200% auth checks pass separately; they do not close this defect. Reproduction, failed evidence, tested environment and the related upstream error family are in [UI_UPGRADE_VERIFICATION.md](UI_UPGRADE_VERIFICATION.md).
+
+The landing/auth/appearance code, media fallback, original walkthrough and before/after evidence are delivered on the feature branch. iOS/physical-device/runtime acceptance, human screen-reader testing and approved marketplace-film footage remain outstanding. Existing release-one limitations below retain their scope.

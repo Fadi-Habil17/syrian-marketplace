@@ -1,0 +1,14 @@
+{
+  "date": "2026-11-24",
+  "browser": "Chromium (installed Chrome)",
+  "results": [
+    {
+      "name": "journeys keyboard/touch/reduced-motion en",
+      "status": "PASS"
+    },
+    {
+      "name": "journeys keyboard/touch/reduced-motion ar",
+      "status": "PASS"
+    }
+  ]
+}

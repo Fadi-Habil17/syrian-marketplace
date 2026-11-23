@@ -3,6 +3,7 @@ import { currentUser } from '../lib/session';
 import { choose, type Locale } from '../lib/locale';
 import { HeaderMenu } from './header-menu';
 import { LocaleSwitch } from './locale-switch';
+import { AppearanceControl } from './appearance';
 
 export async function Header({ locale }: { locale: Locale }) {
   const viewer = await currentUser().catch(() => null);
@@ -25,7 +26,7 @@ export async function Header({ locale }: { locale: Locale }) {
           <span className="brand-mark" aria-hidden="true">
             <span />
           </span>
-          {choose(locale, 'دكّان و حارة', 'Dukkan & Hara')}
+          <span className="brand-name">{choose(locale, 'دكّان و حارة', 'Dukkan & Hara')}</span>
         </Link>
         <nav
           className="desktop-nav"
@@ -46,6 +47,7 @@ export async function Header({ locale }: { locale: Locale }) {
           />
         </form>
         <LocaleSwitch locale={locale} />
+        <AppearanceControl locale={locale} />
         <Link className="button primary desktop-account" href={account.href}>
           {account.label}
         </Link>

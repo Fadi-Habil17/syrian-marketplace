@@ -1,0 +1,10 @@
+[
+  {
+    "name": "Android Dark preference survives process restart",
+    "status": "PASS"
+  },
+  {
+    "name": "Android System preference follows OS light/dark",
+    "status": "PASS"
+  }
+]

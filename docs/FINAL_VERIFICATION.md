@@ -55,3 +55,7 @@ Use [TEST_REPORT.md](TEST_REPORT.md) for commands, isolation, actual results and
 Existing module tests, auth/file validation, locked dependencies and business/API/checklist/security documentation were updated. Original requirements/PDF are unchanged. Runtime data, environment files, build products, bundles and raw evidence remain ignored.
 
 The delivered backend was also compiled in the ordinary workspace and its previously owned local API/worker restarted. Local health, Swagger, existing web and existing Expo endpoints returned HTTP 200. This is local application of the fixes, not a production deployment or a new device acceptance result.
+
+## Additional UI increment — 2026-11-24
+
+The [UI upgrade report](UI_UPGRADE_VERIFICATION.md) records 64 final web acceptance passes, 37 existing client regressions rerun successfully, actual isolated-backend Android auth, bilingual/theme screenshots and comparable landing measurements. **High / FAIL UI-01 remains:** changing appearance after an Android font/activity recreation can produce a native Fabric mounting error in Expo Go. iOS runtime, physical-device acceptance and approved marketplace-film assets remain outstanding. This does not change the scope or counts of the earlier backend/security run and does not establish first-release approval.

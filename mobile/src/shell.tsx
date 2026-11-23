@@ -1,15 +1,38 @@
+import { themedStyles, useAppearance } from './appearance';
 import type { ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { router, usePathname } from 'expo-router';
 import { Image } from 'expo-image';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSession } from './state/session';
-import { colors, design, readingStyle } from './theme';
+import { design, readingStyle } from './theme';
+import { AppearancePicker } from './appearance-picker';
 
 const browseRoutes = new Set(['/catalog', '/listing', '/store', '/booking', '/cart']);
 const orderRoutes = new Set(['/orders', '/order', '/chat', '/review', '/delivery']);
 
 export function MobileShell({ children, home = false }: { children: ReactNode; home?: boolean }) {
+  const s = useStyles();
+  const { colors } = useAppearance();
+  const [keyboard, setKeyboard] = useState(false);
+  useEffect(() => {
+    const shown = Keyboard.addListener('keyboardDidShow', () => setKeyboard(true));
+    const hidden = Keyboard.addListener('keyboardDidHide', () => setKeyboard(false));
+    return () => {
+      shown.remove();
+      hidden.remove();
+    };
+  }, []);
   const { user, locale, setLocale } = useSession();
   const ar = locale === 'ar';
   const path = usePathname();
@@ -43,104 +66,114 @@ export function MobileShell({ children, home = false }: { children: ReactNode; h
               {ar ? 'دكّان و حارة' : 'Dukkan & Hara'}
             </Text>
           </Pressable>
+          <AppearancePicker locale={locale} />
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={ar ? 'Switch to English' : 'التبديل للعربية'}
             onPress={() => setLocale(ar ? 'en' : 'ar')}
             style={s.language}
           >
-            <Image source={design.globe} style={s.globe} />
-            <Text style={[s.languageText, readingStyle(locale, true)]}>
-              {ar ? 'العربية / English' : 'English / العربية'}
-            </Text>
+            <Image tintColor={colors.green} source={design.globe} style={s.globe} />
+            <Text style={[s.languageText, readingStyle(locale, true)]}>{ar ? 'EN' : 'عربي'}</Text>
           </Pressable>
         </View>
       </View>
-      <ScrollView
-        style={s.body}
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={s.scroll}
-        testID="marketplace-content"
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <View style={[s.frame, home && s.home, { direction }]}>{children}</View>
-      </ScrollView>
-      <SafeAreaView style={s.bottom} edges={['bottom']}>
-        <View accessibilityRole="tablist" style={[s.tabs, { direction }]}>
-          {tabs.map((tab) => (
-            <Pressable
-              key={tab.key}
-              accessibilityRole="tab"
-              accessibilityState={{ selected: activeTab === tab.key }}
-              accessibilityLabel={tab.title}
-              onPress={() => {
-                if (path !== tab.path) router.navigate(tab.path);
-              }}
-              style={s.tab}
-            >
-              <View style={[s.tabIcon, activeTab === tab.key && s.selected]}>
-                <Image source={design[tab.key]} style={s.icon} />
-              </View>
-              <Text style={[readingStyle(locale, activeTab === tab.key), s.tabText]}>
-                {tab.title}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-      </SafeAreaView>
+        <ScrollView
+          style={s.body}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+          automaticallyAdjustKeyboardInsets={Platform.OS === 'ios'}
+          contentContainerStyle={s.scroll}
+          testID="marketplace-content"
+        >
+          <View style={[s.frame, home && s.home, { direction }]}>{children}</View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+      {!keyboard && (
+        <SafeAreaView style={s.bottom} edges={['bottom']}>
+          <View accessibilityRole="tablist" style={[s.tabs, { direction }]}>
+            {tabs.map((tab) => (
+              <Pressable
+                key={tab.key}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: activeTab === tab.key }}
+                accessibilityLabel={tab.title}
+                onPress={() => {
+                  if (path !== tab.path) router.navigate(tab.path);
+                }}
+                style={s.tab}
+              >
+                <View style={[s.tabIcon, activeTab === tab.key && s.selected]}>
+                  <Image tintColor={colors.green} source={design[tab.key]} style={s.icon} />
+                </View>
+                <Text style={[readingStyle(locale, activeTab === tab.key), s.tabText]}>
+                  {tab.title}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </SafeAreaView>
+      )}
     </SafeAreaView>
   );
 }
 
-const s = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.paper, direction: 'ltr' },
-  header: { borderBottomWidth: 1, borderColor: colors.line },
-  headerRow: {
-    minHeight: 61,
-    paddingHorizontal: 20,
-    width: '100%',
-    maxWidth: 600,
-    alignSelf: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 8,
-  },
-  brand: { minHeight: 48, flexShrink: 1, gap: 9, flexDirection: 'row', alignItems: 'center' },
-  brandIcon: { width: 38, height: 38 },
-  wordmark: { fontSize: 17, color: colors.ink, flexShrink: 1 },
-  language: {
-    minHeight: 44,
-    borderRadius: 10,
-    backgroundColor: colors.mint,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 8,
-  },
-  globe: { width: 17, height: 17 },
-  languageText: { fontSize: 11, color: colors.green },
-  body: { flex: 1, backgroundColor: colors.cream },
-  scroll: { flexGrow: 1, paddingHorizontal: 20 },
-  frame: { width: '100%', maxWidth: 560, alignSelf: 'center', paddingVertical: 14, gap: 12 },
-  home: { gap: 8 },
-  bottom: { borderTopWidth: 1, borderColor: colors.line },
-  tabs: {
-    flexDirection: 'row',
-    width: '100%',
-    maxWidth: 600,
-    alignSelf: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 4,
-  },
-  tab: { minHeight: 52, flex: 1, alignItems: 'center', justifyContent: 'center', gap: 2 },
-  tabIcon: {
-    width: 46,
-    height: 28,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  selected: { backgroundColor: colors.mint },
-  icon: { width: 19, height: 19 },
-  tabText: { textAlign: 'center', fontSize: 11, lineHeight: 16, color: colors.green },
-});
+const useStyles = themedStyles((colors) =>
+  StyleSheet.create({
+    screen: { flex: 1, backgroundColor: colors.paper, direction: 'ltr' },
+    header: { borderBottomWidth: 1, borderColor: colors.line },
+    headerRow: {
+      minHeight: 61,
+      paddingHorizontal: 20,
+      width: '100%',
+      maxWidth: 600,
+      alignSelf: 'center',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 8,
+    },
+    brand: { minHeight: 48, flexShrink: 1, gap: 9, flexDirection: 'row', alignItems: 'center' },
+    brandIcon: { width: 38, height: 38 },
+    wordmark: { fontSize: 17, color: colors.ink, flexShrink: 1 },
+    language: {
+      minHeight: 44,
+      borderRadius: 10,
+      backgroundColor: colors.mint,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      paddingHorizontal: 8,
+    },
+    globe: { width: 17, height: 17 },
+    languageText: { fontSize: 11, color: colors.green },
+    body: { flex: 1, backgroundColor: colors.cream },
+    scroll: { flexGrow: 1, paddingHorizontal: 20 },
+    frame: { width: '100%', maxWidth: 560, alignSelf: 'center', paddingVertical: 14, gap: 12 },
+    home: { gap: 8 },
+    bottom: { borderTopWidth: 1, borderColor: colors.line },
+    tabs: {
+      flexDirection: 'row',
+      width: '100%',
+      maxWidth: 600,
+      alignSelf: 'center',
+      paddingHorizontal: 14,
+      paddingVertical: 4,
+    },
+    tab: { minHeight: 52, flex: 1, alignItems: 'center', justifyContent: 'center', gap: 2 },
+    tabIcon: {
+      width: 46,
+      height: 28,
+      borderRadius: 14,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    selected: { backgroundColor: colors.mint },
+    icon: { width: 19, height: 19 },
+    tabText: { textAlign: 'center', fontSize: 11, lineHeight: 16, color: colors.green },
+  }),
+);

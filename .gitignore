@@ -40,3 +40,7 @@ mobile/ios/
 *.apk
 *.aab
 *.ipa
+
+# Local Python UI automation cache
+__pycache__/
+*.pyc

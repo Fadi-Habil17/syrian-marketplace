@@ -7,6 +7,7 @@ import { choose, localeOf } from '../../lib/locale';
 import '../globals.css';
 import { currentUser } from '../../lib/session';
 import { ActorScope } from '../../features/actor-scope';
+import { appearanceBoot } from '../../lib/appearance';
 
 export async function generateMetadata({
   params,
@@ -37,7 +38,10 @@ export default async function LocaleLayout({
   const locale = localeOf((await params).locale);
   const viewer = await currentUser().catch(() => null);
   return (
-    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: appearanceBoot }} />
+      </head>
       <body>
         <StoreProvider>
           <ActorScope id={viewer?.id ?? null}>

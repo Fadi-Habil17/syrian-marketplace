@@ -1,0 +1,7 @@
+[
+  {
+    "name": "Android appearance after font configuration change, native modal dismissed before apply",
+    "status": "FAIL",
+    "error": "Expected visible UI: المظهر: داكن"
+  }
+]

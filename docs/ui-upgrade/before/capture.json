@@ -1,0 +1,127 @@
+{
+  "phase": "before",
+  "browser": "158.0.8127.37",
+  "screens": [
+    {
+      "name": "home-en-1440.png",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "dir": "ltr",
+      "background": "rgb(247, 243, 233)"
+    },
+    {
+      "name": "login-en-1440.png",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "dir": "ltr",
+      "background": "rgb(247, 243, 233)"
+    },
+    {
+      "name": "register-en-1440.png",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "dir": "ltr",
+      "background": "rgb(247, 243, 233)"
+    },
+    {
+      "name": "home-ar-1440.png",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "dir": "rtl",
+      "background": "rgb(247, 243, 233)"
+    },
+    {
+      "name": "login-ar-1440.png",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "dir": "rtl",
+      "background": "rgb(247, 243, 233)"
+    },
+    {
+      "name": "register-ar-1440.png",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "dir": "rtl",
+      "background": "rgb(247, 243, 233)"
+    },
+    {
+      "name": "home-en-390.png",
+      "width": 390,
+      "scrollWidth": 390,
+      "dir": "ltr",
+      "background": "rgb(247, 243, 233)"
+    },
+    {
+      "name": "login-en-390.png",
+      "width": 390,
+      "scrollWidth": 390,
+      "dir": "ltr",
+      "background": "rgb(247, 243, 233)"
+    },
+    {
+      "name": "register-en-390.png",
+      "width": 390,
+      "scrollWidth": 390,
+      "dir": "ltr",
+      "background": "rgb(247, 243, 233)"
+    },
+    {
+      "name": "home-ar-390.png",
+      "width": 390,
+      "scrollWidth": 390,
+      "dir": "rtl",
+      "background": "rgb(247, 243, 233)"
+    },
+    {
+      "name": "login-ar-390.png",
+      "width": 390,
+      "scrollWidth": 390,
+      "dir": "rtl",
+      "background": "rgb(247, 243, 233)"
+    },
+    {
+      "name": "register-ar-390.png",
+      "width": 390,
+      "scrollWidth": 390,
+      "dir": "rtl",
+      "background": "rgb(247, 243, 233)"
+    }
+  ],
+  "performance": [
+    {
+      "lcp": 2332,
+      "cls": 0,
+      "ttfb": 103,
+      "transferBytes": 378652,
+      "requests": 19
+    },
+    {
+      "lcp": 2348,
+      "cls": 0,
+      "ttfb": 102.79999999701977,
+      "transferBytes": 378653,
+      "requests": 19
+    },
+    {
+      "lcp": 2284,
+      "cls": 0,
+      "ttfb": 102.70000000298023,
+      "transferBytes": 378653,
+      "requests": 19
+    },
+    {
+      "lcp": 2268,
+      "cls": 0,
+      "ttfb": 104.20000000298023,
+      "transferBytes": 378652,
+      "requests": 19
+    },
+    {
+      "lcp": 2272,
+      "cls": 0,
+      "ttfb": 102.29999999701977,
+      "transferBytes": 378650,
+      "requests": 19
+    }
+  ]
+}

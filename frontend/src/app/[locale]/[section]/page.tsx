@@ -5,6 +5,8 @@ import { CommandForm } from '../../../features/command-form';
 import { Back, Heading } from '../../../features/ui';
 import { actionLabel } from '../../../lib/labels';
 import { choose, localeOf, queryOf, type RouteProps } from '../../../lib/locale';
+import { AuthShell } from '../../../features/account/auth-shell';
+import { RegisterForm } from '../../../features/account/forms';
 
 const forms = {
   register: 'register',
@@ -28,6 +30,12 @@ export default async function SectionPage({ params, searchParams }: RouteProps) 
   const locale = localeOf(language);
   const query = queryOf(await searchParams);
   if (section === 'login') return <LoginPanel locale={locale} next={query.next} />;
+  if (section === 'register')
+    return (
+      <AuthShell locale={locale} mode="register">
+        <RegisterForm locale={locale} />
+      </AuthShell>
+    );
   if (Object.hasOwn(forms, section)) {
     const name = forms[section as keyof typeof forms];
     return (
