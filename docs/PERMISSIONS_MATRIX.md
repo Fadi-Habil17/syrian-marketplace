@@ -40,3 +40,9 @@ All entries require an authenticated, permitted session except public browsing. 
 - Both parties can submit evidence for 72h from case creation; system and handling admins append immutable notes. Submitted shared evidence is visible to the opposing party; internal moderation notes and security data are admin-only. Sensitive evidence submitted privately requires explicit visibility metadata and an audited access path.
 - Suspended/restricted participants retain a controlled evidence/support route; ordinary purchasing, publishing, socket presence and funding obey the current restriction. Revoking a session or role terminates its active socket grants.
 - Mobile push contains minimal event identifiers; opening it triggers fresh server authorization. Never place tokens/private data into a deep link.
+
+## Current runtime enforcement
+
+Restricted users can password-authenticate for their own history and controlled evidence/support, while refresh, ordinary writes, administrative powers and socket presence remain blocked. Actor grants are reread inside command transactions; a suspended admin cannot retain case powers through a previously issued JWT. Own User DTOs expose current restrictions. Active-business publishing and seller fulfillment require the corresponding current role and active profile.
+
+Archived former drivers retain redacted own assignment/payout history without regaining job acceptance, exact addresses or private delivery files. Referenced unpublished catalog media is available to current moderators with audited reads. Case-private evidence remains limited to its submitter and assigned handling admin; shared evidence is visible to both original parties. Admin content inspection uses typed moderation rows and never exposes password hashes or session tokens.

@@ -1,5 +1,7 @@
 # Database and API contract validation report
 
+> Historical database/contract increment. Current backend runtime and verification are in [BACKEND_IMPLEMENTATION_REPORT.md](BACKEND_IMPLEMENTATION_REPORT.md). Statements about then-unwired handlers describe that earlier increment.
+
 Evidence recorded 23 November 2026; PostgreSQL execution verified in the follow-up on the same date. This increment implements schema, migration files, development seed, internal financial persistence and transport contracts. It does not register business controllers, authentication or a WebSocket gateway; health remains the only live REST operation. The worker remains a heartbeat and the clients remain setup shells.
 
 ## Delivered model and policies

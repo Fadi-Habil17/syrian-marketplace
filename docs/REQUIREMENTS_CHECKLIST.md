@@ -2,7 +2,7 @@
 
 Source of truth: complete `MARKETPLACE_REQUIREMENTS.md` revision 1.2, complete nine-page `B4F_HACKATHON_RULES.pdf`, and owner's stack/setup instruction. No source policy is optional unless explicitly labelled. All three workspaces, both clients/admin, both delivery paths and both locales belong to release one.
 
-Status: **D/P** = designed, implementation and acceptance verification pending; **S** = setup artifact present, see `SETUP_REPORT.md` for actual checks; **P** = later deliverable pending; **O** = explicitly optional; **X** = explicitly outside release. A design is never counted as a running feature. Product rows include all clauses; A01-A14 separately retain every minimum scenario. Targets/defaults are distinguished in BUSINESS_RULES.
+Status: **D/P** = full-release implementation or client acceptance pending (backend delivery is separately mapped below); **S** = setup artifact present, see `SETUP_REPORT.md` for actual checks; **P** = later deliverable pending; **O** = explicitly optional; **X** = explicitly outside release. A design is never counted as a running feature. Product rows include all clauses; A01-A14 separately retain every minimum scenario. Targets/defaults are distinguished in BUSINESS_RULES.
 
 Document abbreviations: BR=`BUSINESS_RULES.md`, SD=`SYSTEM_DESIGN.md`, MB=`MODULE_BOUNDARIES.md`, DF=`DATA_FLOW.md`, PM=`PERMISSIONS_MATRIX.md`, SM=`ORDER_STATE_MACHINES.md`, ERD=`ERD.md`, API=`API_CONVENTIONS.md`, PLAN=`IMPLEMENTATION_PLAN.md`, SUB=`SUBMISSION_GUIDE.md`. All paths relative to `docs/`.
 
@@ -141,56 +141,56 @@ All pending executable feature verification. See PLAN A01-A14 for test approach.
 
 ## B4F submission rules, all pages
 
-| ID   | PDF page | Requirement                                                                                         | Artifact / remaining gate                                       | Status |
-| ---- | -------- | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ------ |
-| B001 | 1,4,9    | One repository contains complete Nest backend, Next frontend, React Native mobile                   | Exact roots scaffolded; full code PLAN 1-6                      | D/P    |
-| B002 | 2,9      | Arabic Word project brief, required Arabic filename, max ONE page                                   | SUB filenames; real roster first                                | P      |
-| B003 | 2,9      | English TeamName_ProjectBrief_EN.docx, max ONE page, same information                               | SUB                                                             | P      |
-| B004 | 2        | Brief name/summary/problem/solution/audience/main features/tech                                     | SD source material; SUB document gate                           | P      |
-| B005 | 2        | Brief every real member/name/role/main contribution/GitHub username                                 | Roster deferred by owner; no example members copied             | P      |
-| B006 | 2        | Brief repository URL and demo link if available; contributions checked against Git                  | SUB + final actual history                                      | P      |
-| B007 | 3,9      | Arabic and English Word analysis/design, prescribed filenames, each <=10 pages, preferably 4-5      | SUB; markdown designs are source, not these Word deliverables   | P      |
-| B008 | 3        | Count diagrams within page limit                                                                    | SUB render/page-count QA                                        | P      |
-| B009 | 3        | System overview goal/audience/problem/scope/out-of-scope                                            | SD; final Word export                                           | D/P    |
-| B010 | 3        | Actors/user roles                                                                                   | PM/SD; final Word export                                        | D/P    |
-| B011 | 3        | Functional requirements                                                                             | This checklist/BR; final Word export                            | D/P    |
-| B012 | 3        | Nonfunctional security/performance/usability/reliability/response/maintainability as applicable     | SD D19; final Word export                                       | D/P    |
-| B013 | 3        | At least THREE main use cases with short scenarios; use case diagram optional                       | SD three scenarios; final Word export                           | D/P    |
-| B014 | 3        | High-level architecture diagram links Next/Nest/React Native/DB/external services                   | SD Mermaid; final Word rendering                                | D/P    |
-| B015 | 3        | Database entities/relationships/PK/FK and ERD                                                       | ERD; final Word rendering                                       | D/P    |
-| B016 | 3        | Authentication/authorization roles/hash/endpoint protection/input validation                        | SD/PM/API; final Word export                                    | D/P    |
-| B017 | 3        | Business rules and main data flow optional in analysis document                                     | BR/DF prepared                                                  | O      |
-| B018 | 4        | Exact root README.md/backend/frontend/mobile/docs/.gitignore                                        | Root setup                                                      | S      |
-| B019 | 4        | Every member uses main GitHub account and appears as actual contributor                             | AGENTS; final team history check                                | P      |
-| B020 | 4        | Git user.email linked to own primary GitHub; never one author for team work                         | Current configured contributor only; owner confirmation; AGENTS | S      |
-| B021 | 4        | Avoid squash/history hiding; brief contributions match commits                                      | AGENTS; final team review                                       | P      |
-| B022 | 4        | Public repo OR reviewer collaborator with code/contributor/history access                           | Not published; SUB                                              | P      |
-| B023 | 5        | README overview/team/main features/stack/structure/prerequisites                                    | README present; roster pending                                  | D/P    |
-| B024 | 5        | README env/install/backend/frontend/mobile run/db migration & seed                                  | README foundation commands; final feature seed pending          | D/P    |
-| B025 | 5        | README API overview/Swagger/Postman                                                                 | README current vs planned; collection                           | S      |
-| B026 | 5        | README demo accounts/demo URL/APK or Expo link/known limits                                         | Explicit pending sections; final actual artifacts needed        | D/P    |
-| B027 | 5        | README each member name/role/contribution/GitHub matches brief and history                          | Roster deferred; SUB                                            | P      |
-| B028 | 6        | Document actual Nest npm install/start:dev and project migration/seed commands                      | README workspace and per-folder commands                        | S      |
-| B029 | 6        | Document Next npm install/dev                                                                       | README                                                          | S      |
-| B030 | 6        | Document mobile npm install/Expo start or native Android                                            | README/mobile README                                            | S      |
-| B031 | 6,9      | Provide APK OR Expo review link plus local instructions                                             | Not generated; SUB                                              | P      |
-| B032 | 7,9      | Separate backend/frontend/mobile .env.example with ALL variables per part                           | Templates distinguish shell/future variables                    | S      |
-| B033 | 7        | No actual secrets/real values in templates; browser NEXT_PUBLIC_, Expo EXPO_PUBLIC_ as needed       | Templates/.gitignore; final audit                               | S      |
-| B034 | 7        | Never Git database passwords/JWT secrets/private keys/production API keys                           | AGENTS/.gitignore; final scan                                   | S      |
-| B035 | 7,9      | Actual review-only demo login credentials incl. passwords in README when auth exists                | Auth not implemented; no fictional working accounts claimed     | P      |
-| B036 | 7,9      | Repeatable demo account seed preferred (project requirement makes all-role/currency seed mandatory) | Foundation seed only; PLAN 1-6                                  | D/P    |
-| B037 | 8        | README important endpoints grouped by domain with HTTP method/path; Swagger/Postman full detail     | README + API table; update every slice                          | S      |
-| B038 | 8,9      | @nestjs/swagger at /api/docs                                                                        | Backend bootstrap                                               | S      |
-| B039 | 8        | Swagger DTO/auth/body/response schemas and main errors                                              | Health schema now; domain schemas/errors pending                | D/P    |
-| B040 | 8,9      | Postman Collection v2.1                                                                             | docs/postman/syrian-marketplace.postman_collection.json         | S      |
-| B041 | 8        | Use {{baseUrl}}/{{token}} variables, no hardcoded values/secrets/tokens                             | Collection variable declarations and noauth health              | S      |
-| B042 | 8        | Postman covers ALL backend endpoints incl. auth/body/examples                                       | Current health covered; future all-route gate                   | D/P    |
-| B043 | 8        | Collection domain folders match README overview                                                     | Infrastructure now; API planned domain folders                  | S      |
-| B044 | 9        | Submit four Word docs plus GitHub repository link                                                   | SUB                                                             | P      |
-| B045 | 9        | Demo URL if available                                                                               | Deployment pending                                              | P      |
-| B046 | 9        | Short demo video optional                                                                           | SUB                                                             | O      |
-| B047 | 9        | Complete code and clear contributor history for ALL members                                         | Feature implementation/team contributions pending               | P      |
-| B048 | 9        | Deadline Tuesday 24 November 2026, 16:00 Asia/Damascus                                              | SUB deadline and PLAN phase 6                                   | S      |
+| ID   | PDF page | Requirement                                                                                         | Artifact / remaining gate                                                 | Status |
+| ---- | -------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------ |
+| B001 | 1,4,9    | One repository contains complete Nest backend, Next frontend, React Native mobile                   | Exact roots scaffolded; full code PLAN 1-6                                | D/P    |
+| B002 | 2,9      | Arabic Word project brief, required Arabic filename, max ONE page                                   | SUB filenames; real roster first                                          | P      |
+| B003 | 2,9      | English TeamName_ProjectBrief_EN.docx, max ONE page, same information                               | SUB                                                                       | P      |
+| B004 | 2        | Brief name/summary/problem/solution/audience/main features/tech                                     | SD source material; SUB document gate                                     | P      |
+| B005 | 2        | Brief every real member/name/role/main contribution/GitHub username                                 | Roster deferred by owner; no example members copied                       | P      |
+| B006 | 2        | Brief repository URL and demo link if available; contributions checked against Git                  | SUB + final actual history                                                | P      |
+| B007 | 3,9      | Arabic and English Word analysis/design, prescribed filenames, each <=10 pages, preferably 4-5      | SUB; markdown designs are source, not these Word deliverables             | P      |
+| B008 | 3        | Count diagrams within page limit                                                                    | SUB render/page-count QA                                                  | P      |
+| B009 | 3        | System overview goal/audience/problem/scope/out-of-scope                                            | SD; final Word export                                                     | D/P    |
+| B010 | 3        | Actors/user roles                                                                                   | PM/SD; final Word export                                                  | D/P    |
+| B011 | 3        | Functional requirements                                                                             | This checklist/BR; final Word export                                      | D/P    |
+| B012 | 3        | Nonfunctional security/performance/usability/reliability/response/maintainability as applicable     | SD D19; final Word export                                                 | D/P    |
+| B013 | 3        | At least THREE main use cases with short scenarios; use case diagram optional                       | SD three scenarios; final Word export                                     | D/P    |
+| B014 | 3        | High-level architecture diagram links Next/Nest/React Native/DB/external services                   | SD Mermaid; final Word rendering                                          | D/P    |
+| B015 | 3        | Database entities/relationships/PK/FK and ERD                                                       | ERD; final Word rendering                                                 | D/P    |
+| B016 | 3        | Authentication/authorization roles/hash/endpoint protection/input validation                        | SD/PM/API; final Word export                                              | D/P    |
+| B017 | 3        | Business rules and main data flow optional in analysis document                                     | BR/DF prepared                                                            | O      |
+| B018 | 4        | Exact root README.md/backend/frontend/mobile/docs/.gitignore                                        | Root setup                                                                | S      |
+| B019 | 4        | Every member uses main GitHub account and appears as actual contributor                             | AGENTS; final team history check                                          | P      |
+| B020 | 4        | Git user.email linked to own primary GitHub; never one author for team work                         | Current configured contributor only; owner confirmation; AGENTS           | S      |
+| B021 | 4        | Avoid squash/history hiding; brief contributions match commits                                      | AGENTS; final team review                                                 | P      |
+| B022 | 4        | Public repo OR reviewer collaborator with code/contributor/history access                           | Not published; SUB                                                        | P      |
+| B023 | 5        | README overview/team/main features/stack/structure/prerequisites                                    | README present; roster pending                                            | D/P    |
+| B024 | 5        | README env/install/backend/frontend/mobile run/db migration & seed                                  | README foundation commands; final feature seed pending                    | D/P    |
+| B025 | 5        | README API overview/Swagger/Postman                                                                 | README current vs planned; collection                                     | S      |
+| B026 | 5        | README demo accounts/demo URL/APK or Expo link/known limits                                         | Explicit pending sections; final actual artifacts needed                  | D/P    |
+| B027 | 5        | README each member name/role/contribution/GitHub matches brief and history                          | Roster deferred; SUB                                                      | P      |
+| B028 | 6        | Document actual Nest npm install/start:dev and project migration/seed commands                      | README workspace and per-folder commands                                  | S      |
+| B029 | 6        | Document Next npm install/dev                                                                       | README                                                                    | S      |
+| B030 | 6        | Document mobile npm install/Expo start or native Android                                            | README/mobile README                                                      | S      |
+| B031 | 6,9      | Provide APK OR Expo review link plus local instructions                                             | Not generated; SUB                                                        | P      |
+| B032 | 7,9      | Separate backend/frontend/mobile .env.example with ALL variables per part                           | Templates distinguish shell/future variables                              | S      |
+| B033 | 7        | No actual secrets/real values in templates; browser NEXT_PUBLIC_, Expo EXPO_PUBLIC_ as needed       | Templates/.gitignore; final audit                                         | S      |
+| B034 | 7        | Never Git database passwords/JWT secrets/private keys/production API keys                           | AGENTS/.gitignore; final scan                                             | S      |
+| B035 | 7,9      | Actual review-only demo login credentials incl. passwords in README when auth exists                | Actual isolated seed accounts and working HTTP login documented in README | P      |
+| B036 | 7,9      | Repeatable demo account seed preferred (project requirement makes all-role/currency seed mandatory) | Foundation seed only; PLAN 1-6                                            | D/P    |
+| B037 | 8        | README important endpoints grouped by domain with HTTP method/path; Swagger/Postman full detail     | README + API table; update every slice                                    | S      |
+| B038 | 8,9      | @nestjs/swagger at /api/docs                                                                        | Backend bootstrap                                                         | S      |
+| B039 | 8        | Swagger DTO/auth/body/response schemas and main errors                                              | Health schema now; domain schemas/errors pending                          | D/P    |
+| B040 | 8,9      | Postman Collection v2.1                                                                             | docs/postman/syrian-marketplace.postman_collection.json                   | S      |
+| B041 | 8        | Use {{baseUrl}}/{{token}} variables, no hardcoded values/secrets/tokens                             | Collection variable declarations and noauth health                        | S      |
+| B042 | 8        | Postman covers ALL backend endpoints incl. auth/body/examples                                       | Current health covered; future all-route gate                             | D/P    |
+| B043 | 8        | Collection domain folders match README overview                                                     | Infrastructure now; API planned domain folders                            | S      |
+| B044 | 9        | Submit four Word docs plus GitHub repository link                                                   | SUB                                                                       | P      |
+| B045 | 9        | Demo URL if available                                                                               | Deployment pending                                                        | P      |
+| B046 | 9        | Short demo video optional                                                                           | SUB                                                                       | O      |
+| B047 | 9        | Complete code and clear contributor history for ALL members                                         | Feature implementation/team contributions pending                         | P      |
+| B048 | 9        | Deadline Tuesday 24 November 2026, 16:00 Asia/Damascus                                              | SUB deadline and PLAN phase 6                                             | S      |
 
 ## Owner task and setup scope
 
@@ -213,20 +213,34 @@ Live funds and official ShamCash Sandbox: **X** per requirements §7. Optional v
 
 These are source/contract implementation statuses, not end-to-end release acceptance. Product rows above stay D/P until complete backend/client behavior and live PostgreSQL tests pass.
 
-| ID    | Deliverable                                                                                                           | Status                                                                                          |
-| ----- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| DB01  | 72 domain Prisma models / UUID identifiers / complete role and workspace relationships                                | Implemented; Prisma schema/client checked                                                       |
-| DB02  | BIGINT currency-safe money, order specializations, financial journal/entry/escrow/allocation relationships            | Implemented; migrations applied on PostgreSQL 16.16                                             |
-| DB03  | FK/query indexes, partial uniqueness, schedule exclusion, stock/geography/quote/review constraints                    | Applied; selected guards covered by real DB tests                                               |
-| DB04  | Immutable balanced ledger, controlled balance updates, installment/settlement/adjustment uniqueness                   | Implemented; seven real PostgreSQL tests passed                                                 |
-| DB05  | Atomic holds, failed-attempt idempotency, store reservations, freeze/dispute, completion and admin partial resolution | Internal commands implemented; selected financial/race tests passed; HTTP orchestration pending |
-| DB06  | Nonproduction idempotent six-role/two-currency seed and README credentials                                            | Executed twice per dev/test DB; no duplicate topups observed                                    |
-| DB07  | ERD generated from complete Prisma model                                                                              | Generated; drift command provided                                                               |
-| API01 | OpenAPI 3.1, JWT, all release-one operations/DTOs/error schemas                                                       | Implemented and schema validated                                                                |
-| API02 | Pagination/filter/sort, If-Match and Idempotency-Key conventions                                                      | Defined per operation                                                                           |
-| API03 | Every source transition actor/guards/effects and per-operation permissions                                            | 72 transition rows linked to canonical state tables                                             |
-| API04 | WebSocket event/command/ack and room/push/replay policy                                                               | Documented and typed in canonical contract                                                      |
-| API05 | Generated HTTP/WebSocket types shared by web/mobile, drift checks                                                     | Implemented; clients remain unconnected to contract-only endpoints                              |
-| API06 | Matching-domain Postman v2.1 for every target operation                                                               | Generated; only health is implemented at runtime                                                |
+| ID    | Deliverable                                                                                                           | Status                                                                                 |
+| ----- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| DB01  | 72 domain Prisma models / UUID identifiers / complete role and workspace relationships                                | Implemented; Prisma schema/client checked                                              |
+| DB02  | BIGINT currency-safe money, order specializations, financial journal/entry/escrow/allocation relationships            | Implemented; migrations applied on PostgreSQL 16.16                                    |
+| DB03  | FK/query indexes, partial uniqueness, schedule exclusion, stock/geography/quote/review constraints                    | Applied; selected guards covered by real DB tests                                      |
+| DB04  | Immutable balanced ledger, controlled balance updates, installment/settlement/adjustment uniqueness                   | Implemented; seven real PostgreSQL tests passed                                        |
+| DB05  | Atomic holds, failed-attempt idempotency, store reservations, freeze/dispute, completion and admin partial resolution | HTTP orchestration implemented; financial/race tests passed                            |
+| DB06  | Nonproduction idempotent six-role/two-currency seed and README credentials                                            | Executed twice in dev and once in test; no duplicate topups observed                   |
+| DB07  | ERD generated from complete Prisma model                                                                              | Generated; drift command provided                                                      |
+| API01 | OpenAPI 3.1, JWT, all release-one operations/DTOs/error schemas                                                       | Implemented and schema validated                                                       |
+| API02 | Pagination/filter/sort, If-Match and Idempotency-Key conventions                                                      | Defined per operation                                                                  |
+| API03 | Every source transition actor/guards/effects and per-operation permissions                                            | 75 transition rows linked to canonical state tables                                    |
+| API04 | WebSocket event/command/ack and room/push/replay policy                                                               | Documented and typed in canonical contract                                             |
+| API05 | Generated HTTP/WebSocket types shared by web/mobile, drift checks                                                     | Implemented; web/mobile business screens remain unconnected to the implemented backend |
+| API06 | Matching-domain Postman v2.1 for every target operation                                                               | Generated; 145 implemented routes covered and checked                                  |
 
-Actual results and untested boundaries are in [database/contract report](DATABASE_CONTRACT_REPORT.md).
+Historical schema-increment results are in the [database/contract report](DATABASE_CONTRACT_REPORT.md); current backend results are in the [implementation report](BACKEND_IMPLEMENTATION_REPORT.md).
+
+## Current backend delivery evidence
+
+The backend-only increment is mapped feature by feature in [BACKEND_IMPLEMENTATION_REPORT.md](BACKEND_IMPLEMENTATION_REPORT.md). All 145 canonical operations have actual registered handlers. Nine forward migrations have been applied, rich seed reruns preserve financial idempotency, real S3/ClamAV and Socket.IO are exercised, and actual test counts are recorded there. Canonical DTOs, Postman, ERD and generated web/mobile contracts are checked for drift. Product rows above retain their complete release scope; a backend scenario test is not verification of web/mobile UX, Arabic/English parity, native push or B4F submission.
+
+| Delivery item                    | Implementation                                                                     | Verification scope                                                               |
+| -------------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| All 22 backend feature groups    | Implemented modules/services, no scaffold responses                                | Module and scenario matrix in backend report                                     |
+| REST contracts and Swagger       | 145 registered operations, canonical validation/projection                         | Actual Nest method/path/operation reflection test                                |
+| Financial invariants             | Backend amounts/holds, immutable ledger, transactional idempotency and settlements | Actual PostgreSQL constraints and races                                          |
+| Files and realtime               | Private real S3 objects, antivirus and authorized Socket.IO                        | Actual storage/scanner/socket integration                                        |
+| Timed policies                   | Durable deadline workers and stale-job checks                                      | Expired fixture timestamps with real DB constraints; no claim of real-hour waits |
+| Expo/production email            | Implemented configurable transports and persisted retry state                      | Real-device/production gateway acceptance pending credentials and client work    |
+| Clients/admin/locales/submission | Existing setup artifacts remain                                                    | Full first-release and B4F acceptance still pending                              |

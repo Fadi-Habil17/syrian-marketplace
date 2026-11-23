@@ -77,3 +77,11 @@ Web server obtains/refreshes bearer credentials from HttpOnly session cookies; m
 ## Workspace switch flow
 
 Lock user and membership/profile rows; query all buyer/seller/driver active orders, unresolved cases, pending delivery and unsettled financial obligations under the same serializable transaction. Reject with structured blockers if any exist; do not leak another actor's private data. Otherwise archive old profile, reactivate/create target, append audit/outbox and commit. Order creation and driver acceptance lock the same user/profile eligibility boundary so they cannot race a switch into an invalid commitment. Historical FKs never migrate to the new business profile.
+
+## Implemented execution and recovery
+
+HTTP and socket adapters call actual feature services. Canonical DTO validation precedes command execution; transaction-scoped guards reread the actor/session and ownership after participant locks. A rejection rolls the domain unit of work back; stable idempotent rejections are remembered separately. Successful effects, audit and outbox commit atomically. File/storage/scanner and outbound email/push I/O occur outside financial transactions.
+
+The separate worker claims persisted rows with leases and SKIP LOCKED. It rechecks current deadlines/state/proof/cases under order locks; stale jobs no-op. Scan events process actual stored bytes; mail events contain authenticated encryption; notification creation and push tickets/receipts remain durable. API gateways hydrate published references per current recipient grants and do not broadcast raw outbox payloads.
+
+Overdue balance resumption closes its governing case without allocating money, records a distinct actual anchor/case reference and exact mutual deadline, reopens escrow, and schedules new reminders/expiry. The deposit and original readiness remain intact. A revision retains old submissions and paid balance; resubmission opens a fresh 72-hour review.

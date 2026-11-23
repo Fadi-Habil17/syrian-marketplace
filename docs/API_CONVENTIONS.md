@@ -1,6 +1,6 @@
 # API conventions and release-one contract
 
-Canonical machine-readable contract: [OpenAPI 3.1](api/openapi.yaml). It defines the complete target API, not running business endpoints. `x-implementation-status` is `implemented` only for health; all other operations remain `contract-only`. Runtime Swagger `/api/docs` and `/api/docs-json` still describe the health shell. The old `openapi.setup.json` is a historical runtime snapshot, not the target contract. Shared web/mobile types are generated from the canonical YAML before client feature integration.
+Canonical machine-readable contract: [OpenAPI 3.1](api/openapi.yaml). All 145 operations have registered NestJS handlers and implementation status `implemented`; the Nest reflection integration test compares every actual method/path/operation ID. Runtime Swagger at `/api/docs` and `/api/docs-json` serves this contract. Request DTOs use class-validator for identity and AJV 2020 JSON Schema validation for canonical DTOs, with strict unknown-field rejection and typed shared output. This does not imply every branch or client flow has an acceptance test; see [actual evidence](BACKEND_IMPLEMENTATION_REPORT.md). The setup JSON snapshot is historical.
 
 ## Routes, authorization and representation
 
@@ -38,11 +38,11 @@ Private Files requests enforce target ownership/access class, size/extension/MIM
 
 Socket.IO namespace `/orders` and full typed event/ack/permission/replay/push behavior are in [WebSocket events](api/WEBSOCKET_EVENTS.md). Canonical RealtimeEvent/RealtimeCommand/RealtimeAck components are generated with HTTP types. Events are committed-outbox, at least once, recipient projected; reconnect/refetch recovers gaps. REST remains the money/state mutation authority.
 
-Run `npm run contracts:validate`, `contracts:generate`, `contracts:check` and `contracts:postman`. Generated `packages/contracts/src/generated/openapi.ts` exports paths/operations/components; package root exports ApiSchemas and Realtime types. Both frontend and mobile have type-only API imports from that same package. Generated types are committed and checked for drift; never duplicate DTO definitions or edit generated output. This provides compile-time types, not runtime authorization/validation. Generate server DTO/handler implementations in future slices from reviewed contracts; do not connect clients to unimplemented routes.
+Run `npm run contracts:validate`, `contracts:generate`, `contracts:check` and `contracts:postman`. Generated `packages/contracts/src/generated/openapi.ts` exports paths/operations/components; package root exports ApiSchemas and Realtime types. Both frontend and mobile have type-only API imports from that same package. Generated types are committed and checked for drift; never duplicate DTO definitions or edit generated output. This provides compile-time types, not runtime authorization/validation. Backend controllers/services are implemented. Web/mobile business integration remains separate; generated types never replace backend authorization.
 
 ## Full operation inventory
 
-All listed routes except health are contract-only. Postman folders match these tags and carry status descriptions, blank token/ID/idempotency variables and fictional request examples. Populate keys/IDs from a running implemented slice; do not interpret placeholder requests as working features.
+All listed routes have actual registered handlers. Postman folders match these tags and carry status descriptions, blank token/ID/idempotency variables and fictional request examples. Use the running backend and seeded isolated accounts; populate current IDs, dates, parent version and keys. Postman examples are not an automated acceptance runner.
 
 | Domain         | Method | Route                                                          | operationId                 |
 | -------------- | ------ | -------------------------------------------------------------- | --------------------------- |
@@ -191,3 +191,11 @@ All listed routes except health are contract-only. Postman folders match these t
 | Admin          | POST   | `/api/v1/admin/restrictions/{restrictionId}/revoke`            | `revokeRestriction`         |
 | Admin          | DELETE | `/api/v1/admin/driver-zones/{zoneId}`                          | `removeDriverZone`          |
 | Admin          | POST   | `/api/v1/admin/cases/{caseId}/resume-final-payment`            | `resumeOverdueFinalPayment` |
+
+## Runtime details
+
+The exact collection is [marketplace.postman_collection.json](postman/marketplace.postman_collection.json). The older filename is an identical compatibility artifact. Browser realtime tickets require orderId and are consumed once within 60 seconds. Inspection images may be staged owner-only and atomically claimed. A custom quote has nullable agreed due/total until approval. `mine=true` is authenticated management scope; ordinary catalog reads hide moderated/draft records. Admin moderation rows include typed content for review, and own User responses include current restrictions. Required nonempty text rejects whitespace-only input.
+
+An explicit administrative driver award requires driverAssignmentId. Collected-goods cancellation proposals snapshot inventoryReturns for the same two-party approval; original funds/commission remain unchanged until authorized settlement. Payment resumption records balanceResumedAt and balanceResumptionCaseId, preserving original readyAt, and requires the exact agreed deadline within a new maximum 72-hour window. Cursor signatures bind sorted filters and actor scope. A successful command replay returns the original result; stable domain rejections are cached only after their failed transaction has rolled back.
+
+Rate limits per minute: identity 60 (registration 20), reads 300, ordinary writes 120, fund/checkout/confirmation/administrative-resolution operations 30, plus an IP bound. Socket commands also have actor/socket limits and a 32 KiB cap. Rate-limit rejection includes Retry-After. These counters assume one API instance or an upstream distributed limiter.

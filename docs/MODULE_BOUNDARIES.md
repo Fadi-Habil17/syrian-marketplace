@@ -1,6 +1,6 @@
 # Module boundaries
 
-Feature ownership remains as below. Database/contracts and internal financial persistence now exist; the runtime AppModule still registers only infrastructure/health. Read an exported query or invoke an exported command across a boundary. No cross-module direct table writes or client-computed policy. Within one database transaction, a coordinator passes a typed unit-of-work context to participants; participants own their invariants and repositories.
+Feature ownership remains as below. The runtime AppModule registers the implemented feature modules and authorized transports. See the backend report for the mapping to all 22 requested feature groups. Read an exported query or invoke an exported command across a boundary. No cross-module direct table writes or client-computed policy. Within one database transaction, a coordinator passes a typed unit-of-work context to participants; participants own their invariants and repositories.
 
 | Module           | Owns                                                                                                                          | Exports / allowed consumers                                              |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
@@ -38,3 +38,9 @@ Orders coordinates Scheduling, Inventory, Payments, EscrowSettlement and Audit i
 `frontend/src/app` owns route composition; `frontend/src/lib/api` server-only transport; `frontend/src/lib/actions` authenticated mutations; `frontend/src/features` domain presentation; `frontend/src/store` UI state. Equivalent `mobile/src/features`, `api`, `store`, `i18n` consume the same contract and permissions, with secure native token storage and device push adapters. Both have full admin feature surfaces; hiding a control is never authorization.
 
 `packages/contracts` may expose generated OpenAPI DTO/event types; `packages/i18n` owns shared message keys and ar/en strings. Neither imports backend internals. Any later shared validation must not become a duplicate client authority for order transitions or money.
+
+## Implemented composition
+
+Auth/Users, Profiles, Geography, Catalog, Freelance, Bookings/Scheduling, Quotes, Stores/Products, Inventory, Orders/Core/Read, Wallets, PaymentGateway, Ledger, Escrow, Settlement/CommissionRates, Delivery/ShippingPolicy/DeliveryConfig, Chat/Files, Notifications, Reviews, Disputes/CaseLifecycle/CaseAccess, Admin, Realtime and Jobs have real providers. Thin controllers are generated only from an explicit operation-to-service registry; generation rejects missing service methods. The runtime reflection test verifies registration independently of that registry.
+
+LedgerPostingService owns balanced posting; the local gateway delegates to it. EscrowService owns liability lifecycle. MarketplaceFinance is the transaction-scoped financial/order coordinator, exported by SettlementModule. InventoryService owns quantity mutations. Profile switches call exported catalog/store/user capabilities; moderation restoration never clears hidden publication status. Security/read projections may join participating aggregates for authorization and hydration, but expose only canonical DTOs.
