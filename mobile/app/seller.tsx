@@ -16,6 +16,12 @@ export default function Seller() {
   return (
     <Page title={ar ? 'لوحة أعمالي' : 'Business dashboard'}>
       <Copy>{user?.activeBusinessProfile?.title}</Copy>
+      {['PROFESSIONAL', 'STORE_OWNER'].includes(user?.activeBusinessProfile?.type ?? '') && (
+        <Button
+          title={ar ? 'عنوان المقر العام' : 'Public venue location'}
+          onPress={() => router.push('/venue')}
+        />
+      )}
       <Button
         title={ar ? 'إدارة الطلبات' : 'Manage orders'}
         onPress={() => router.push('/orders')}

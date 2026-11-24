@@ -1,5 +1,17 @@
 import { CatalogService } from '../catalog/catalog.service';
 import { StoresService } from '../stores/stores.service';
+import type { ApiSchemas } from '@syrian-marketplace/contracts';
+import { GeographyService } from '../geography/geography.service';
+import {
+  coverageWhere,
+  publicLocation,
+  publicPlaceSelect,
+  venueOf,
+  venueData,
+  venueSelect,
+} from '../geography/public-location';
+import { eligibleProfile } from '../catalog/catalog.policy';
+import { rankPage } from './discovery-ranking';
 import { Injectable } from '@nestjs/common';
 import { ApiRequest } from '../../common/actor';
 import { AccessService } from '../../common/access.service';
@@ -17,7 +29,111 @@ export class ProfilesService {
     private readonly users: UsersService,
     private readonly catalog: CatalogService,
     private readonly stores: StoresService,
+    private readonly geography: GeographyService,
   ) {}
+  async searchLocal(r: ApiRequest) {
+    const b: ApiSchemas['LocalSearch'] = r.body;
+    if (b.origin && Object.values(b.origin).some((n) => Number(n.toFixed(2)) !== n))
+      fail('INVALID_INPUT', 400);
+    const region = await this.geography.validateLocation(b.cityId, b.areaId);
+    const listing = {
+      status: 'PUBLISHED' as const,
+      kind: 'PROFESSIONAL_PACKAGE' as const,
+      category: { active: true },
+    };
+    const [stores, professionals] = await Promise.all([
+      b.kind === 'PROFESSIONAL' ? [] : this.stores.discovery(b.cityId, b.areaId),
+      b.kind === 'STORE'
+        ? []
+        : this.db.businessProfile.findMany({
+            where: {
+              ...eligibleProfile(),
+              type: 'PROFESSIONAL',
+              serviceArea_profile: { some: coverageWhere(b.cityId, b.areaId) },
+              listing_profile: { some: listing },
+            },
+            select: {
+              id: true,
+              title: true,
+              city: { select: publicPlaceSelect },
+              ...venueSelect,
+              listing_profile: {
+                where: listing,
+                select: { id: true },
+                orderBy: { id: 'asc' },
+                take: 1,
+              },
+            },
+          }),
+    ]);
+    return rankPage(
+      [
+        ...stores,
+        ...professionals.map((p) => ({
+          id: p.id,
+          detailId: p.listing_profile[0]!.id,
+          kind: 'PROFESSIONAL' as const,
+          nameEn: p.title,
+          nameAr: p.title,
+          cityId: p.city?.id ?? region.city.id,
+          regionEn: p.city?.nameEn ?? region.city.nameEn,
+          regionAr: p.city?.nameAr ?? region.city.nameAr,
+          ...publicLocation(p, p.city),
+        })),
+      ],
+      b,
+      b.origin ?? region.center,
+    );
+  }
+  private async venue(r: ApiRequest, tx: UnitOfWork, input?: ApiSchemas['VenueInput']) {
+    const profile = await this.access.ownedProfile(r.params.profileId!, r.actor, tx);
+    if (
+      !['STORE_OWNER', 'PROFESSIONAL'].includes(profile.type) ||
+      !r.actor.roles.includes(profile.type) ||
+      profile.status !== 'ACTIVE'
+    )
+      fail('FORBIDDEN', 403);
+    if (input?.point) {
+      this.access.verified(r.actor);
+      if (!input.confirmedPublic) fail('INVALID_INPUT', 400);
+      if (r.actor.restrictions.includes('PUBLISHING')) fail('ACCOUNT_RESTRICTED', 403);
+    }
+    if (profile.type === 'STORE_OWNER') return this.stores.ownerVenue(tx, profile.id, input?.point);
+    if (!input) return { point: venueOf(profile) };
+    if (
+      input.point &&
+      !(await tx.listing.findFirst({
+        where: {
+          profileId: profile.id,
+          status: 'PUBLISHED',
+          kind: 'PROFESSIONAL_PACKAGE',
+          category: { active: true },
+        },
+        select: { id: true },
+      }))
+    )
+      fail('INVALID_TRANSITION');
+    const updated = await tx.businessProfile.update({
+      where: { id: profile.id },
+      data: venueData(input.point),
+    });
+    return { point: venueOf(updated) };
+  }
+  getPublicVenue(r: ApiRequest) {
+    return this.venue(r, this.db);
+  }
+  setPublicVenue(r: ApiRequest) {
+    return this.commands.run(r, async (tx) => {
+      const result = await this.venue(r, tx, r.body);
+      await this.commands.audit(
+        tx,
+        r.actor.id,
+        r.params.profileId!,
+        result.point ? 'venue.published' : 'venue.withdrawn',
+      );
+      return result;
+    });
+  }
   getMe(r: ApiRequest) {
     return this.users.dto(r.actor.id);
   }

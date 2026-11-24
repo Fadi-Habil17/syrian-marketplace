@@ -1,6 +1,6 @@
 # Syrian Marketplace | السوق السوري
 
-A B4F Syrian marketplace for freelance services, professional bookings/quotes and home-produced goods. **Current increment: implemented NestJS backend, 145 REST operations, authorized Socket.IO, PostgreSQL transactions and durable workers.** Payments are deliberately simulated with actual wallet/escrow/ledger records. The reviewed [Next.js web client](frontend/README.md) adds bilingual marketplace/admin workflows with [known API gaps](docs/FRONTEND_API_ISSUES.md). The [Expo mobile client](mobile/README.md) is partial; full client parity and release acceptance remain unfinished. See the [backend implementation and actual validation report](docs/BACKEND_IMPLEMENTATION_REPORT.md).
+A B4F Syrian marketplace for freelance services, professional bookings/quotes and home-produced goods. **Current increment: implemented NestJS backend, 148 REST operations, authorized Socket.IO, PostgreSQL transactions and durable workers.** Payments are deliberately simulated with actual wallet/escrow/ledger records. The reviewed [Next.js web client](frontend/README.md) adds bilingual marketplace/admin workflows with [known API gaps](docs/FRONTEND_API_ISSUES.md). The [Expo mobile client](mobile/README.md) is partial; full client parity and release acceptance remain unfinished. See the [backend implementation and actual validation report](docs/BACKEND_IMPLEMENTATION_REPORT.md).
 
 ## Team members
 
@@ -135,7 +135,7 @@ Run `npm run worker:dev` in a separate terminal, or `npm run worker --workspace 
 
 ## Backend API overview
 
-All 145 operations under `/api/v1` have registered handlers: auth/users/profiles, geography/catalog, freelance/bookings/quotes, storefronts/products/inventory, orders/payments/wallets, delivery/drivers, chat/files, cases/reviews/notifications and administration. [API conventions](docs/API_CONVENTIONS.md) contains the complete method/path inventory. Public catalog reads are anonymous; private actions use JWT plus backend role, ownership, workspace and restriction checks. Money and state are always calculated/validated by the backend.
+All 148 operations under `/api/v1` have registered handlers: auth/users/profiles, geography/catalog/local discovery, freelance/bookings/quotes, storefronts/products/inventory, orders/payments/wallets, delivery/drivers, chat/files, cases/reviews/notifications and administration. [API conventions](docs/API_CONVENTIONS.md) contains the complete method/path inventory. Public catalog reads are anonymous; private actions use JWT plus backend role, ownership, workspace and restriction checks. Money and state are always calculated/validated by the backend.
 
 ### Swagger documentation
 
@@ -197,3 +197,5 @@ Database-only variables: `ALLOW_DEMO_SEED` (false by default, true explicitly fo
 ## Validated local PostgreSQL instance
 
 The follow-up environment check found native PostgreSQL 18 running and Docker available outside the sandbox. Validation used a separate PostgreSQL 16.16 container, `syrian-marketplace-validation`, on `127.0.0.1:15432`, with isolated `marketplace_dev` and `marketplace_test` databases. Existing native databases were not changed. Local credentials/URLs are configured only in ignored `backend/.env`; the named Docker volume retains this project's data. With Docker Desktop running, start the existing validation database/storage/scanner containers if needed, then `npm run db:test` to run the dedicated database tests. This workstation setup does not replace the fresh-clone environment/Compose instructions above.
+
+The [map verification record](docs/MAP_VERIFICATION.md) covers optional private address pins, owner-published venue points and local discovery. Apply the two forward database migrations before deploying this increment. The example web and native configurations use the list and written-address fallback until a map style is configured.

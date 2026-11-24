@@ -304,8 +304,12 @@ const features = [
       ['CatalogModule', '../catalog/catalog.module'],
       ['StoresModule', '../stores/stores.module'],
       ['UsersModule', '../users/users.service'],
+      ['GeographyModule', '../geography/geography.module'],
     ],
     operations: [
+      'getPublicVenue',
+      'setPublicVenue',
+      'searchLocal',
       'getMe',
       'updateMe',
       'listOwnBusinessProfiles',

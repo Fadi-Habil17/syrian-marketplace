@@ -1419,6 +1419,84 @@ paths:
         '503':
           $ref: '#/components/responses/Error503'
       security: []
+  /api/v1/discovery/local/search:
+    post:
+      operationId: searchLocal
+      summary: Find nearby stores and professionals
+      description: Read-only search over published public locations and service coverage.
+      tags: [Geography]
+      x-implementation-status: implemented
+      x-permissions: [Public]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LocalSearch' }
+      responses:
+        '200':
+          description: Successful result
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LocalResults' }
+        '400': { $ref: '#/components/responses/Error400' }
+        '401': { $ref: '#/components/responses/Error401' }
+        '403': { $ref: '#/components/responses/Error403' }
+        '404': { $ref: '#/components/responses/Error404' }
+        '409': { $ref: '#/components/responses/Error409' }
+        '429': { $ref: '#/components/responses/Error429' }
+        '503': { $ref: '#/components/responses/Error503' }
+  /api/v1/business-profiles/{profileId}/public-venue:
+    get:
+      operationId: getPublicVenue
+      summary: Read venue publication settings
+      description: Owner of the active professional or store workspace.
+      tags: [Profiles]
+      x-implementation-status: implemented
+      x-permissions: [Active workspace owner]
+      parameters:
+        - { name: profileId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: Successful result
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/VenueSetting' }
+        '400': { $ref: '#/components/responses/Error400' }
+        '401': { $ref: '#/components/responses/Error401' }
+        '403': { $ref: '#/components/responses/Error403' }
+        '404': { $ref: '#/components/responses/Error404' }
+        '409': { $ref: '#/components/responses/Error409' }
+        '429': { $ref: '#/components/responses/Error429' }
+        '503': { $ref: '#/components/responses/Error503' }
+    patch:
+      operationId: setPublicVenue
+      summary: Publish or withdraw a customer-facing venue
+      description: Owner of the active professional or store workspace.
+      tags: [Profiles]
+      x-implementation-status: implemented
+      x-permissions: [Active workspace owner]
+      parameters:
+        - { name: profileId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { $ref: '#/components/parameters/IdempotencyKey' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/VenueInput' }
+      responses:
+        '200':
+          description: Successful result
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/VenueSetting' }
+        '400': { $ref: '#/components/responses/Error400' }
+        '401': { $ref: '#/components/responses/Error401' }
+        '403': { $ref: '#/components/responses/Error403' }
+        '404': { $ref: '#/components/responses/Error404' }
+        '409': { $ref: '#/components/responses/Error409' }
+        '429': { $ref: '#/components/responses/Error429' }
+        '503': { $ref: '#/components/responses/Error503' }
   /api/v1/me/addresses:
     get:
       operationId: listAddresses
@@ -9644,6 +9722,8 @@ components:
       type: object
       additionalProperties: false
       properties:
+        center:
+          anyOf: [{ $ref: '#/components/schemas/GeoPoint' }, {type: 'null'}]
         id:
           type: string
           format: uuid
@@ -9670,6 +9750,8 @@ components:
       type: object
       additionalProperties: false
       properties:
+        center:
+          anyOf: [{ $ref: '#/components/schemas/GeoPoint' }, {type: 'null'}]
         id:
           type: string
           format: uuid
@@ -9689,10 +9771,94 @@ components:
         - cityId
         - nameAr
         - nameEn
+    VenueSetting:
+      type: object
+      additionalProperties: false
+      required: [point]
+      properties:
+        point:
+          anyOf: [{ $ref: '#/components/schemas/GeoPoint' }, {type: 'null'}]
+    VenueInput:
+      type: object
+      additionalProperties: false
+      required: [point, confirmedPublic]
+      properties:
+        point:
+          anyOf: [{ $ref: '#/components/schemas/GeoPoint' }, {type: 'null'}]
+        confirmedPublic: { type: boolean }
+      description: Publishing requires explicit confirmation that customers can visit and the point will be public. Null withdraws.
+    LocalSearch:
+      type: object
+      additionalProperties: false
+      required: [cityId]
+      properties:
+        cityId: {type: string, format: uuid}
+        areaId: {type: string, format: uuid}
+        origin:
+          type: object
+          additionalProperties: false
+          required: [latitude, longitude]
+          properties:
+            latitude: {type: number, minimum: -90, maximum: 90, description: Rounded to two decimal places.}
+            longitude: {type: number, minimum: -180, maximum: 180, description: Rounded to two decimal places.}
+        kind: {type: string, enum: [STORE, PROFESSIONAL]}
+        limit: {type: integer, minimum: 1, maximum: 100, description: Defaults to 20.}
+        cursor: {type: string, minLength: 1, maxLength: 4096}
+    LocalResult:
+      type: object
+      additionalProperties: false
+      required: [id, kind, nameAr, nameEn, detailId, cityId, regionAr, regionEn, point, precision]
+      properties:
+        id: {type: string, format: uuid}
+        detailId: {type: string, format: uuid}
+        kind: {type: string, enum: [STORE, PROFESSIONAL]}
+        nameAr: {type: string}
+        nameEn: {type: string}
+        cityId: {type: string, format: uuid}
+        regionAr: {type: string}
+        regionEn: {type: string}
+        point:
+          anyOf: [{ $ref: '#/components/schemas/GeoPoint' }, {type: 'null'}]
+        precision: {enum: [APPROXIMATE, PUBLIC_VENUE, null]}
+    LocalResults:
+      type: object
+      additionalProperties: false
+      required: [items, nextCursor]
+      properties:
+        items: {type: array, maxItems: 100, items: { $ref: '#/components/schemas/LocalResult' }}
+        nextCursor: {type: [string, 'null']}
+    GeoPoint:
+      type: object
+      additionalProperties: false
+      required: [latitude, longitude]
+      properties:
+        latitude: { type: number, minimum: -90, maximum: 90 }
+        longitude: { type: number, minimum: -180, maximum: 180 }
+    Destination:
+      type: object
+      additionalProperties: false
+      properties:
+        details: { type: string }
+        contactName: { type: string }
+        contactPhone: { type: string }
+        label: { type: string }
+        id: { type: string, format: uuid }
+        cityId: { type: string, format: uuid }
+        areaId: { type: [string, 'null'], format: uuid }
+        createdAt: { type: string, format: date-time }
+        pin:
+          anyOf:
+            - $ref: '#/components/schemas/GeoPoint'
+            - type: 'null'
     AddressInput:
       type: object
       additionalProperties: false
       properties:
+        pin:
+          description: Optional private destination. Omit to preserve on edit, or send null to clear.
+          anyOf:
+            - $ref: '#/components/schemas/GeoPoint'
+            - type: 'null'
         label:
           type: string
           maxLength: 80
@@ -9731,6 +9897,11 @@ components:
       type: object
       additionalProperties: false
       properties:
+        pin:
+          description: Optional private destination. Omit to preserve on edit, or send null to clear.
+          anyOf:
+            - $ref: '#/components/schemas/GeoPoint'
+            - type: 'null'
         id:
           type: string
           format: uuid
@@ -10906,6 +11077,9 @@ components:
       type: object
       additionalProperties: false
       properties:
+        destination:
+          description: Immutable fulfillment address on an authorized order detail read.
+          $ref: '#/components/schemas/Destination'
         id:
           type: string
           format: uuid
@@ -12104,7 +12278,10 @@ components:
           type: integer
           minimum: 1
         address:
-          $ref: '#/components/schemas/Address'
+          description: Available on a freshly authorized delivery read.
+          anyOf:
+            - $ref: '#/components/schemas/Destination'
+            - type: 'null'
         assignmentId:
           anyOf:
             - type: string

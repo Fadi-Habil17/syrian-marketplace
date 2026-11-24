@@ -1,3 +1,4 @@
+import { VenueEditor } from './venue-editor';
 import { api } from '../lib/api/client';
 import type { ApiSchemas } from '../lib/api/contracts';
 import { choose, localText, type Locale } from '../lib/locale';
@@ -23,11 +24,18 @@ export async function Workspace({
     geographicChoices(locale, query),
   ]);
   const active = user.activeBusinessProfile;
+  const venue =
+    active && ['STORE_OWNER', 'PROFESSIONAL'].includes(active.type)
+      ? await optional(api('getPublicVenue', { token, params: { profileId: active.id } }))
+      : null;
   return (
     <>
       <Heading description={active?.title}>
         {choose(locale, 'مساحة العمل', 'Business workspace')}
       </Heading>
+      {venue && active && (
+        <VenueEditor key={active.id} profileId={active.id} initial={venue.point} locale={locale} />
+      )}
       <div className="dashboard-grid">
         <div className="stack">
           <Panel title={choose(locale, 'ملفات الأعمال', 'Business profiles')}>

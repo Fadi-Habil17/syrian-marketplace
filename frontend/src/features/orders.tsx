@@ -5,6 +5,8 @@ import type { ApiSchemas } from '../lib/api/contracts';
 import { operations, type Operation } from '../lib/api/registry';
 import { amount, choose, timestamp, type Locale } from '../lib/locale';
 import { actionLabel, enumLabel, field } from '../lib/labels';
+import { LocationMap } from './location-map';
+import { InboxRefresh } from './inbox-refresh';
 import { CommandForm } from './command-form';
 import { Back, Data, Empty, Heading, NextPage, Panel, ReadPanel, optional } from './ui';
 import { Realtime } from './realtime';
@@ -123,6 +125,20 @@ export async function OrderDetail({
         <div className="stack">
           <Panel title={choose(locale, 'الاتفاق والمبالغ', 'Agreement and amounts')}>
             <p className="preserve">{order.terms.scope}</p>
+            {order.destination && <Data locale={locale} value={{ address: order.destination }} />}
+            {order.destination?.pin && (
+              <LocationMap
+                locale={locale}
+                center={order.destination.pin}
+                entries={[
+                  {
+                    id: 'pin',
+                    point: order.destination.pin,
+                    label: choose(locale, 'الوجهة', 'Destination'),
+                  },
+                ]}
+              />
+            )}
             <Data
               locale={locale}
               value={{
@@ -576,6 +592,25 @@ export async function DeliveryPanel({
           events: delivery.events,
         }}
       />
+      {assigned && (
+        <>
+          <InboxRefresh />
+          <Realtime locale={locale} orderId={delivery.orderId} version={delivery.orderVersion} />
+        </>
+      )}
+      {delivery.address?.pin && (
+        <LocationMap
+          locale={locale}
+          center={delivery.address.pin}
+          entries={[
+            {
+              id: 'pin',
+              point: delivery.address.pin,
+              label: choose(locale, 'الوجهة', 'Destination'),
+            },
+          ]}
+        />
+      )}
       {buyer && relevant && (
         <p>
           {choose(

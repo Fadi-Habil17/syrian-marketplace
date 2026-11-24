@@ -49,7 +49,7 @@ export class DeliveryService {
           include: { user: true },
         }),
       );
-    return this.commands.run(
+    return this.deliveryCommand(
       r,
       async (tx) => {
         let d = await this.row(tx, initial.id);
@@ -205,35 +205,56 @@ export class DeliveryService {
   private async row(tx: UnitOfWork, id: string) {
     return requireValue(await tx.delivery.findUnique({ where: { id }, include }));
   }
-  private async allowed(tx: UnitOfWork, d: Row, actor: Actor) {
+  private async canRead(tx: UnitOfWork, d: Row, actor: Actor) {
     const o = d.storeOrder.order;
-    if (
+    return Boolean(
       [o.buyerId, o.sellerProfile.userId].includes(actor.id) ||
-      active(d)?.driver.userId === actor.id ||
+      (actor.roles.includes('DELIVERY_DRIVER') &&
+        active(d)?.driver.status === 'ACTIVE' &&
+        active(d)?.driver.userId === actor.id) ||
       (actor.roles.includes('ADMIN') &&
-        (await tx.caseRecord.findFirst({ where: { orderId: o.id, handlingAdminId: actor.id } })))
-    )
-      return;
-    fail('NOT_FOUND', 404);
+        (await tx.caseRecord.findFirst({ where: { orderId: o.id, handlingAdminId: actor.id } }))),
+    );
   }
-  private dto(d: Row) {
+  private async allowed(tx: UnitOfWork, d: Row, actor: Actor) {
+    if (!(await this.canRead(tx, d, actor))) fail('NOT_FOUND', 404);
+  }
+  private dto(d: Row, includeDestination = false) {
     const a = active(d),
       o = d.storeOrder.order;
     return {
-      ...d,
+      id: d.id,
+      method: d.method,
+      status: d.status,
+      termsVersion: d.termsVersion,
+      droppedOffAt: d.droppedOffAt,
       orderId: o.id,
       orderVersion: o.version,
       fee: money(d.currency, d.feeUnits),
-      address: o.addressSnapshot,
+      address: includeDestination ? o.addressSnapshot : null,
       assignmentId: a?.id ?? null,
       driverProfileId: a?.driverId ?? null,
       events: d.deliveryEvent_delivery.map((e) => ({ ...e, proofFileId: e.proofId })),
     };
   }
+  // Keep destinations out of idempotency receipts. Recheck the current assignment even on a replay.
+  private async deliveryCommand(
+    r: ApiRequest,
+    work: (tx: UnitOfWork) => Promise<ReturnType<DeliveryService['dto']>>,
+    participants: string[] = [],
+  ) {
+    const receipt = await this.commands.run(r, work, participants);
+    const current = await this.row(this.db, receipt.id);
+    const authorized = await this.canRead(this.db, current, r.actor);
+    return { ...receipt, address: authorized ? current.storeOrder.order.addressSnapshot : null };
+  }
   async getDelivery(r: ApiRequest) {
     const d = await this.row(this.db, r.params.deliveryId!);
     await this.allowed(this.db, d, r.actor);
-    return this.dto(d);
+    return this.dto(
+      d,
+      d.storeOrder.order.state !== 'DRAFT' || d.storeOrder.order.buyerId === r.actor.id,
+    );
   }
   private async locked(tx: UnitOfWork, r: ApiRequest, id = r.params.deliveryId!) {
     let d = await this.row(tx, id);
@@ -335,7 +356,7 @@ export class DeliveryService {
     );
   }
   acceptDeliveryJob(r: ApiRequest) {
-    return this.commands.run(r, async (tx) => {
+    return this.deliveryCommand(r, async (tx) => {
       const p = await this.access.profile(r.actor, 'DELIVERY_DRIVER', tx);
       this.access.verified(r.actor);
       await tx.$queryRaw`SELECT "id" FROM "BusinessProfile" WHERE "id"=${p.id}::uuid FOR UPDATE`;
@@ -385,7 +406,7 @@ export class DeliveryService {
     });
   }
   releaseDriverAssignment(r: ApiRequest) {
-    return this.commands.run(r, async (tx) => {
+    return this.deliveryCommand(r, async (tx) => {
       const d = await this.locked(tx, r),
         a = active(d);
       if (!a || a.driver.userId !== r.actor.id) fail('FORBIDDEN', 403);
@@ -510,13 +531,13 @@ export class DeliveryService {
     return this.dto(await this.row(tx, d.id));
   }
   recordPickup(r: ApiRequest) {
-    return this.commands.run(r, (tx) => this.event(tx, r, 'PICKUP'));
+    return this.deliveryCommand(r, (tx) => this.event(tx, r, 'PICKUP'));
   }
   recordDropoff(r: ApiRequest) {
-    return this.commands.run(r, (tx) => this.event(tx, r, 'DROPOFF'));
+    return this.deliveryCommand(r, (tx) => this.event(tx, r, 'DROPOFF'));
   }
   reportDeliveryException(r: ApiRequest) {
-    return this.commands.run(r, async (tx) => {
+    return this.deliveryCommand(r, async (tx) => {
       const d = await this.locked(tx, r),
         o = d.storeOrder.order;
       if (

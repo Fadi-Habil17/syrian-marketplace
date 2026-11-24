@@ -485,6 +485,8 @@ model Governorate {
 }
 
 model City {
+  centerLatitude Float?
+  centerLongitude Float?
   id                   String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   nameAr               String
   nameEn               String
@@ -507,6 +509,8 @@ model City {
 }
 
 model Area {
+  centerLatitude Float?
+  centerLongitude Float?
   id               String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   nameAr           String
   nameEn           String
@@ -523,6 +527,8 @@ model Area {
 }
 
 model Address {
+  latitude                  Float?
+  longitude                 Float?
   id                        String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   label                     String
   details                   String              @db.Text
@@ -545,6 +551,9 @@ model Address {
 }
 
 model BusinessProfile {
+  venueLatitude Float?
+  venueLongitude Float?
+  venuePublished Boolean @default(false)
   id                           String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   type                         BusinessType
   status                       ProfileStatus         @default(DRAFT)
@@ -753,6 +762,9 @@ model ListingAsset {
 }
 
 model Storefront {
+  venueLatitude Float?
+  venueLongitude Float?
+  venuePublished Boolean @default(false)
   id                            String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   nameAr                        String
   nameEn                        String

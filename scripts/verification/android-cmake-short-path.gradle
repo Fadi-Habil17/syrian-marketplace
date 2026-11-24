@@ -1,0 +1,18 @@
+// Optional Windows verification build. MARKET_MAP_CXX points to a short, writable build directory.
+def stagingRoot = System.getenv('MARKET_MAP_CXX')
+if (!stagingRoot || !new File(stagingRoot).isAbsolute()) {
+    throw new GradleException('Set MARKET_MAP_CXX to an absolute, short CMake build directory.')
+}
+
+gradle.beforeProject { project ->
+    ['com.android.application', 'com.android.library'].each { pluginId ->
+        project.pluginManager.withPlugin(pluginId) {
+            project.androidComponents.finalizeDsl { android ->
+                if (project.name == 'app' || android.externalNativeBuild.cmake.path != null) {
+                    android.externalNativeBuild.cmake.buildStagingDirectory = new File(stagingRoot, project.name)
+                    android.defaultConfig.externalNativeBuild.cmake.arguments.add('-DCMAKE_OBJECT_PATH_MAX=215')
+                }
+            }
+        }
+    }
+}

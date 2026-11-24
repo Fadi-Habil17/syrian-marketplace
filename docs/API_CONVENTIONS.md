@@ -1,6 +1,6 @@
 # API conventions and release-one contract
 
-Canonical machine-readable contract: [OpenAPI 3.1](api/openapi.yaml). All 145 operations have registered NestJS handlers and implementation status `implemented`; the Nest reflection integration test compares every actual method/path/operation ID. Runtime Swagger at `/api/docs` and `/api/docs-json` serves this contract. Request DTOs use class-validator for identity and AJV 2020 JSON Schema validation for canonical DTOs, with strict unknown-field rejection and typed shared output. This does not imply every branch or client flow has an acceptance test; see [actual evidence](BACKEND_IMPLEMENTATION_REPORT.md). The setup JSON snapshot is historical.
+Canonical machine-readable contract: [OpenAPI 3.1](api/openapi.yaml). All 148 operations have registered NestJS handlers and implementation status `implemented`; the Nest reflection integration test compares every actual method/path/operation ID. Runtime Swagger at `/api/docs` and `/api/docs-json` serves this contract. Request DTOs use class-validator for identity and AJV 2020 JSON Schema validation for canonical DTOs, with strict unknown-field rejection and typed shared output. This does not imply every branch or client flow has an acceptance test; see [actual evidence](BACKEND_IMPLEMENTATION_REPORT.md). The setup JSON snapshot is historical.
 
 ## Routes, authorization and representation
 
@@ -73,6 +73,9 @@ All listed routes have actual registered handlers. Postman folders match these t
 | Geography      | GET    | `/api/v1/geography/governorates`                               | `listGovernorates`          |
 | Geography      | GET    | `/api/v1/geography/cities`                                     | `listCities`                |
 | Geography      | GET    | `/api/v1/geography/areas`                                      | `listAreas`                 |
+| Discovery      | POST   | `/api/v1/discovery/local/search`                               | `searchLocal`               |
+| Profiles       | GET    | `/api/v1/business-profiles/{profileId}/public-venue`           | `getPublicVenue`            |
+| Profiles       | PATCH  | `/api/v1/business-profiles/{profileId}/public-venue`           | `setPublicVenue`            |
 | Geography      | GET    | `/api/v1/me/addresses`                                         | `listAddresses`             |
 | Geography      | POST   | `/api/v1/me/addresses`                                         | `createAddress`             |
 | Geography      | PATCH  | `/api/v1/me/addresses/{addressId}`                             | `updateAddress`             |
@@ -201,3 +204,9 @@ The exact collection is [marketplace.postman_collection.json](postman/marketplac
 An explicit administrative driver award requires driverAssignmentId. Collected-goods cancellation proposals snapshot inventoryReturns for the same two-party approval; original funds/commission remain unchanged until authorized settlement. Payment resumption records balanceResumedAt and balanceResumptionCaseId, preserving original readyAt, and requires the exact agreed deadline within a new maximum 72-hour window. Cursor signatures bind sorted filters and actor scope. A successful command replay returns the original result; stable domain rejections are cached only after their failed transaction has rolled back.
 
 Rate limits per minute: identity 60 (registration 20), reads 300, ordinary writes 120, fund/checkout/confirmation/administrative-resolution operations 30, plus an IP bound. Socket commands also have actor/socket limits and a 32 KiB cap. Rate-limit rejection includes Retry-After. These counters assume one API instance or an upstream distributed limiter.
+
+## Location operations
+
+The private address operations use an optional `pin` containing numeric latitude and longitude. For updates, omission preserves a pin and `null` clears it. The order destination and authorized delivery address are historical snapshots. The server checks current access on reads and delivery command replays. Shared caches must not store these projections.
+
+`GET` and `PATCH /api/v1/business-profiles/{profileId}/public-venue` manage an independently provided public point. Publication requires `confirmedPublic: true`. A null point withdraws it. Read-only `POST /api/v1/discovery/local/search` accepts the selected city and optional area, kind, origin, limit and cursor. The server rejects origins more precise than two decimals and sends a no-store response. Clients keep the origin out of URLs and persistence. [Schemas](api/openapi.yaml) · [Verification](MAP_VERIFICATION.md)

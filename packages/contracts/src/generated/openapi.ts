@@ -575,6 +575,30 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/business-profiles/{profileId}/public-venue': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Read venue publication settings
+     * @description Owner of the active professional or store workspace.
+     */
+    get: operations['getPublicVenue'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Publish or withdraw a customer-facing venue
+     * @description Owner of the active professional or store workspace.
+     */
+    patch: operations['setPublicVenue'];
+    trace?: never;
+  };
   '/api/v1/business-profiles/{profileId}/reactivate': {
     parameters: {
       query?: never;
@@ -1042,6 +1066,26 @@ export interface paths {
      * @description Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.
      */
     delete: operations['revokeDevice'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/discovery/local/search': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Find nearby stores and professionals
+     * @description Read-only search over published public locations and service coverage.
+     */
+    post: operations['searchLocal'];
+    delete?: never;
     options?: never;
     head?: never;
     patch?: never;
@@ -2599,6 +2643,8 @@ export interface components {
       /** Format: uuid */
       id: string;
       label: string;
+      /** @description Optional private destination. Omit to preserve on edit, or send null to clear. */
+      pin?: components['schemas']['GeoPoint'] | null;
     };
     AddressInput: {
       areaId?: string | null;
@@ -2608,6 +2654,8 @@ export interface components {
       contactPhone: string;
       details: string;
       label: string;
+      /** @description Optional private destination. Omit to preserve on edit, or send null to clear. */
+      pin?: components['schemas']['GeoPoint'] | null;
     };
     AddressPage: {
       items: components['schemas']['Address'][];
@@ -2642,6 +2690,7 @@ export interface components {
       };
     };
     Area: {
+      center?: components['schemas']['GeoPoint'] | null;
       /** Format: uuid */
       cityId: string;
       /** Format: uuid */
@@ -2799,6 +2848,7 @@ export interface components {
       termsAccepted: true;
     };
     City: {
+      center?: components['schemas']['GeoPoint'] | null;
       /** Format: uuid */
       governorateId: string;
       /** Format: uuid */
@@ -2865,7 +2915,8 @@ export interface components {
       proofFileId?: string;
     };
     Delivery: {
-      address: components['schemas']['Address'];
+      /** @description Available on a freshly authorized delivery read. */
+      address: components['schemas']['Destination'] | null;
       assignmentId: string | null;
       driverProfileId: string | null;
       droppedOffAt: string | null;
@@ -2972,6 +3023,21 @@ export interface components {
       /** Format: date-time */
       promisedAt: string;
       reason: string;
+    };
+    Destination: {
+      /** Format: uuid */
+      areaId?: string | null;
+      /** Format: uuid */
+      cityId?: string;
+      contactName?: string;
+      contactPhone?: string;
+      /** Format: date-time */
+      createdAt?: string;
+      details?: string;
+      /** Format: uuid */
+      id?: string;
+      label?: string;
+      pin?: components['schemas']['GeoPoint'] | null;
     };
     Device: {
       /** Format: uuid */
@@ -3173,6 +3239,10 @@ export interface components {
       nameAr: string;
       nameEn: string;
     };
+    GeoPoint: {
+      latitude: number;
+      longitude: number;
+    };
     Governorate: {
       /** Format: uuid */
       id: string;
@@ -3286,6 +3356,44 @@ export interface components {
       titleAr: string;
       /** @default  */
       titleEn: string;
+    };
+    LocalResult: {
+      /** Format: uuid */
+      cityId: string;
+      /** Format: uuid */
+      detailId: string;
+      /** Format: uuid */
+      id: string;
+      /** @enum {string} */
+      kind: 'STORE' | 'PROFESSIONAL';
+      nameAr: string;
+      nameEn: string;
+      point: components['schemas']['GeoPoint'] | null;
+      /** @enum {unknown} */
+      precision: 'APPROXIMATE' | 'PUBLIC_VENUE' | null;
+      regionAr: string;
+      regionEn: string;
+    };
+    LocalResults: {
+      items: components['schemas']['LocalResult'][];
+      nextCursor: string | null;
+    };
+    LocalSearch: {
+      /** Format: uuid */
+      areaId?: string;
+      /** Format: uuid */
+      cityId: string;
+      cursor?: string;
+      /** @enum {string} */
+      kind?: 'STORE' | 'PROFESSIONAL';
+      /** @description Defaults to 20. */
+      limit?: number;
+      origin?: {
+        /** @description Rounded to two decimal places. */
+        latitude: number;
+        /** @description Rounded to two decimal places. */
+        longitude: number;
+      };
     };
     LoginInput: {
       /** @enum {unknown} */
@@ -3419,6 +3527,8 @@ export interface components {
       deliveryFee: components['schemas']['Money'];
       deliveryVerified: boolean;
       deposit: components['schemas']['Money'] | null;
+      /** @description Immutable fulfillment address on an authorized order detail read. */
+      destination?: components['schemas']['Destination'];
       held: components['schemas']['Money'];
       /** Format: uuid */
       id: string;
@@ -4331,6 +4441,14 @@ export interface components {
       restrictions?: components['schemas']['Restriction'][];
       roles: components['schemas']['RoleCode'][];
       verifiedAt: string | null;
+    };
+    /** @description Publishing requires explicit confirmation that customers can visit and the point will be public. Null withdraws. */
+    VenueInput: {
+      confirmedPublic: boolean;
+      point: components['schemas']['GeoPoint'] | null;
+    };
+    VenueSetting: {
+      point: components['schemas']['GeoPoint'] | null;
     };
     Wallet: {
       /** @description Integer stored units as a decimal string, bounded by PostgreSQL BIGINT; never a float. */
@@ -5644,6 +5762,71 @@ export interface operations {
       503: components['responses']['Error503'];
     };
   };
+  getPublicVenue: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        profileId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['VenueSetting'];
+        };
+      };
+      400: components['responses']['Error400'];
+      401: components['responses']['Error401'];
+      403: components['responses']['Error403'];
+      404: components['responses']['Error404'];
+      409: components['responses']['Error409'];
+      429: components['responses']['Error429'];
+      503: components['responses']['Error503'];
+    };
+  };
+  setPublicVenue: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Actor/route/key scoped, request-hash bound. Reuse same key on timeout; different body -> 409. Permanent installment/settlement operation keys prevent duplicates across different client keys. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+      };
+      path: {
+        profileId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['VenueInput'];
+      };
+    };
+    responses: {
+      /** @description Successful result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['VenueSetting'];
+        };
+      };
+      400: components['responses']['Error400'];
+      401: components['responses']['Error401'];
+      403: components['responses']['Error403'];
+      404: components['responses']['Error404'];
+      409: components['responses']['Error409'];
+      429: components['responses']['Error429'];
+      503: components['responses']['Error503'];
+    };
+  };
   reactivateBusinessProfile: {
     parameters: {
       query?: never;
@@ -6650,6 +6833,37 @@ export interface operations {
       413: components['responses']['Error413'];
       415: components['responses']['Error415'];
       422: components['responses']['Error422'];
+      429: components['responses']['Error429'];
+      503: components['responses']['Error503'];
+    };
+  };
+  searchLocal: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LocalSearch'];
+      };
+    };
+    responses: {
+      /** @description Successful result */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['LocalResults'];
+        };
+      };
+      400: components['responses']['Error400'];
+      401: components['responses']['Error401'];
+      403: components['responses']['Error403'];
+      404: components['responses']['Error404'];
+      409: components['responses']['Error409'];
       429: components['responses']['Error429'];
       503: components['responses']['Error503'];
     };

@@ -109,6 +109,7 @@ run('Freelance, confirmed bookings and approved itemized quote convergence', () 
         cityId: city,
         areaId,
         label: 'Test',
+        pin: { latitude: 35, longitude: 37 },
         details: 'Fictional service address',
         contactName: 'Buyer',
         contactPhone: '+000000',
@@ -128,6 +129,62 @@ run('Freelance, confirmed bookings and approved itemized quote convergence', () 
   }, 30000);
   afterAll(async () => {
     await app?.close();
+  });
+  it('publishes a professional venue only in searches matching its service coverage', async () => {
+    const address = await db.address.findUniqueOrThrow({
+      where: { id: addressId },
+      include: { city: true },
+    });
+    const location = await db.city.create({
+      data: {
+        governorateId: address.city.governorateId,
+        nameEn: 'Test ' + key(),
+        nameAr: 'مدينة اختبار',
+      },
+    });
+    const area = await db.area.create({
+      data: { cityId: location.id, nameEn: 'Test area', nameAr: 'منطقة اختبار' },
+    });
+    const coverage = await db.serviceArea.create({
+      data: { cityId: location.id, areaId: area.id, profileId: professionalId },
+    });
+    const path = '/api/v1/business-profiles/' + professionalId + '/public-venue';
+    const patch = (token: string, point: { latitude: number; longitude: number } | null) =>
+      http()
+        .patch(path)
+        .auth(token, { type: 'bearer' })
+        .set('Idempotency-Key', key())
+        .send({ point, confirmedPublic: Boolean(point) });
+    const search = (areaId?: string) =>
+      http()
+        .post('/api/v1/discovery/local/search')
+        .send({ cityId: location.id, kind: 'PROFESSIONAL', areaId });
+    const previous = await http().get(path).auth(provider, { type: 'bearer' }).expect(200);
+    try {
+      const point = { latitude: 35.04, longitude: 37.08 };
+      await patch(buyer, point).expect(404);
+      await patch(provider, point).expect(200);
+      expect((await search().expect(200)).body.items).toEqual([]);
+      const matched = await search(area.id).expect(200);
+      expect(matched.body.items).toHaveLength(1);
+      const [item] = matched.body.items;
+      expect(item).toMatchObject({
+        id: professionalId,
+        kind: 'PROFESSIONAL',
+        point,
+        precision: 'PUBLIC_VENUE',
+      });
+      await http()
+        .get('/api/v1/listings/' + item.detailId)
+        .expect(200);
+      await patch(provider, null).expect(200);
+      expect((await search(area.id).expect(200)).body.items[0].point).not.toEqual(point);
+    } finally {
+      await patch(provider, previous.body.point).expect(200);
+      await db.serviceArea.delete({ where: { id: coverage.id } });
+      await db.area.delete({ where: { id: area.id } });
+      await db.city.delete({ where: { id: location.id } });
+    }
   });
   it('fixes a freelance price on the backend and requires both scope approvals', async () => {
     await post('orders/freelance', buyer, {
@@ -163,6 +220,11 @@ run('Freelance, confirmed bookings and approved itemized quote convergence', () 
         startsAt: start.toISOString(),
       }).expect(201)
     ).body;
+    const destination = await http()
+      .get('/api/v1/orders/' + booking.id)
+      .auth(provider, { type: 'bearer' })
+      .expect(200);
+    expect(destination.body.destination.pin).toEqual({ latitude: 35, longitude: 37 });
     expect(booking.state).toBe('BOOKING_REQUESTED');
     await post(
       'orders/' + booking.id + '/payments/deposit',
@@ -250,6 +312,43 @@ run('Freelance, confirmed bookings and approved itemized quote convergence', () 
         photoIds: [file.id],
       }).expect(201)
     ).body;
+    const input = {
+      cityId: (await db.address.findUniqueOrThrow({ where: { id: addressId } })).cityId,
+      label: 'Edited',
+      details: 'New address',
+      contactName: 'Buyer',
+      contactPhone: '00000',
+    };
+    const edit = (body: object) =>
+      http()
+        .patch('/api/v1/me/addresses/' + addressId)
+        .auth(buyer, { type: 'bearer' })
+        .set('Idempotency-Key', key())
+        .send(body);
+    expect((await edit(input).expect(200)).body.pin).toEqual({ latitude: 35, longitude: 37 });
+    expect((await edit({ ...input, pin: null }).expect(200)).body.pin).toBeNull();
+    for (const pin of [
+      { latitude: 30 },
+      { latitude: 91, longitude: 5 },
+      { latitude: 6, longitude: -181 },
+      { latitude: '35', longitude: 37 },
+    ])
+      await edit({ ...input, pin }).expect(400);
+    await expect(
+      db.address.update({ where: { id: addressId }, data: { latitude: 35 } }),
+    ).rejects.toThrow();
+    await expect(
+      db.address.update({ where: { id: addressId }, data: { latitude: 91, longitude: 37 } }),
+    ).rejects.toThrow();
+    const read = await http()
+      .get('/api/v1/orders/' + quoteOrder.id)
+      .auth(provider, { type: 'bearer' })
+      .expect(200);
+    expect(read.body.destination.pin).toEqual({ latitude: 35, longitude: 37 });
+    await http()
+      .get('/api/v1/orders/' + quoteOrder.id)
+      .auth(adminToken, { type: 'bearer' })
+      .expect(404);
     expect(quoteOrder.total).toBeNull();
     expect(quoteOrder.terms.dueAt).toBeNull();
     const starts = new Date(start.getTime() + 8 * 3600000),

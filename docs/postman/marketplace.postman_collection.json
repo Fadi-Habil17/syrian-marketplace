@@ -409,6 +409,34 @@
             "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks."
           },
           "response": []
+        },
+        {
+          "name": "Read venue publication settings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/business-profiles/{{profileId}}/public-venue",
+            "description": "implemented. Owner of the active professional or store workspace."
+          },
+          "response": []
+        },
+        {
+          "name": "Publish or withdraw a customer-facing venue",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Idempotency-Key", "value": "{{idempotencyKey}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/business-profiles/{{profileId}}/public-venue",
+            "description": "implemented. Owner of the active professional or store workspace.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"point\": {\n    \"latitude\": -90,\n    \"longitude\": -180\n  },\n  \"confirmedPublic\": false\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -449,6 +477,22 @@
           "response": []
         },
         {
+          "name": "Find nearby stores and professionals",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/discovery/local/search",
+            "description": "implemented. Read-only search over published public locations and service coverage.",
+            "auth": { "type": "noauth" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cityId\": \"{{cityId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Own saved addresses",
           "request": {
             "method": "GET",
@@ -470,7 +514,7 @@
             "description": "implemented. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"label\": \"Demo request\",\n  \"cityId\": \"{{cityId}}\",\n  \"details\": \"Demo request\",\n  \"contactName\": \"Demo request\",\n  \"contactPhone\": \"Demo request\"\n}",
+              "raw": "{\n  \"label\": \"Demo request\",\n  \"cityId\": \"{{cityId}}\",\n  \"details\": \"Demo request\",\n  \"contactName\": \"Demo request\",\n  \"contactPhone\": \"Demo request\",\n  \"pin\": {\n    \"latitude\": 35.01,\n    \"longitude\": 37.05\n  }\n}",
               "options": { "raw": { "language": "json" } }
             }
           },
@@ -488,7 +532,7 @@
             "description": "implemented. Existing orders retain immutable address snapshots. Authenticated owner/participant; backend role, active-workspace, ownership and restriction checks.",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"label\": \"Demo request\",\n  \"cityId\": \"{{cityId}}\",\n  \"details\": \"Demo request\",\n  \"contactName\": \"Demo request\",\n  \"contactPhone\": \"Demo request\"\n}",
+              "raw": "{\n  \"label\": \"Demo request\",\n  \"cityId\": \"{{cityId}}\",\n  \"details\": \"Demo request\",\n  \"contactName\": \"Demo request\",\n  \"contactPhone\": \"Demo request\",\n  \"pin\": {\n    \"latitude\": 35.01,\n    \"longitude\": 37.05\n  }\n}",
               "options": { "raw": { "language": "json" } }
             }
           },

@@ -65,6 +65,7 @@ export class OrdersQueryService {
     const terms = d?.termsSnapshot as Record<string, any> | undefined;
     return {
       ...o,
+      addressSnapshot: undefined,
       total: money(o.currency, o.agreedTotalUnits),
       sellerAmount: money(o.currency, o.eligibleSellerUnits),
       deliveryFee: money(o.currency, o.deliveryFeeUnits),
@@ -146,8 +147,14 @@ export class OrdersQueryService {
     };
   }
   async getOrder(r: ApiRequest) {
-    await this.access.order(r.params.orderId!, r.actor);
-    return this.read(r.params.orderId!);
+    const order = await this.access.order(r.params.orderId!, r.actor);
+    return {
+      ...(await this.read(order.id)),
+      destination:
+        order.state !== 'DRAFT' || order.buyerId === r.actor.id
+          ? (order.addressSnapshot ?? undefined)
+          : undefined,
+    };
   }
   async listOrders(r: ApiRequest) {
     const q = r.query,

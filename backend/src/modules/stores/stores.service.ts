@@ -1,3 +1,12 @@
+import {
+  coverageWhere,
+  publicLocation,
+  publicPlaceSelect,
+  venueOf,
+  venueData,
+  venueSelect,
+  type Point,
+} from '../geography/public-location';
 import { ProductsService } from '../products/products.service';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
@@ -19,6 +28,46 @@ export class StoresService {
     private readonly geography: GeographyService,
     private readonly products: ProductsService,
   ) {}
+  async discovery(cityId: string, areaId?: string) {
+    const stores = await this.db.storefront.findMany({
+      where: {
+        status: 'PUBLISHED',
+        profile: {
+          ...eligibleProfile(),
+          type: 'STORE_OWNER',
+          serviceArea_profile: { some: coverageWhere(cityId, areaId) },
+        },
+      },
+      select: {
+        id: true,
+        nameAr: true,
+        nameEn: true,
+        ...venueSelect,
+        city: { select: publicPlaceSelect },
+      },
+    });
+    return stores.map((s) => ({
+      id: s.id,
+      detailId: s.id,
+      kind: 'STORE' as const,
+      nameAr: s.nameAr,
+      nameEn: s.nameEn,
+      cityId: s.city.id,
+      regionAr: s.city.nameAr,
+      regionEn: s.city.nameEn,
+      ...publicLocation(s, s.city),
+    }));
+  }
+  async ownerVenue(tx: UnitOfWork, profileId: string, point?: Point | null) {
+    const store = requireValue(await tx.storefront.findUnique({ where: { profileId } }));
+    if (point === undefined) return { point: venueOf(store) };
+    if (point && store.status !== 'PUBLISHED') fail('INVALID_TRANSITION');
+    return {
+      point: venueOf(
+        await tx.storefront.update({ where: { id: store.id }, data: venueData(point) }),
+      ),
+    };
+  }
   async listStores(r: ApiRequest) {
     const q = r.query as Record<string, any>,
       scope = q.mine ? (r.actor?.id ?? fail('AUTH_REQUIRED', 401)) : 'stores';

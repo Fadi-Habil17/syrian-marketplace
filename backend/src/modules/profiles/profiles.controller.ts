@@ -6,6 +6,28 @@ import { ProfilesService } from './profiles.service';
 export class ProfilesController {
   constructor(private readonly service: ProfilesService) {}
 
+  @Get('business-profiles/:profileId/public-venue')
+  @HttpCode(200)
+  @Operation('getPublicVenue')
+  getPublicVenue(@Req() request: ApiRequest) {
+    return this.service.getPublicVenue(request);
+  }
+
+  @Patch('business-profiles/:profileId/public-venue')
+  @HttpCode(200)
+  @Operation('setPublicVenue')
+  setPublicVenue(@Req() request: ApiRequest) {
+    return this.service.setPublicVenue(request);
+  }
+
+  @Public()
+  @Post('discovery/local/search')
+  @HttpCode(200)
+  @Operation('searchLocal')
+  searchLocal(@Req() request: ApiRequest) {
+    return this.service.searchLocal(request);
+  }
+
   @Get('me')
   @HttpCode(200)
   @Operation('getMe')

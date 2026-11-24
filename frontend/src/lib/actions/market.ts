@@ -16,6 +16,14 @@ function failure(error: unknown): Result {
   return { ok: false, code: error.code, requestId: error.requestId, status: error.status };
 }
 
+export async function searchLocal(input: ApiSchemas['LocalSearch']) {
+  try {
+    return await api('searchLocal', {}, input);
+  } catch (e) {
+    if (e instanceof ApiFailure) return null;
+    throw e;
+  }
+}
 const browserOnly = new Set<Operation>([
   'login',
   'refreshSession',

@@ -9,7 +9,7 @@ import { useBrowseLocation } from '../src/state/browse-location';
 import { design, readingStyle } from '../src/theme';
 import { Busy, Copy, Heading } from '../src/ui';
 
-const atlas = require('../assets/design/souk.png');
+const atlas = require('../assets/design/souk.jpg');
 const atlasSize = 1024;
 const crops = {
   hero: { x: 14, y: 134, width: 316, height: 87 },
