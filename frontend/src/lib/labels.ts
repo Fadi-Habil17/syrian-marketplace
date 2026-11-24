@@ -308,7 +308,7 @@ const actions: Record<string, [string, string]> = {
   resolveAdminCase: ['حسم القضية', 'Resolve case'],
   reassignDelivery: ['إعادة تعيين التوصيل', 'Reassign delivery'],
   moderateReview: ['الإشراف على تقييم', 'Moderate review'],
-  simulateWalletTopUp: ['شحن محفظة تجريبية', 'Top up simulated wallet'],
+  simulateWalletTopUp: ['شحن محفظة المحاكي', 'Top up simulated wallet'],
   revokeRestriction: ['إلغاء تقييد', 'Revoke restriction'],
   removeDriverZone: ['حذف نطاق سائق', 'Remove driver zone'],
   resumeOverdueFinalPayment: ['استئناف الدفع النهائي', 'Resume final payment'],
@@ -357,7 +357,7 @@ export function errorLabel(locale: Locale, code: string) {
       'This order changed. Refresh the page before retrying.',
     ],
     INSUFFICIENT_FUNDS: [
-      'رصيد المحفظة التجريبية غير كافٍ.',
+      'رصيد المحفظة في المحاكي غير كافٍ.',
       'The simulated wallet has insufficient funds.',
     ],
     REQUEST_IN_PROGRESS: [

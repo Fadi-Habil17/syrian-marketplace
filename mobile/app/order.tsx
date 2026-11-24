@@ -133,7 +133,7 @@ export default function Order() {
             ))}
             <Copy>
               {ar
-                ? 'الدفع تجريبي. يخضع تحرير المبلغ لشروط الطلب والنزاعات.'
+                ? 'الدفع عبر المحاكي. يخضع تحرير المبلغ لشروط الطلب والنزاعات.'
                 : 'Simulated payment. Release is subject to order and dispute terms.'}
             </Copy>
           </Card>
@@ -164,7 +164,7 @@ export default function Order() {
             ))}
           <ConfirmDialog
             visible={confirmPayment !== null}
-            title={ar ? 'تأكيد الحجز التجريبي' : 'Confirm simulated hold'}
+            title={ar ? 'تأكيد حجز المبلغ بالمحاكاة' : 'Confirm simulated hold'}
             message={`${order.terms.scope}\n${money(confirmPayment === 'deposit' ? order.deposit : order.balance)}`}
             cancelLabel={ar ? 'رجوع' : 'Back'}
             confirmLabel={ar ? 'أوافق على الشروط' : 'Accept terms'}

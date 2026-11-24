@@ -84,7 +84,7 @@ export function AuthShell({
         <p className="auth-footnote">
           {choose(
             locale,
-            'الدفع تجريبي بالمحاكاة. لا تُستخدم أموال حقيقية.',
+            'الدفع عبر المحاكي. لا تُستخدم أموال حقيقية.',
             'Payments are simulated. No real money is used.',
           )}
         </p>

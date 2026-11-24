@@ -10,7 +10,7 @@ export default function Wallet() {
     [user?.id],
   );
   return (
-    <Page title={locale === 'ar' ? 'المحفظة التجريبية' : 'Simulated wallet'}>
+    <Page title={locale === 'ar' ? 'محفظة المحاكي' : 'Simulated wallet'}>
       {result.loading && <Busy />}
       {result.error && <Failure message={result.error} retry={() => void result.reload()} />}
       {result.data?.items.map((wallet) => (

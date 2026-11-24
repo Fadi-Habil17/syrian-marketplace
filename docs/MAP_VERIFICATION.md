@@ -12,6 +12,8 @@ Store owners and professionals enter a separate point and confirm that the venue
 
 A city search includes city-wide service. Selecting an area also includes businesses that serve that area. A rounded, optional foreground fix changes distance ordering within that coverage. It remains in screen memory. Signed cursors bind to a digest of the search criteria. The list and map use the same result page, with unmapped businesses sorted last. The backend currently ranks eligible candidates in memory. Large-catalog performance is unmeasured.
 
+The local presentation dataset adds reviewed centers for [Damascus](https://www.geonames.org/170654/damascus.html), [Aleppo](https://www.geonames.org/170063/aleppo.html), [Homs](https://www.geonames.org/169577/homs.html) and [Latakia](https://www.geonames.org/173576/latakia.html) with the same GeoNames CC BY 4.0 attribution. Its businesses use approximate city centers.
+
 ## Provider review
 
 OpenFreeMap's public Liberty style is a candidate for zero-cost hosting. It requires no marketplace API key and offers no availability guarantee. On the review host, the style returned a version 8 document, its tile source supplied attribution, and a fixed regional tile returned HTTP 200. The web renderer uses the style source's attribution. Native also displays OpenFreeMap, OpenMapTiles and OpenStreetMap credit. OpenFreeMap describes its infrastructure logging and retention in its privacy policy. [Quick start and attribution](https://openfreemap.org/quick_start/) · [Terms](https://openfreemap.org/tos/) · [Privacy](https://openfreemap.org/privacy/)

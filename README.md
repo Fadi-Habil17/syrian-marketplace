@@ -89,6 +89,8 @@ Migration deployment uses `prisma migrate deploy`. Set `ALLOW_DEMO_SEED=true` in
 
 Create the separate test database before running integration tests, for example `docker compose exec postgres createdb -U marketplace_local marketplace_test` (use your configured database user). Set DATABASE_TEST_URL to that database and apply migrations/seed there too. Never point test commands at production.
 
+For a presentation on a local seeded database, run `npm run db:seed:showcase`. It adds fictional bilingual catalog records, original illustrative photos, approximate city locations, completed simulator orders and dated buyer reviews. The seed requires `ALLOW_DEMO_SEED=true` and accepts only the local `marketplace_dev` and `marketplace_test` databases. Re-running it preserves the review and financial history. See the [map verification record](docs/MAP_VERIFICATION.md) for geographic attribution.
+
 For subsequent schema development:
 
 ```powershell

@@ -190,7 +190,7 @@ export default function Cart() {
           <Copy>{money(preview.order.deliveryFee)}</Copy>
           <Copy>{preview.order.terms.promisedDeliveryAt}</Copy>
           <Button
-            title={ar ? 'تأكيد الدفع التجريبي' : 'Confirm simulated payment'}
+            title={ar ? 'تأكيد الدفع بالمحاكاة' : 'Confirm simulated payment'}
             disabled={busy}
             onPress={() => setConfirmOpen(true)}
           />

@@ -118,7 +118,7 @@ export async function OrderDetail({
       </Heading>
       <div className="inline-links">
         <span className="pill active">{enumLabel(locale, order.state)}</span>
-        <span className="pill">{choose(locale, 'مدفوعات تجريبية', 'Simulated payments')}</span>
+        <span className="pill">{choose(locale, 'مدفوعات بالمحاكاة', 'Simulated payments')}</span>
         {!isDraft && <Realtime locale={locale} orderId={id} version={order.version} />}
       </div>
       <div className="dashboard-grid">
@@ -505,7 +505,7 @@ async function OrderHistory({ locale, token, order, search }: OrderProps) {
   return (
     <>
       {payments?.items.length ? (
-        <Panel title={choose(locale, 'سجل المدفوعات التجريبية', 'Simulated payment history')}>
+        <Panel title={choose(locale, 'سجل المدفوعات بالمحاكاة', 'Simulated payment history')}>
           <Data locale={locale} value={payments.items} />
           {payments.nextCursor && (
             <Link href={'?' + new URLSearchParams({ paymentsCursor: payments.nextCursor })}>

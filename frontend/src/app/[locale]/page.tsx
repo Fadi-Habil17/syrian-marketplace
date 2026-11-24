@@ -206,8 +206,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             title={choose(locale, 'خذ جولة بالسوق', 'Take a look around')}
             description={choose(
               locale,
-              'جولة قصيرة بالنسخة التجريبية، ببيانات خيالية ومدفوعات محاكاة.',
-              'A short look at the demo marketplace, with fictional data and simulated payments.',
+              'شوف كيف تختار منتج، تحجز موعد، وتتابع طلبك من مكان واحد.',
+              'See how to choose a product, book a service and track your order in one place.',
             )}
             poster="/images/walkthrough-poster.webp"
             source={process.env.NEXT_PUBLIC_PRODUCT_TOUR_URL || '/media/product-tour.webm'}

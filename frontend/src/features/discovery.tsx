@@ -133,7 +133,7 @@ export function Discovery({
       {result?.items.some((r) => r.precision === 'APPROXIMATE') && (
         <small>
           {ar ? 'بيانات مراكز المدن' : 'City center data'} ·{' '}
-          <a href="https://www.geonames.org/164947/as-salamiyah.html">GeoNames</a> (
+          <a href="https://www.geonames.org/SY/largest-cities-in-syria.html">GeoNames</a> (
           <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>)
         </small>
       )}

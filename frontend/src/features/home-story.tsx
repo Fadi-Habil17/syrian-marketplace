@@ -220,9 +220,7 @@ export function HowItWorks({ locale }: { locale: Locale }) {
           <Link className="button primary" href={'/' + locale + '/' + journey.route}>
             {choose(locale, 'خلّينا نبلّش', 'Let’s get started')} <span aria-hidden="true">↗</span>
           </Link>
-          <small>
-            {choose(locale, 'المدفوعات تجريبية بالمحاكاة.', 'All payments are simulated.')}
-          </small>
+          <small>{choose(locale, 'المدفوعات عبر المحاكي.', 'All payments are simulated.')}</small>
         </div>
       </div>
     </section>
