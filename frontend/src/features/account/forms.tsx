@@ -165,9 +165,6 @@ export function LoginForm({ locale, next }: { locale: Locale; next?: string }) {
           : choose(locale, 'تسجيل الدخول', 'Sign in')}{' '}
         <span aria-hidden="true">↗</span>
       </button>
-      <Link className="auth-secondary" href={'/' + locale + '/verify-email'}>
-        {choose(locale, 'تأكيد البريد الإلكتروني', 'Verify an email address')}
-      </Link>
     </form>
   );
 }
@@ -191,12 +188,12 @@ export function RegisterForm({ locale }: { locale: Locale }) {
         <p>
           {choose(
             locale,
-            'راجع بريدك لتأكيد الحساب. تقدر بعدها تسجّل الدخول وتكمل.',
-            'Check your email to verify your account, then sign in to continue.',
+            'حسابك جاهز. سجّل الدخول وابدأ باستخدام السوق.',
+            'Your account is ready. Sign in to get started.',
           )}
         </p>
-        <Link className="button primary" href={'/' + locale + '/verify-email'}>
-          {choose(locale, 'تأكيد البريد', 'Verify email')}
+        <Link className="button primary" href={'/' + locale + '/login'}>
+          {choose(locale, 'تسجيل الدخول', 'Sign in')}
         </Link>
       </div>
     );

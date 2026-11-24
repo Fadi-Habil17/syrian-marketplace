@@ -66,7 +66,6 @@ export class DeliveryService {
               status: 'ACTIVE',
               type: 'DELIVERY_DRIVER',
               user: {
-                verifiedAt: { not: null },
                 archivedAt: null,
                 userRole_user: { some: { revokedAt: null, role: { code: 'DELIVERY_DRIVER' } } },
                 restriction_user: {
@@ -358,7 +357,6 @@ export class DeliveryService {
   acceptDeliveryJob(r: ApiRequest) {
     return this.deliveryCommand(r, async (tx) => {
       const p = await this.access.profile(r.actor, 'DELIVERY_DRIVER', tx);
-      this.access.verified(r.actor);
       await tx.$queryRaw`SELECT "id" FROM "BusinessProfile" WHERE "id"=${p.id}::uuid FOR UPDATE`;
       let d = await this.row(tx, r.params.deliveryId!);
       await tx.$queryRaw`SELECT "id" FROM "MarketOrder" WHERE "id"=${d.storeOrder.orderId}::uuid FOR UPDATE`;

@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpCode, Post, Req } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Operation, Public, ApiRequest } from '../../common/actor';
 import { AuthService } from './auth.service';
-import { EmailDto, LoginDto, RefreshDto, RegisterDto, ResetDto, TokenDto } from './auth.dto';
+import { EmailDto, LoginDto, RefreshDto, RegisterDto, ResetDto } from './auth.dto';
 import { UsersService } from '../users/users.service';
 @ApiTags('Auth')
 @Controller('auth')
@@ -21,11 +21,6 @@ export class AuthController {
     @Body() b: RefreshDto,
   ) {
     return this.auth.refresh(b.refreshToken);
-  }
-  @Public() @Post('verify-email') @HttpCode(200) @Operation('verifyEmail') verify(
-    @Body() b: TokenDto,
-  ) {
-    return this.auth.verify(b.token);
   }
   @Public() @Post('forgot-password') @HttpCode(200) @Operation('forgotPassword') forgot(
     @Body() b: EmailDto,

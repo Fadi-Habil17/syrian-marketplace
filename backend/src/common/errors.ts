@@ -63,7 +63,7 @@ export function apiFailure(error: unknown): DomainError {
     const code = error.message;
     return new DomainError(
       code,
-      ['FORBIDDEN', 'ACCOUNT_RESTRICTED', 'EMAIL_NOT_VERIFIED', 'WORKSPACE_INACTIVE'].includes(code)
+      ['FORBIDDEN', 'ACCOUNT_RESTRICTED', 'WORKSPACE_INACTIVE'].includes(code)
         ? 403
         : [
               'INVALID_ALLOCATION',

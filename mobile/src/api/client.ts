@@ -90,9 +90,7 @@ export const api = createClient<ApiPaths>({
     if (version !== sessionVersion) throw new SessionChangedError();
     if (
       result.status !== 401 ||
-      /\/auth\/(login|register|refresh|forgot-password|reset-password|verify-email)(\?|$)/.test(
-        request.url,
-      )
+      /\/auth\/(login|register|refresh|forgot-password|reset-password)(\?|$)/.test(request.url)
     )
       return result;
     // A late 401 for an already rotated access token needs no second refresh.

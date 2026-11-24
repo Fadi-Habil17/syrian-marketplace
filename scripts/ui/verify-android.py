@@ -284,7 +284,7 @@ try:
                     time.sleep(2)
                     scroll()
                     time.sleep(0.4)
-                    wait('أهلاً في الحارة! راجع بريدك لتأكيد الحساب.' if ar else 'Welcome to the neighbourhood! Check your email to verify your account.')
+                    wait('حسابك جاهز! سجّل الدخول للمتابعة.' if ar else 'Your account is ready! Sign in to continue.')
                     shot('android-register-success-' + language + '-' + mode)
                     top()
                     input('كلمة المرور' if ar else 'Password', 'Marketplace123!')

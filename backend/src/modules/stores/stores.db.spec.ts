@@ -47,7 +47,6 @@ run('Store and product publication with actual private image storage', () => {
         })
         .expect(201)
     ).body;
-    await db.user.update({ where: { id: u.id }, data: { verifiedAt: new Date() } });
     token = (
       await http()
         .post('/api/v1/auth/login')
@@ -67,7 +66,6 @@ run('Store and product publication with actual private image storage', () => {
           .expect(201)
       ).body;
     buyerUserId = buyer.id;
-    await db.user.update({ where: { id: buyer.id }, data: { verifiedAt: new Date() } });
     other = (
       await http()
         .post('/api/v1/auth/login')
@@ -387,7 +385,6 @@ run('Store and product publication with actual private image storage', () => {
           })
           .expect(201)
       ).body;
-    await db.user.update({ where: { id: u.id }, data: { verifiedAt: new Date() } });
     const second = await login(email);
     let profile = (
       await http()

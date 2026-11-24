@@ -376,8 +376,6 @@ export function CommandForm({
     version?: number;
     actorId: string | null;
   }>(undefined);
-  const [city, setCity] = useState(String(initial.cityId ?? ''));
-  const [area, setArea] = useState(String(initial.areaId ?? ''));
   const [uncertain, setUncertain] = useState(false);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -436,18 +434,7 @@ export function CommandForm({
     ([key]) => !(key in defaults) && !hidden.includes(key),
   );
   const form = (
-    <form
-      className="command-form"
-      onSubmit={submit}
-      onChange={(e) => {
-        const target = e.target as HTMLInputElement;
-        if (target.name === 'cityId') {
-          setCity(target.value);
-          setArea('');
-        }
-        if (target.name === 'areaId') setArea(target.value);
-      }}
-    >
+    <form className="command-form" onSubmit={submit}>
       <fieldset disabled={busy || uncertain} className="form-fields">
         {route.route
           .filter((key) => !params[key])
@@ -462,31 +449,33 @@ export function CommandForm({
               choices={choices}
             />
           ))}
-        {fields.map(([key, child]) =>
-          key === 'pin' ? (
-            <PinField
-              key={JSON.stringify(initial.pin ?? null)}
-              locale={locale}
-              center={
-                choices.areaId?.find((c) => c.value === area)?.center ??
-                choices.cityId?.find((c) => c.value === city)?.center
-              }
-              initial={initial.pin as ApiSchemas['GeoPoint'] | null | undefined}
-            />
-          ) : (
-            <Field
-              key={key}
-              schema={child}
-              name={key}
-              label={key}
-              locale={locale}
-              required={shape?.required?.includes(key)}
-              choices={choices}
-              initial={initial[key]}
-              upload={upload}
-            />
-          ),
-        )}
+        {fields
+          .filter(
+            ([key]) =>
+              !(fields.some(([field]) => field === 'pin') && ['cityId', 'areaId'].includes(key)),
+          )
+          .map(([key, child]) =>
+            key === 'pin' ? (
+              <PinField
+                key={JSON.stringify(initial.pin ?? null)}
+                locale={locale}
+                initialCityId={String(initial.cityId ?? '')}
+                initial={initial.pin as ApiSchemas['GeoPoint'] | null | undefined}
+              />
+            ) : (
+              <Field
+                key={key}
+                schema={child}
+                name={key}
+                label={key}
+                locale={locale}
+                required={shape?.required?.includes(key)}
+                choices={choices}
+                initial={initial[key]}
+                upload={upload}
+              />
+            ),
+          )}
       </fieldset>
       <button type="submit" className="button primary" disabled={busy}>
         {busy

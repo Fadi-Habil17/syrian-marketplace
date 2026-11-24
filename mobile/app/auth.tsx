@@ -1,3 +1,4 @@
+import { Select } from '../src/select';
 import { useCallback, useRef, useState } from 'react';
 import { BackHandler, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
@@ -7,13 +8,12 @@ import { useSession } from '../src/state/session';
 import { themedStyles } from '../src/appearance';
 import { Page, Field, Button, Failure, Copy, Card, Heading } from '../src/ui';
 
-type Mode = 'login' | 'register' | 'forgot' | 'verify' | 'reset';
+type Mode = 'login' | 'register' | 'forgot' | 'reset';
 type Role = ApiSchemas['BusinessType'] | null;
 const actions = {
   login: ['تسجيل الدخول', 'Sign in'],
   register: ['إنشاء حساب', 'Create account'],
   forgot: ['استعادة الحساب', 'Recover your account'],
-  verify: ['تأكيد البريد', 'Verify email'],
   reset: ['كلمة مرور جديدة', 'New password'],
 } satisfies Record<Mode, [string, string]>;
 const roles = [
@@ -35,7 +35,6 @@ export default function Auth() {
   const ar = locale === 'ar';
   const [mode, setMode] = useState<Mode>('login'),
     [role, setRole] = useState<Role>(null),
-    [roleOpen, setRoleOpen] = useState(false),
     [email, setEmail] = useState(''),
     [password, setPassword] = useState(''),
     [name, setName] = useState(''),
@@ -86,7 +85,7 @@ export default function Auth() {
       e.password = ar
         ? 'استخدم 12 حرفاً على الأقل، وبحد أقصى 72 بايت.'
         : 'Use at least 12 characters and no more than 72 UTF-8 bytes.';
-    if (['verify', 'reset'].includes(mode) && !token.trim())
+    if (mode === 'reset' && !token.trim())
       e.token = ar ? 'اكتب رمز التحقق من بريدك.' : 'Enter the token from your email.';
     setErrors(e);
     const first = Object.keys(e)[0];
@@ -122,10 +121,10 @@ export default function Auth() {
           }),
         );
         setPassword('');
+        changeMode('login');
+        changeMode('login');
         setNotice(
-          ar
-            ? 'أهلاً في الحارة! راجع بريدك لتأكيد الحساب.'
-            : 'Welcome to the neighbourhood! Check your email to verify your account.',
+          ar ? 'حسابك جاهز! سجّل الدخول للمتابعة.' : 'Your account is ready! Sign in to continue.',
         );
       }
       if (mode === 'forgot') {
@@ -134,12 +133,6 @@ export default function Auth() {
           ar
             ? 'إذا كان البريد مسجّلاً، ستصلك خطوات الاستعادة.'
             : 'If the address is registered, recovery instructions will arrive by email.',
-        );
-      }
-      if (mode === 'verify') {
-        unwrap(await api.POST('/api/v1/auth/verify-email', { body: { token: token.trim() } }));
-        setNotice(
-          ar ? 'تم تأكيد البريد. تقدر تسجّل الدخول.' : 'Email verified. You can now sign in.',
         );
       }
       if (mode === 'reset') {
@@ -185,7 +178,6 @@ export default function Auth() {
     }
   }
   const title = (m: Mode) => actions[m][ar ? 0 : 1];
-  const selectedRole = roles.find((r) => r[0] === role)!;
   return (
     <Page backLabel={ar ? 'العودة إلى السوق' : 'Back to the marketplace'}>
       <View style={s.intro}>
@@ -247,7 +239,7 @@ export default function Auth() {
               onSubmitEditing={() => passwordRef.current?.focus()}
             />
           )}
-          {['verify', 'reset'].includes(mode) && (
+          {mode === 'reset' && (
             <Field
               label={ar ? 'رمز البريد' : 'Email token'}
               value={token}
@@ -314,32 +306,16 @@ export default function Auth() {
           )}
           {mode === 'register' && (
             <View style={s.roleSection}>
-              <Copy variant="label">{ar ? 'كيف حابب تبدأ؟' : 'How would you like to start?'}</Copy>
-              <Button
-                variant="outline"
-                title={(ar ? selectedRole[1] : selectedRole[2]) + ' ⌄'}
-                onPress={() => setRoleOpen(!roleOpen)}
+              <Select
+                label={ar ? 'كيف حابب تبدأ؟' : 'How would you like to start?'}
+                value={role ?? ''}
                 disabled={busy}
+                options={roles.map(([value, a, en]) => ({
+                  value: value ?? '',
+                  label: ar ? a : en,
+                }))}
+                onChange={(value) => setRole((value || null) as Role)}
               />
-              {roleOpen && (
-                <View accessibilityRole="radiogroup">
-                  {roles.map(([value, a, en]) => (
-                    <Pressable
-                      key={value ?? 'customer'}
-                      accessibilityRole="radio"
-                      accessibilityState={{ checked: role === value }}
-                      style={[s.role, role === value && s.selected]}
-                      onPress={() => {
-                        setRole(value);
-                        setRoleOpen(false);
-                      }}
-                    >
-                      <Copy>{ar ? a : en}</Copy>
-                      <Copy>{role === value ? '✓' : ''}</Copy>
-                    </Pressable>
-                  ))}
-                </View>
-              )}
               <Copy variant="muted">
                 {ar
                   ? 'كل أصحاب الأعمال بيقدروا يشتروا كمان.'
@@ -351,13 +327,6 @@ export default function Auth() {
           {notice && (
             <View accessibilityLiveRegion="polite">
               <Copy>{notice}</Copy>
-              {mode === 'register' && (
-                <Button
-                  variant="link"
-                  title={title('verify')}
-                  onPress={() => changeMode('verify')}
-                />
-              )}
             </View>
           )}
           <Button
@@ -385,7 +354,7 @@ export default function Auth() {
         />
       </View>
       <View style={s.recovery}>
-        {(['verify', 'reset'] as const)
+        {(['reset'] as const)
           .filter((m) => m !== mode)
           .map((m) => (
             <Button

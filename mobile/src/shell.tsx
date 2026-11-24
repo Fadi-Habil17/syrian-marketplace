@@ -1,7 +1,7 @@
 import { themedStyles, useAppearance } from './appearance';
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
-import { router, usePathname } from 'expo-router';
+import { router, usePathname, useLocalSearchParams } from 'expo-router';
 import { Image } from 'expo-image';
 import {
   Keyboard,
@@ -16,7 +16,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSession } from './state/session';
 import { design, readingStyle } from './theme';
-import { AppearancePicker } from './appearance-picker';
+import { SideMenu } from './side-menu';
+import { Icon } from './icons';
+import { MobileFooter } from './footer';
+import { profileInitials } from './profile-initials';
 
 const browseRoutes = new Set(['/catalog', '/listing', '/store', '/booking', '/cart']);
 const orderRoutes = new Set(['/orders', '/order', '/chat', '/review', '/delivery']);
@@ -25,6 +28,7 @@ export function MobileShell({ children, home = false }: { children: ReactNode; h
   const s = useStyles();
   const { colors } = useAppearance();
   const [keyboard, setKeyboard] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   useEffect(() => {
     const shown = Keyboard.addListener('keyboardDidShow', () => setKeyboard(true));
     const hidden = Keyboard.addListener('keyboardDidHide', () => setKeyboard(false));
@@ -33,9 +37,13 @@ export function MobileShell({ children, home = false }: { children: ReactNode; h
       hidden.remove();
     };
   }, []);
-  const { user, locale, setLocale } = useSession();
+  const { user, locale } = useSession();
   const ar = locale === 'ar';
   const path = usePathname();
+  const { workspace } = useLocalSearchParams<{ workspace?: string }>();
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [path, workspace]);
   const activeTab =
     path === '/' || path === '/location'
       ? 'home'
@@ -66,17 +74,66 @@ export function MobileShell({ children, home = false }: { children: ReactNode; h
               {ar ? 'دكّان و حارة' : 'Dukkan & Hara'}
             </Text>
           </Pressable>
-          <AppearancePicker locale={locale} />
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={ar ? 'Switch to English' : 'التبديل للعربية'}
-            onPress={() => setLocale(ar ? 'en' : 'ar')}
-            style={s.language}
-          >
-            <Image tintColor={colors.green} source={design.globe} style={s.globe} />
-            <Text style={[s.languageText, readingStyle(locale, true)]}>{ar ? 'EN' : 'عربي'}</Text>
-          </Pressable>
+          <View style={s.actions}>
+            <Pressable
+              accessibilityRole="link"
+              accessibilityLabel={
+                user
+                  ? (ar ? 'حسابي: ' : 'My account: ') + user.displayName
+                  : ar
+                    ? 'تسجيل الدخول'
+                    : 'Sign in'
+              }
+              onPress={() => router.navigate(user ? '/account' : '/auth')}
+              style={s.avatar}
+            >
+              {user ? (
+                <Text style={[s.avatarText, readingStyle(locale, true)]}>
+                  {profileInitials(user.displayName)}
+                </Text>
+              ) : (
+                <Icon name="user" color={colors.green} />
+              )}
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={ar ? 'فتح القائمة' : 'Open menu'}
+              accessibilityState={{ expanded: menuOpen }}
+              onPress={() => {
+                Keyboard.dismiss();
+                setMenuOpen(true);
+              }}
+              style={s.menuButton}
+            >
+              <Icon name="menu" color={colors.ink} />
+            </Pressable>
+          </View>
         </View>
+      </View>
+      <View style={[s.categoryBar, { direction }]}>
+        {(
+          [
+            ['FREELANCE', 'العمل الحر', 'Freelance', 'briefcase'],
+            ['PROFESSIONAL', 'المهنيون', 'Professionals', 'tools'],
+            ['STORE', 'المتاجر المنزلية', 'Home stores', 'bag'],
+          ] as const
+        ).map(([value, a, en, icon]) => {
+          const selected = path === '/catalog' && (workspace ?? 'FREELANCE') === value;
+          return (
+            <Pressable
+              key={value}
+              accessibilityRole="link"
+              accessibilityState={{ selected }}
+              onPress={() =>
+                router.navigate({ pathname: '/catalog', params: { workspace: value } })
+              }
+              style={[s.category, selected && s.selected]}
+            >
+              <Icon name={icon} size={16} color={colors.green} />
+              <Text style={[s.categoryText, readingStyle(locale, true)]}>{ar ? a : en}</Text>
+            </Pressable>
+          );
+        })}
       </View>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -90,7 +147,10 @@ export function MobileShell({ children, home = false }: { children: ReactNode; h
           contentContainerStyle={s.scroll}
           testID="marketplace-content"
         >
-          <View style={[s.frame, home && s.home, { direction }]}>{children}</View>
+          <View style={[s.frame, home && s.home, { direction }]}>
+            {children}
+            <MobileFooter />
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
       {!keyboard && (
@@ -118,6 +178,7 @@ export function MobileShell({ children, home = false }: { children: ReactNode; h
           </View>
         </SafeAreaView>
       )}
+      <SideMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
     </SafeAreaView>
   );
 }
@@ -125,6 +186,47 @@ export function MobileShell({ children, home = false }: { children: ReactNode; h
 const useStyles = themedStyles((colors) =>
   StyleSheet.create({
     screen: { flex: 1, backgroundColor: colors.paper, direction: 'ltr' },
+    actions: { flexDirection: 'row', gap: 8, alignItems: 'center' },
+    avatar: {
+      width: 42,
+      height: 42,
+      borderRadius: 21,
+      borderWidth: 1,
+      borderColor: colors.control,
+      backgroundColor: colors.mint,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    avatarText: { fontSize: 15, lineHeight: 25, color: colors.green },
+    menuButton: {
+      width: 44,
+      height: 44,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: colors.line,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    categoryBar: {
+      flexDirection: 'row',
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      gap: 4,
+      borderBottomWidth: 1,
+      borderColor: colors.line,
+      backgroundColor: colors.paper,
+    },
+    category: {
+      flex: 1,
+      minHeight: 44,
+      flexDirection: 'row',
+      gap: 5,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 12,
+      paddingHorizontal: 5,
+    },
+    categoryText: { fontSize: 11, lineHeight: 20, color: colors.green, flexShrink: 1 },
     header: { borderBottomWidth: 1, borderColor: colors.line },
     headerRow: {
       minHeight: 61,

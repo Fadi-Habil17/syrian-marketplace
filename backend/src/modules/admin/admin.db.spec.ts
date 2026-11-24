@@ -49,7 +49,6 @@ run('Audited admin configuration and moderation', () => {
         })
         .expect(201)
     ).body.id;
-    await db.user.update({ where: { id: userId }, data: { verifiedAt: new Date() } });
     owner = (
       await http()
         .post('/api/v1/auth/login')

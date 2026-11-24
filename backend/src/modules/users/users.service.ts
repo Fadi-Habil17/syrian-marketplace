@@ -109,7 +109,6 @@ export class UsersService {
       email: u.email,
       displayName: u.displayName,
       locale: u.locale,
-      verifiedAt: u.verifiedAt,
       restrictions: u.restriction_user,
       roles: u.userRole_user.map((r) => r.role.code),
       activeBusinessProfile: u.businessProfile_user[0]

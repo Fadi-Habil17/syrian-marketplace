@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import { AccessibilityInfo, useColorScheme } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
-export type AppearancePreference = 'light' | 'dark' | 'system';
+export type AppearancePreference = 'light' | 'dark';
 const light = {
   ink: '#192f2a',
   green: '#10554c',
@@ -45,7 +45,7 @@ const Context = createContext<{
 } | null>(null);
 export function AppearanceProvider({ children }: { children: ReactNode }) {
   const os = useColorScheme();
-  const [preference, setValue] = useState<AppearancePreference>('system');
+  const [preference, setValue] = useState<AppearancePreference>(os === 'dark' ? 'dark' : 'light');
   const [ready, setReady] = useState(false);
   const [persistenceError, setError] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -66,8 +66,7 @@ export function AppearanceProvider({ children }: { children: ReactNode }) {
     let mounted = true;
     SecureStore.getItemAsync(storageKey)
       .then((value) => {
-        if (mounted && (value === 'light' || value === 'dark' || value === 'system'))
-          setValue(value);
+        if (mounted && (value === 'light' || value === 'dark')) setValue(value);
       })
       .catch(() => {
         if (mounted) setError(true);
@@ -79,7 +78,7 @@ export function AppearanceProvider({ children }: { children: ReactNode }) {
       mounted = false;
     };
   }, []);
-  const mode = preference === 'system' ? (os === 'dark' ? 'dark' : 'light') : preference;
+  const mode = preference;
   async function setPreference(p: AppearancePreference) {
     setValue(p);
     try {

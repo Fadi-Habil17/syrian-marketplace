@@ -70,7 +70,7 @@ On a POSIX shell use the equivalent `cp` commands. Replace template markers with
 
 [backend/.env.example](backend/.env.example) contains placeholders only. Configure independent random JWT secrets (at least 32 characters), database URLs, trusted WEB_ORIGINS, matching private STORAGE credentials, CLAMAV_HOST/PORT and PAYMENT_PROVIDER=simulated. Access tokens last 15 minutes, refresh sessions 30 days and bcrypt uses cost 12. Root [.env.example](.env.example) configures Compose; its database/storage values must match the backend.
 
-Development email verification/reset tokens are delivered to ignored `.local-data/mail` files. Production uses EMAIL_DELIVERY_URL/TOKEN and an independent EMAIL_OUTBOX_KEY; queued mail is encrypted. Set EXPO_PUSH_ENABLED=true only with a configured Expo project and registered real device tokens; EXPO_ACCESS_TOKEN is optional when required by the project. Push transport tracks provider tickets/receipts; in-app notices persist even if push is disabled or fails.
+Development password-reset tokens are delivered to ignored `.local-data/mail` files. Production uses EMAIL_DELIVERY_URL/TOKEN and an independent EMAIL_OUTBOX_KEY; queued mail is encrypted. Set EXPO_PUSH_ENABLED=true only with a configured Expo project and registered real device tokens; EXPO_ACCESS_TOKEN is optional when required by the project. Push transport tracks provider tickets/receipts; in-app notices persist even if push is disabled or fails.
 
 Frontend NEST_API_URL remains server-only; mobile EXPO_PUBLIC_API_URL/WS_URL contain public URLs only. Physical devices need a reachable development-machine address, and Android emulators usually use `10.0.2.2`. Never expose private storage or ClamAV ports publicly or put secrets in client environment variables.
 

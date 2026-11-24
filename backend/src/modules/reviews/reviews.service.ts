@@ -45,7 +45,6 @@ export class ReviewsService {
   }
   createReview(r: ApiRequest) {
     return this.commands.run(r, async (tx) => {
-      this.access.verified(r.actor);
       const o = await this.access.order(r.params.orderId!, r.actor, tx, true);
       this.access.buyer(o, r.actor);
       if (o.state !== 'COMPLETED' || (await tx.review.findUnique({ where: { orderId: o.id } })))

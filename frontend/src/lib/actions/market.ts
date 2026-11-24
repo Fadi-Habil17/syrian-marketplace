@@ -223,3 +223,29 @@ export async function orderTicket(orderId: string) {
     throw error;
   }
 }
+
+export async function loadMapLocations(governorateId?: string, initialCityId?: string) {
+  for (const id of [governorateId, initialCityId])
+    if (id && !/^[0-9a-f-]{36}$/i.test(id)) throw new Error('INVALID_LOCATION');
+  const governors = await api('listGovernorates', { query: { limit: 100 } });
+  let selected = governorateId ?? '';
+  let cities: Awaited<ReturnType<typeof api<'listCities'>>>['items'] = [];
+  if (initialCityId && !selected) {
+    const groups = await Promise.all(
+      governors.items.map(async (governor) => ({
+        id: governor.id,
+        page: await api('listCities', { query: { governorateId: governor.id, limit: 100 } }),
+      })),
+    );
+    const group = groups.find((group) =>
+      group.page.items.some((city) => city.id === initialCityId),
+    );
+    if (group) {
+      selected = group.id;
+      cities = group.page.items;
+    }
+  } else if (selected) {
+    cities = (await api('listCities', { query: { governorateId: selected, limit: 100 } })).items;
+  }
+  return { governors: governors.items, cities, selected };
+}

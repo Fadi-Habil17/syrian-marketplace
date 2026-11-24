@@ -1,3 +1,4 @@
+import { Select } from '../src/select';
 import { useRef, useState } from 'react';
 import { router } from 'expo-router';
 import { api, unwrap } from '../src/api/client';
@@ -93,39 +94,35 @@ function Results({
     });
   return (
     <>
-      <Button
-        variant="outline"
-        title={ar ? 'المدينة كاملة' : 'Whole city'}
-        onPress={() => {
-          setArea(undefined);
+      <Select
+        label={ar ? 'المنطقة' : 'Area'}
+        value={area ?? ''}
+        loading={areas.loading}
+        options={[
+          { value: '', label: ar ? 'المدينة كاملة' : 'Whole city' },
+          ...(areas.data?.items ?? []).map((item) => ({
+            value: item.id,
+            label: ar ? item.nameAr : item.nameEn,
+          })),
+        ]}
+        onChange={(id) => {
+          setArea(id || undefined);
           setCursor(undefined);
         }}
       />
-      {areas.data?.items.map((a) => (
-        <Button
-          key={a.id}
-          variant="outline"
-          title={(area === a.id ? '✓ ' : '') + (ar ? a.nameAr : a.nameEn)}
-          onPress={() => {
-            setArea(a.id);
-            setCursor(undefined);
-          }}
-        />
-      ))}
-      {[undefined, 'STORE', 'PROFESSIONAL'].map((k, i) => (
-        <Button
-          key={i}
-          variant="outline"
-          title={
-            (kind === k ? '✓ ' : '') +
-            (ar ? ['الكل', 'متاجر', 'مهنيون'] : ['All', 'Stores', 'Professionals'])[i]
-          }
-          onPress={() => {
-            setKind(k as typeof kind);
-            setCursor(undefined);
-          }}
-        />
-      ))}
+      <Select
+        label={ar ? 'نوع النشاط' : 'Business type'}
+        value={kind ?? ''}
+        options={[
+          { value: '', label: ar ? 'الكل' : 'All' },
+          { value: 'STORE', label: ar ? 'متاجر' : 'Stores' },
+          { value: 'PROFESSIONAL', label: ar ? 'مهنيون' : 'Professionals' },
+        ]}
+        onChange={(value) => {
+          setKind((value || undefined) as typeof kind);
+          setCursor(undefined);
+        }}
+      />
       <Button title={ar ? 'بالقرب مني' : 'Near me'} onPress={() => void near()} />
       {origin && (
         <Button

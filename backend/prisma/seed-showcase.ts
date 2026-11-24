@@ -95,7 +95,6 @@ async function account(
       displayName,
       passwordHash,
       locale: /[\u0600-\u06ff]/.test(displayName) ? 'ar' : 'en',
-      verifiedAt: founded,
       createdAt: founded,
     },
   });

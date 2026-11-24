@@ -40,16 +40,6 @@
       "requiredQuery": [],
       "body": { "ref": "RefreshInput" }
     },
-    "verifyEmail": {
-      "path": "/auth/verify-email",
-      "method": "POST",
-      "public": true,
-      "route": [],
-      "headers": [],
-      "query": {},
-      "requiredQuery": [],
-      "body": { "ref": "TokenInput" }
-    },
     "forgotPassword": {
       "path": "/auth/forgot-password",
       "method": "POST",
@@ -1681,13 +1671,6 @@
       "required": ["refreshToken"],
       "properties": {
         "refreshToken": { "type": "string", "minLength": 1, "maxLength": 8192, "pattern": "\\S" }
-      }
-    },
-    "TokenInput": {
-      "type": "object",
-      "required": ["token"],
-      "properties": {
-        "token": { "type": "string", "minLength": 1, "maxLength": 512, "pattern": "\\S" }
       }
     },
     "EmailInput": {

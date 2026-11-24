@@ -55,7 +55,6 @@ export function sortBy(q: Record<string, any>, ratingPath = 'profile') {
 export class CatalogPolicy {
   constructor(private readonly access: AccessService) {}
   publishing(actor: Actor) {
-    this.access.verified(actor);
     if (actor.restrictions.includes('PUBLISHING')) fail('ACCOUNT_RESTRICTED', 403);
   }
   language(b: Record<string, unknown>, store = false) {

@@ -1,3 +1,4 @@
+import { Select } from '../src/select';
 import { useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
 import * as Crypto from 'expo-crypto';
@@ -149,36 +150,32 @@ export default function Cart() {
           />
         </Card>
       ))}
-      {addresses.data?.items.map((address) => (
-        <Button
-          key={address.id}
-          disabled={busy || paymentPending || checkingPayment}
-          title={`${address.id === addressId ? '✓ ' : ''}${address.label} · ${address.details}`}
-          onPress={() => {
-            setAddress(address.id);
-            setPreview(null);
-          }}
-        />
-      ))}
-      {(['SELLER', 'PLATFORM_DRIVER'] as const).map((value) => (
-        <Button
-          key={value}
-          disabled={busy || paymentPending || checkingPayment}
-          title={
-            value === 'SELLER'
-              ? ar
-                ? 'توصيل البائع'
-                : 'Seller delivery'
-              : ar
-                ? 'سائق المنصة'
-                : 'Platform driver'
-          }
-          onPress={() => {
-            setMethod(value);
-            setPreview(null);
-          }}
-        />
-      ))}
+      <Select
+        label={ar ? 'عنوان التوصيل' : 'Delivery address'}
+        value={addressId}
+        disabled={busy || paymentPending || checkingPayment}
+        options={(addresses.data?.items ?? []).map((address) => ({
+          value: address.id,
+          label: address.label + ' · ' + address.details,
+        }))}
+        onChange={(id) => {
+          setAddress(id);
+          setPreview(null);
+        }}
+      />
+      <Select
+        label={ar ? 'طريقة التوصيل' : 'Delivery method'}
+        value={method}
+        disabled={busy || paymentPending || checkingPayment}
+        options={[
+          { value: 'SELLER', label: ar ? 'توصيل البائع' : 'Seller delivery' },
+          { value: 'PLATFORM_DRIVER', label: ar ? 'سائق المنصة' : 'Platform driver' },
+        ]}
+        onChange={(value) => {
+          setMethod(value as 'SELLER' | 'PLATFORM_DRIVER');
+          setPreview(null);
+        }}
+      />
       <Button
         title={ar ? 'مراجعة السعر والتوصيل' : 'Review price and delivery'}
         disabled={!user || !addressId || !lines.length || busy || paymentPending || checkingPayment}

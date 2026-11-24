@@ -243,57 +243,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/RefreshInput'
-  /api/v1/auth/verify-email:
-    post:
-      operationId: verifyEmail
-      tags:
-        - Auth
-      summary: verifyEmail
-      description: Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.
-      x-implementation-status: implemented
-      x-permissions:
-        - Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.
-      parameters: []
-      responses:
-        '200':
-          description: Successful result
-          headers:
-            X-Request-Id:
-              schema:
-                type: string
-                maxLength: 128
-                minLength: 1
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '400':
-          $ref: '#/components/responses/Error400'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '404':
-          $ref: '#/components/responses/Error404'
-        '409':
-          $ref: '#/components/responses/Error409'
-        '413':
-          $ref: '#/components/responses/Error413'
-        '415':
-          $ref: '#/components/responses/Error415'
-        '422':
-          $ref: '#/components/responses/Error422'
-        '429':
-          $ref: '#/components/responses/Error429'
-        '503':
-          $ref: '#/components/responses/Error503'
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TokenInput'
   /api/v1/auth/forgot-password:
     post:
       operationId: forgotPassword
@@ -9163,7 +9112,7 @@ components:
           schema:
             $ref: '#/components/schemas/ApiError'
     Error403:
-      description: FORBIDDEN WORKSPACE_INACTIVE ACCOUNT_RESTRICTED EMAIL_NOT_VERIFIED
+      description: FORBIDDEN WORKSPACE_INACTIVE ACCOUNT_RESTRICTED
       headers:
         X-Request-Id:
           schema:
@@ -9589,7 +9538,6 @@ components:
         - FORBIDDEN
         - WORKSPACE_INACTIVE
         - ACCOUNT_RESTRICTED
-        - EMAIL_NOT_VERIFIED
         - NOT_FOUND
         - INVALID_TRANSITION
         - VERSION_CONFLICT
@@ -10344,11 +10292,6 @@ components:
           enum:
             - ar
             - en
-        verifiedAt:
-          anyOf:
-            - type: string
-              format: date-time
-            - type: 'null'
         roles:
           type: array
           items:
@@ -10368,7 +10311,6 @@ components:
         - email
         - displayName
         - locale
-        - verifiedAt
         - roles
         - activeBusinessProfile
     RegisterInput:
@@ -10463,17 +10405,6 @@ components:
           pattern: \S
       required:
         - refreshToken
-    TokenInput:
-      type: object
-      additionalProperties: false
-      properties:
-        token:
-          type: string
-          maxLength: 512
-          minLength: 1
-          pattern: \S
-      required:
-        - token
     EmailInput:
       type: object
       additionalProperties: false

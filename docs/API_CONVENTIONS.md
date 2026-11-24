@@ -52,7 +52,6 @@ All listed routes have actual registered handlers. Postman folders match these t
 | Auth           | POST   | `/api/v1/auth/register`                                        | `register`                  |
 | Auth           | POST   | `/api/v1/auth/login`                                           | `login`                     |
 | Auth           | POST   | `/api/v1/auth/refresh`                                         | `refreshSession`            |
-| Auth           | POST   | `/api/v1/auth/verify-email`                                    | `verifyEmail`               |
 | Auth           | POST   | `/api/v1/auth/forgot-password`                                 | `forgotPassword`            |
 | Auth           | POST   | `/api/v1/auth/reset-password`                                  | `resetPassword`             |
 | Auth           | POST   | `/api/v1/auth/logout`                                          | `logout`                    |

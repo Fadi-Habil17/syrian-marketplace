@@ -471,26 +471,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/v1/auth/verify-email': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * verifyEmail
-     * @description Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.
-     */
-    post: operations['verifyEmail'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   '/api/v1/business-profiles': {
     parameters: {
       query?: never;
@@ -3109,7 +3089,6 @@ export interface components {
       | 'FORBIDDEN'
       | 'WORKSPACE_INACTIVE'
       | 'ACCOUNT_RESTRICTED'
-      | 'EMAIL_NOT_VERIFIED'
       | 'NOT_FOUND'
       | 'INVALID_TRANSITION'
       | 'VERSION_CONFLICT'
@@ -4378,9 +4357,6 @@ export interface components {
       scope: string;
       startsAt?: string | null;
     };
-    TokenInput: {
-      token: string;
-    };
     TokenPair: {
       accessToken: string;
       /** @constant */
@@ -4440,7 +4416,6 @@ export interface components {
       /** @description Current restrictions visible only in the authenticated own-account DTO. */
       restrictions?: components['schemas']['Restriction'][];
       roles: components['schemas']['RoleCode'][];
-      verifiedAt: string | null;
     };
     /** @description Publishing requires explicit confirmation that customers can visit and the point will be public. Null withdraws. */
     VenueInput: {
@@ -4487,7 +4462,7 @@ export interface components {
         'application/json': components['schemas']['ApiError'];
       };
     };
-    /** @description FORBIDDEN WORKSPACE_INACTIVE ACCOUNT_RESTRICTED EMAIL_NOT_VERIFIED */
+    /** @description FORBIDDEN WORKSPACE_INACTIVE ACCOUNT_RESTRICTED */
     Error403: {
       headers: {
         'X-Request-Id'?: string;
@@ -5526,41 +5501,6 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['Operation'];
-        };
-      };
-      400: components['responses']['Error400'];
-      401: components['responses']['Error401'];
-      403: components['responses']['Error403'];
-      404: components['responses']['Error404'];
-      409: components['responses']['Error409'];
-      413: components['responses']['Error413'];
-      415: components['responses']['Error415'];
-      422: components['responses']['Error422'];
-      429: components['responses']['Error429'];
-      503: components['responses']['Error503'];
-    };
-  };
-  verifyEmail: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['TokenInput'];
-      };
-    };
-    responses: {
-      /** @description Successful result */
-      200: {
-        headers: {
-          'X-Request-Id'?: string;
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['User'];
         };
       };
       400: components['responses']['Error400'];

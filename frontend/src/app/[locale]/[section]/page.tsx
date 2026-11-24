@@ -9,8 +9,6 @@ import { AuthShell } from '../../../features/account/auth-shell';
 import { RegisterForm } from '../../../features/account/forms';
 
 const forms = {
-  register: 'register',
-  'verify-email': 'verifyEmail',
   'forgot-password': 'forgotPassword',
   'reset-password': 'resetPassword',
 } as const;
@@ -19,6 +17,7 @@ export async function generateMetadata({ params }: RouteProps) {
   const { locale: language, section } = await params;
   const locale = localeOf(language);
   if (section === 'login') return { title: choose(locale, 'تسجيل الدخول', 'Sign in') };
+  if (section === 'register') return { title: choose(locale, 'إنشاء حساب', 'Create account') };
   if (section === 'search') return { title: choose(locale, 'البحث', 'Search') };
   if (Object.hasOwn(forms, section))
     return { title: actionLabel(locale, forms[section as keyof typeof forms]) };
@@ -41,27 +40,14 @@ export default async function SectionPage({ params, searchParams }: RouteProps) 
     return (
       <section className="auth-panel">
         <Heading>{actionLabel(locale, name)}</Heading>
-        {name === 'register' && (
-          <p>
-            {choose(
-              locale,
-              'ستحتاج إلى تأكيد بريدك الإلكتروني قبل تسجيل الدخول.',
-              'Verify your email before signing in.',
-            )}
-          </p>
-        )}
         <CommandForm
           locale={locale}
           name={name}
-          initial={name === 'register' ? { locale } : {}}
-          go={name === 'verifyEmail' || name === 'resetPassword' ? 'login' : undefined}
+          go={name === 'resetPassword' ? 'login' : undefined}
           open
         />
         <nav className="inline-links">
           <Link href={'/' + locale + '/login'}>{choose(locale, 'تسجيل الدخول', 'Sign in')}</Link>
-          {name === 'register' && (
-            <Link href={'/' + locale + '/verify-email'}>{actionLabel(locale, 'verifyEmail')}</Link>
-          )}
           {name === 'forgotPassword' && (
             <Link href={'/' + locale + '/reset-password'}>
               {actionLabel(locale, 'resetPassword')}

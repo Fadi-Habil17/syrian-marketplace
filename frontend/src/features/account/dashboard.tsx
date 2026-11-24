@@ -89,7 +89,6 @@ export async function Account({
                 displayName: user.displayName,
                 locale: user.locale,
                 roles: user.roles,
-                verifiedAt: user.verifiedAt,
                 restrictions: user.restrictions,
               }}
             />

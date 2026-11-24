@@ -348,7 +348,6 @@ const implemented = [
   'register',
   'login',
   'refreshSession',
-  'verifyEmail',
   'forgotPassword',
   'resetPassword',
   'logout',

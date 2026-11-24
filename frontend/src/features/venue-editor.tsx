@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { mutate } from '../lib/actions/market';
 import { useActor } from './actor-scope';
-import { LocationMap, type Point } from './location-map';
+import type { Point } from './location-map';
+import { LocationPicker } from './location-picker';
 import type { Locale } from '../lib/locale';
 export function VenueEditor({
   locale,
@@ -17,15 +18,11 @@ export function VenueEditor({
   const ar = locale === 'ar',
     actor = useActor(),
     router = useRouter();
-  const [lat, setLat] = useState(initial?.latitude.toString() ?? ''),
-    [lon, setLon] = useState(initial?.longitude.toString() ?? '');
+  const [point, setPoint] = useState<Point | null>(initial);
   const [confirmed, confirm] = useState(false),
     [busy, setBusy] = useState(false),
     [message, setMessage] = useState('');
-  const point =
-    lat.trim() && lon.trim() && Math.abs(Number(lat)) <= 90 && Math.abs(Number(lon)) <= 180
-      ? { latitude: Number(lat), longitude: Number(lon) }
-      : null;
+
   async function save(value: Point | null) {
     setBusy(true);
     try {
@@ -38,10 +35,7 @@ export function VenueEditor({
         actor,
       );
       if (!r.ok) throw Error();
-      if (!value) {
-        setLat('');
-        setLon('');
-      }
+      if (!value) setPoint(null);
       confirm(false);
       setMessage(ar ? 'تم الحفظ' : 'Saved');
       router.refresh();
@@ -54,40 +48,14 @@ export function VenueEditor({
   return (
     <fieldset disabled={busy}>
       <legend>{ar ? 'عنوان المقر العام' : 'Public venue location'}</legend>
-      <LocationMap
+      <LocationPicker
         locale={locale}
-        center={point}
-        entries={point ? [{ id: 'venue', point, label: ar ? 'المقر' : 'Venue' }] : []}
-        select={(p) => {
-          setLat(String(p.latitude));
-          setLon(String(p.longitude));
+        value={point}
+        onChange={(next) => {
+          setPoint(next);
           confirm(false);
         }}
       />
-      <label>
-        {ar ? 'خط العرض' : 'Latitude'}
-        <input
-          type="number"
-          step="any"
-          value={lat}
-          onChange={(e) => {
-            setLat(e.target.value);
-            confirm(false);
-          }}
-        />
-      </label>
-      <label>
-        {ar ? 'خط الطول' : 'Longitude'}
-        <input
-          type="number"
-          step="any"
-          value={lon}
-          onChange={(e) => {
-            setLon(e.target.value);
-            confirm(false);
-          }}
-        />
-      </label>
       <label>
         <input type="checkbox" checked={confirmed} onChange={(e) => confirm(e.target.checked)} />
         {ar
