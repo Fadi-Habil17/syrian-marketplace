@@ -59,9 +59,6 @@ export class AccessService {
       fail('NOT_FOUND', 404);
     return o;
   }
-  verified(actor: Actor) {
-    if (!actor.verified) fail('EMAIL_NOT_VERIFIED', 403);
-  }
   seller(o: OrderAggregate, actor: Actor) {
     if (o.sellerProfile.userId !== actor.id) fail('FORBIDDEN', 403);
     if (o.sellerProfile.status !== 'ACTIVE' || !actor.roles.includes(o.sellerProfile.type))

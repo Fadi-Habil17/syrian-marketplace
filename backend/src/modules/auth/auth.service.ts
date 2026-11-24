@@ -111,7 +111,7 @@ export class AuthService {
           userId,
           kind,
           tokenHash: tokenHash(raw),
-          expiresAt: new Date(Date.now() + (kind === 'EMAIL' ? 24 * 3600000 : 3600000)),
+          expiresAt: new Date(Date.now() + 3600000),
         },
       }),
       user = await tx.user.findUniqueOrThrow({ where: { id: userId } });
@@ -143,10 +143,8 @@ export class AuthService {
           metadata: {},
         },
       });
-      const event = await this.issueInTransaction(tx, u.id, 'EMAIL');
-      return { id: u.id, eventId: event.id };
+      return { id: u.id };
     });
-    await this.mail.deliverOutbox(result.eventId).catch(() => undefined);
     return this.users.dto(result.id);
   }
   async login(b: LoginDto) {
@@ -199,12 +197,6 @@ export class AuthService {
     });
     if (result.error) fail(result.error, 401);
     return result.pair!;
-  }
-  async verify(token: string) {
-    const id = await this.consume(token, 'EMAIL', async (tx, id) => {
-      await tx.user.update({ where: { id }, data: { verifiedAt: new Date() } });
-    });
-    return this.users.dto(id);
   }
   private async consume(
     token: string,

@@ -14,7 +14,6 @@ erDiagram
     string passwordHash
     string displayName
     string locale
-    datetime verifiedAt
     datetime archivedAt
     datetime createdAt
     datetime updatedAt

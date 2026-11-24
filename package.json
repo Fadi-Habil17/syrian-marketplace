@@ -37,7 +37,7 @@
     "db:test": "node scripts/require-test-database.mjs",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
-    "test:mobile": "node --test mobile/tests/client.test.cjs mobile/tests/checkout.test.cjs mobile/tests/realtime.test.cjs mobile/tests/catalog.test.cjs mobile/tests/location.test.cjs"
+    "test:mobile": "node --test mobile/tests/client.test.cjs mobile/tests/checkout.test.cjs mobile/tests/realtime.test.cjs mobile/tests/catalog.test.cjs mobile/tests/location.test.cjs mobile/tests/profile.test.cjs"
   },
   "overrides": {
     "body-parser": "1.20.9",

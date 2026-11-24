@@ -31,7 +31,6 @@ export class CheckoutService {
     return { serviceable: result.methods.length > 0, cityId: a.cityId, methods: result.methods };
   }
   async previewStoreCheckout(r: ApiRequest) {
-    this.access.verified(r.actor);
     const seller = requireValue(
       await this.db.storefront.findUnique({
         where: { id: r.body.storeId },

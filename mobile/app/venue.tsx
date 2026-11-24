@@ -3,14 +3,14 @@ import * as Crypto from 'expo-crypto';
 import { api, unwrap } from '../src/api/client';
 import { useLoad } from '../src/use-load';
 import { useSession } from '../src/state/session';
-import { Page, Button, Field, Failure, Copy } from '../src/ui';
-import { LocationMap, type Point } from '../src/location-map';
+import { Page, Button, Failure, Copy } from '../src/ui';
+import type { Point } from '../src/location-map';
+import { LocationPicker } from '../src/location-picker';
 export default function Venue() {
   const { locale, user } = useSession(),
     ar = locale === 'ar',
     profileId = user?.activeBusinessProfile?.id;
-  const [lat, setLat] = useState(''),
-    [lon, setLon] = useState(''),
+  const [point, setPoint] = useState<Point | null>(null),
     [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
@@ -27,14 +27,10 @@ export default function Venue() {
     [profileId],
   );
   useEffect(() => {
-    setLat(current.data?.point?.latitude.toString() ?? '');
-    setLon(current.data?.point?.longitude.toString() ?? '');
+    setPoint(current.data?.point ?? null);
     setConsent(false);
   }, [current.data]);
-  const point =
-    lat.trim() && lon.trim() && Math.abs(Number(lat)) <= 90 && Math.abs(Number(lon)) <= 180
-      ? { latitude: Number(lat), longitude: Number(lon) }
-      : null;
+
   async function save(value: Point | null) {
     if (!profileId) return;
     setBusy(true);
@@ -58,29 +54,11 @@ export default function Venue() {
   return (
     <Page title={ar ? 'عنوان المقر العام' : 'Public venue location'}>
       {(error || current.error) && <Failure message={error || current.error} />}
-      <LocationMap
-        ar={ar}
-        center={point}
-        entries={point ? [{ id: 'venue', point, label: ar ? 'المقر' : 'Venue' }] : []}
-        select={(p) => {
-          setLat(String(p.latitude));
-          setLon(String(p.longitude));
-          setConsent(false);
-        }}
-      />
-      <Field
-        label={ar ? 'خط العرض' : 'Latitude'}
-        value={lat}
-        onChangeText={(v) => {
-          setLat(v);
-          setConsent(false);
-        }}
-      />
-      <Field
-        label={ar ? 'خط الطول' : 'Longitude'}
-        value={lon}
-        onChangeText={(v) => {
-          setLon(v);
+      <LocationPicker
+        value={point}
+        disabled={busy || current.loading}
+        onChange={(next) => {
+          setPoint(next);
           setConsent(false);
         }}
       />

@@ -19,7 +19,6 @@ run('PostgreSQL financial invariants (real transactions, no repository mocks)', 
         email: `admin-${randomUUID()}@demo.test`,
         displayName: 'Integration admin',
         passwordHash: 'not-a-login-fixture',
-        verifiedAt: new Date(),
       },
     });
     adminId = admin.id;
@@ -39,7 +38,6 @@ run('PostgreSQL financial invariants (real transactions, no repository mocks)', 
             email: `buyer-${randomUUID()}@demo.test`,
             displayName: 'Test buyer',
             passwordHash: 'not-a-login-fixture',
-            verifiedAt: new Date(),
           },
         });
         const seller = await tx.user.create({
@@ -47,7 +45,6 @@ run('PostgreSQL financial invariants (real transactions, no repository mocks)', 
             email: `seller-${randomUUID()}@demo.test`,
             displayName: 'Test seller',
             passwordHash: 'not-a-login-fixture',
-            verifiedAt: new Date(),
           },
         });
         const profile = await tx.businessProfile.create({

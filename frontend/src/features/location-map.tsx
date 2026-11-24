@@ -12,19 +12,26 @@ export function LocationMap({
   center,
   entries,
   select,
+  focusKey = 0,
 }: {
   locale: Locale;
   center?: Point | null;
   entries: MapEntry[];
   select?: (p: Point) => void;
+  focusKey?: number;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const latest = useRef(select);
   latest.current = select;
+  const editableMarker = useRef<Marker | undefined>(undefined);
+  const selectedEntry = useRef(entries[0]);
+  selectedEntry.current = entries[0];
+  const hasPin = !!entries[0];
   const [map, setMap] = useState<LibreMap>();
   const [failed, setFailed] = useState(false);
   const [visible, setVisible] = useState(false);
   const style = process.env.NEXT_PUBLIC_MAP_STYLE_URL;
+  const editable = !!select;
   useEffect(() => {
     if (!style || !host.current) return;
     const observer = new IntersectionObserver((entries) => {
@@ -49,6 +56,7 @@ export function LocationMap({
           style,
           center: [38.5, 35],
           zoom: 6,
+          attributionControl: { compact: true },
           transformRequest: (url) => ({
             url,
             credentials: 'same-origin',
@@ -74,9 +82,63 @@ export function LocationMap({
   useEffect(() => {
     if (map && latitude !== undefined && longitude !== undefined)
       map.jumpTo({ center: [longitude, latitude], zoom: 13 });
-  }, [map, latitude, longitude]);
+  }, [map, latitude, longitude, focusKey]);
   useEffect(() => {
-    if (!map) return;
+    if (!map || !editable || !hasPin) return;
+    let disposed = false;
+    let marker: Marker | undefined;
+    void import('maplibre-gl').then(({ Marker }) => {
+      if (disposed) return;
+      const entry = selectedEntry.current!;
+      marker = new Marker({ draggable: true, color: '#10554c' })
+        .setLngLat([entry.point.longitude, entry.point.latitude])
+        .addTo(map);
+      editableMarker.current = marker;
+      const element = marker.getElement();
+      element.tabIndex = 0;
+      element.setAttribute('role', 'button');
+      element.setAttribute('aria-label', entry.label);
+      marker.on('dragend', () => {
+        const position = marker!.getLngLat().wrap();
+        latest.current?.({ latitude: position.lat, longitude: position.lng });
+      });
+      element.addEventListener('click', (event) => event.stopPropagation());
+      element.addEventListener('keydown', (event) => {
+        if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const position = marker!.getLngLat();
+        const step = event.shiftKey ? 0.001 : 0.0001;
+        const latitude = Math.max(
+          -85,
+          Math.min(
+            85,
+            position.lat + (event.key === 'ArrowUp' ? step : event.key === 'ArrowDown' ? -step : 0),
+          ),
+        );
+        const longitude =
+          ((position.lng +
+            (event.key === 'ArrowRight' ? step : event.key === 'ArrowLeft' ? -step : 0) +
+            540) %
+            360) -
+          180;
+        latest.current?.({ latitude, longitude });
+      });
+    });
+    return () => {
+      disposed = true;
+      marker?.remove();
+      editableMarker.current = undefined;
+    };
+  }, [map, editable, hasPin]);
+  useEffect(() => {
+    const entry = entries[0];
+    if (!editable || !entry || !editableMarker.current) return;
+    editableMarker.current.setLngLat([entry.point.longitude, entry.point.latitude]);
+    editableMarker.current.getElement().setAttribute('aria-label', entry.label);
+  }, [entries, editable]);
+  useEffect(() => {
+    if (!map || editable) return;
     let disposed = false;
     const markers: Marker[] = [];
     void import('maplibre-gl').then(({ Marker }) => {
@@ -125,7 +187,7 @@ export function LocationMap({
       cleanup();
       markers.forEach((m) => m.remove());
     };
-  }, [map, entries]);
+  }, [map, entries, editable]);
   return (
     <>
       {style && (

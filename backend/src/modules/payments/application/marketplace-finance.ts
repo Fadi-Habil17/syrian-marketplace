@@ -256,8 +256,7 @@ export class MarketplaceFinance {
       reject('AGREEMENT_REQUIRED');
     const now = await this.now(tx),
       buyer = await tx.user.findUniqueOrThrow({ where: { id: i.actorId } });
-    if (!buyer.verifiedAt || buyer.archivedAt || o.sellerProfile.status !== 'ACTIVE')
-      reject('ACCOUNT_RESTRICTED');
+    if (buyer.archivedAt || o.sellerProfile.status !== 'ACTIVE') reject('ACCOUNT_RESTRICTED');
     if (
       await tx.restriction.findFirst({
         where: {

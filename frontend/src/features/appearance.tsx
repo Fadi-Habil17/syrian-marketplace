@@ -1,71 +1,74 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import { choose, type Locale } from '../lib/locale';
-
 import { appearanceKey, type Appearance } from '../lib/appearance';
+import { Icon } from './icons';
 
 export function AppearanceControl({ locale }: { locale: Locale }) {
-  const [preference, setPreference] = useState<Appearance>('system');
+  const [preference, setPreference] = useState<Appearance>('light');
   const [notice, setNotice] = useState('');
   useEffect(() => {
-    const media = matchMedia('(prefers-color-scheme: dark)');
     const read = () => {
-      let p: Appearance = 'system';
+      let next: Appearance = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
       try {
         const stored = localStorage.getItem(appearanceKey);
-        if (stored === 'light' || stored === 'dark') p = stored;
+        if (stored === 'light' || stored === 'dark') next = stored;
       } catch {
-        /* OS fallback remains usable. */
+        /* The toggle remains usable without storage. */
       }
-      setPreference(p);
-      document.documentElement.dataset.theme = p;
-      document.documentElement.style.colorScheme =
-        p === 'system' ? (media.matches ? 'dark' : 'light') : p;
+      setPreference(next);
+      document.documentElement.dataset.theme = next;
+      document.documentElement.style.colorScheme = next;
     };
     read();
     window.addEventListener('storage', read);
-    media.addEventListener('change', read);
-    return () => {
-      window.removeEventListener('storage', read);
-      media.removeEventListener('change', read);
-    };
+    return () => window.removeEventListener('storage', read);
   }, []);
+
+  const dark = preference === 'dark';
   return (
-    <label className="appearance-control">
-      <span className="sr-only">{choose(locale, 'المظهر', 'Appearance')}</span>
-      <select
-        value={preference}
-        onChange={(event) => {
-          const p = event.target.value as Appearance;
-          setPreference(p);
-          document.documentElement.dataset.theme = p;
-          document.documentElement.style.colorScheme =
-            p === 'system'
-              ? matchMedia('(prefers-color-scheme: dark)').matches
-                ? 'dark'
-                : 'light'
-              : p;
+    <div className="appearance-control">
+      <button
+        type="button"
+        className="appearance-toggle"
+        role="switch"
+        aria-checked={dark}
+        aria-label={choose(locale, 'الوضع الداكن', 'Dark mode')}
+        onClick={() => {
+          const next: Appearance = dark ? 'light' : 'dark';
+          setPreference(next);
+          document.documentElement.dataset.theme = next;
+          document.documentElement.style.colorScheme = next;
           try {
-            localStorage.setItem(appearanceKey, p);
+            localStorage.setItem(appearanceKey, next);
             setNotice('');
           } catch {
             setNotice(
               choose(
                 locale,
-                'المظهر مؤقت؛ تعذّر حفظ التفضيل.',
+                'تغيّر المظهر لهذه الزيارة؛ تعذّر حفظ التفضيل.',
                 'Appearance changed for this visit; preference could not be saved.',
               ),
             );
           }
         }}
       >
-        <option value="light">{choose(locale, 'فاتح', 'Light')}</option>
-        <option value="dark">{choose(locale, 'داكن', 'Dark')}</option>
-        <option value="system">{choose(locale, 'النظام', 'System')}</option>
-      </select>
+        <span className="setting-icon">
+          <Icon name={dark ? 'moon' : 'sun'} />
+        </span>
+        <span className="setting-copy">
+          <strong>{choose(locale, 'الوضع الداكن', 'Dark mode')}</strong>
+          <span>{dark ? choose(locale, 'مفعّل', 'On') : choose(locale, 'غير مفعّل', 'Off')}</span>
+        </span>
+        <span className="theme-switch" aria-hidden="true">
+          <span>
+            <Icon name={dark ? 'moon' : 'sun'} />
+          </span>
+        </span>
+      </button>
       <span className="sr-only" role="status">
         {notice}
       </span>
-    </label>
+    </div>
   );
 }

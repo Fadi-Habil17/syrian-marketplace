@@ -56,7 +56,6 @@ run('Freelance, confirmed bookings and approved itemized quote convergence', () 
           .expect(201)
       ).body;
     customerId = u.id;
-    await db.user.update({ where: { id: u.id }, data: { verifiedAt: new Date() } });
     buyer = (
       await http()
         .post('/api/v1/auth/login')

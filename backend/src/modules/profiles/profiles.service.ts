@@ -94,7 +94,6 @@ export class ProfilesService {
     )
       fail('FORBIDDEN', 403);
     if (input?.point) {
-      this.access.verified(r.actor);
       if (!input.confirmedPublic) fail('INVALID_INPUT', 400);
       if (r.actor.restrictions.includes('PUBLISHING')) fail('ACCOUNT_RESTRICTED', 403);
     }

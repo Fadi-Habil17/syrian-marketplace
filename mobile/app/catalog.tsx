@@ -1,3 +1,4 @@
+import { Select } from '../src/select';
 import { themedStyles } from '../src/appearance';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -155,19 +156,21 @@ function CatalogPage({
           {categories.error && (
             <Failure message={categories.error} retry={() => void categories.reload()} />
           )}
-          <Button
-            variant="outline"
-            title={ar ? 'كل الفئات' : 'All categories'}
-            onPress={() => selectCategory(null)}
+          <Select
+            label={ar ? 'الفئة' : 'Category'}
+            value={category?.id ?? ''}
+            loading={categories.loading}
+            options={[
+              { value: '', label: ar ? 'كل الفئات' : 'All categories' },
+              ...(categories.data?.items ?? []).map((item) => ({
+                value: item.id,
+                label: ar ? item.nameAr : item.nameEn,
+              })),
+            ]}
+            onChange={(id) =>
+              selectCategory(categories.data?.items.find((item) => item.id === id) ?? null)
+            }
           />
-          {categories.data?.items.map((item) => (
-            <Button
-              key={item.id}
-              variant="outline"
-              title={ar ? item.nameAr : item.nameEn}
-              onPress={() => selectCategory(item)}
-            />
-          ))}
         </Card>
       )}
       {result.loading && <Busy />}

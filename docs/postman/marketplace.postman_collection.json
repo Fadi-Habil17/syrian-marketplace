@@ -10,7 +10,6 @@
     { "key": "idempotencyKey", "value": "", "type": "string" },
     { "key": "orderVersion", "value": "1", "type": "string" },
     { "key": "refreshToken", "value": "", "type": "string" },
-    { "key": "verificationToken", "value": "", "type": "string" },
     { "key": "passwordResetToken", "value": "", "type": "string" },
     { "key": "profileId", "value": "", "type": "string" },
     { "key": "itemId", "value": "", "type": "string" },
@@ -148,22 +147,6 @@
               }
             }
           ]
-        },
-        {
-          "name": "verifyEmail",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": "{{baseUrl}}/auth/verify-email",
-            "description": "implemented. Public. Registration cannot grant ADMIN; refresh rotates once and detects reuse.",
-            "auth": { "type": "noauth" },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"token\": \"{{verificationToken}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            }
-          },
-          "response": []
         },
         {
           "name": "forgotPassword",

@@ -1,95 +1,50 @@
-import { LocationMap, locate, type Point } from '../src/location-map';
-import type { ApiSchemas } from '../src/api/contracts';
-import { useRef, useState } from 'react';
-import { View } from 'react-native';
+﻿import { useState } from 'react';
 import * as Crypto from 'expo-crypto';
+import type { ApiSchemas } from '../src/api/contracts';
 import { api, unwrap } from '../src/api/client';
 import { useLoad } from '../src/use-load';
 import { useSession } from '../src/state/session';
 import { Page, Copy, Field, Button, Failure, Card } from '../src/ui';
+import { LocationPicker } from '../src/location-picker';
+import type { Point } from '../src/location-map';
 export default function Addresses() {
-  const { user, locale } = useSession();
-  const ar = locale === 'ar';
-  const [governorateId, setGovernorate] = useState('');
-  const [cityId, setCity] = useState('');
-  const [label, setLabel] = useState('');
-  const [details, setDetails] = useState('');
-  const [contactName, setName] = useState('');
-  const [contactPhone, setPhone] = useState('');
-  const [editing, setEditing] = useState('');
-  const [areaId, setArea] = useState<string | null>(null);
-  const [lat, setLat] = useState('');
-  const [lon, setLon] = useState('');
-  const [dirty, setDirty] = useState(false);
-  const [removed, setRemoved] = useState(false);
-  const generation = useRef(0);
-  const [locationUnavailable, setLocationUnavailable] = useState(false);
-  const point =
-    lat.trim() && lon.trim() && Math.abs(Number(lat)) <= 90 && Math.abs(Number(lon)) <= 180
-      ? { latitude: Number(lat), longitude: Number(lon) }
-      : null;
-  function edit(a?: ApiSchemas['Address']) {
-    generation.current++;
-    setLocationUnavailable(false);
-    setEditing(a?.id ?? '');
-    setCity(a?.cityId ?? '');
-    setGovernorate('');
-    setArea(a?.areaId ?? null);
-    setLabel(a?.label ?? '');
-    setDetails(a?.details ?? '');
-    setName(a?.contactName ?? '');
-    setPhone(a?.contactPhone ?? '');
-    setLat(a?.pin?.latitude.toString() ?? '');
-    setLon(a?.pin?.longitude.toString() ?? '');
-    setDirty(false);
-    setRemoved(false);
-    setError('');
-  }
-  function modify() {
-    generation.current++;
-    setLocationUnavailable(false);
-    setDirty(true);
-    setRemoved(false);
-  }
-  function select(p: Point) {
-    modify();
-    setLat(String(p.latitude));
-    setLon(String(p.longitude));
-  }
-  async function gps() {
-    setLocationUnavailable(false);
-    const id = ++generation.current;
-    try {
-      const value = await locate();
-      if (id === generation.current) select(value);
-    } catch {
-      if (id === generation.current) setLocationUnavailable(true);
-    }
-  }
-  const areas = useLoad(
-    async () =>
-      cityId
-        ? unwrap(await api.GET('/api/v1/geography/areas', { params: { query: { cityId } } }))
-        : null,
-    [cityId],
+  const { user, locale } = useSession(),
+    ar = locale === 'ar';
+  const [cityId, setCity] = useState(''),
+    [areaId, setArea] = useState<string | null>(null);
+  const [label, setLabel] = useState(''),
+    [details, setDetails] = useState(''),
+    [contactName, setName] = useState(''),
+    [contactPhone, setPhone] = useState('');
+  const [editing, setEditing] = useState(''),
+    [point, setPoint] = useState<Point | null>(null),
+    [dirty, setDirty] = useState(false),
+    [editorKey, setEditorKey] = useState(0);
+  const [initialLocation, setInitialLocation] = useState<{ cityId: string; areaId: string | null }>(
+    { cityId: '', areaId: null },
   );
-  const [error, setError] = useState('');
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState(false),
+    [error, setError] = useState('');
   const addresses = useLoad(
     async () => (user ? unwrap(await api.GET('/api/v1/me/addresses')) : null),
     [user?.id],
   );
-  const governorates = useLoad(async () => unwrap(await api.GET('/api/v1/geography/governorates')));
-  const cities = useLoad(
-    async () =>
-      governorateId
-        ? unwrap(
-            await api.GET('/api/v1/geography/cities', { params: { query: { governorateId } } }),
-          )
-        : null,
-    [governorateId],
-  );
+  function edit(address?: ApiSchemas['Address']) {
+    setEditing(address?.id ?? '');
+    setCity(address?.cityId ?? '');
+    setArea(address?.areaId ?? null);
+    setInitialLocation({ cityId: address?.cityId ?? '', areaId: address?.areaId ?? null });
+    setLabel(address?.label ?? '');
+    setDetails(address?.details ?? '');
+    setName(address?.contactName ?? '');
+    setPhone(address?.contactPhone ?? '');
+    setPoint(address?.pin ?? null);
+    setDirty(false);
+    setError('');
+    setEditorKey((n) => n + 1);
+  }
   async function save() {
+    if (busy || !cityId) return;
     setBusy(true);
     setError('');
     try {
@@ -100,7 +55,7 @@ export default function Addresses() {
         details,
         contactName,
         contactPhone,
-        ...(dirty ? { pin: removed ? null : point } : {}),
+        ...(dirty ? { pin: point } : {}),
       };
       const header = { 'Idempotency-Key': Crypto.randomUUID() };
       if (editing)
@@ -121,118 +76,74 @@ export default function Addresses() {
   }
   return (
     <Page title={ar ? 'العناوين' : 'Addresses'}>
-      {(error || addresses.error || cities.error || governorates.error) && (
-        <Failure message={error || addresses.error || cities.error || governorates.error} />
-      )}
+      {(error || addresses.error) && <Failure message={error || addresses.error} />}
       {addresses.data?.items.map((address) => (
         <Card key={address.id}>
           <Copy>{address.label}</Copy>
           <Copy>{address.details}</Copy>
-          <Button title={ar ? 'تعديل' : 'Edit address'} onPress={() => edit(address)} />
+          <Button
+            title={ar ? 'تعديل' : 'Edit address'}
+            disabled={busy}
+            onPress={() => edit(address)}
+          />
         </Card>
       ))}
-      {governorates.data?.items.map((item) => (
-        <Button
-          key={item.id}
-          title={ar ? item.nameAr : item.nameEn}
-          onPress={() => {
-            setGovernorate(item.id);
-            setCity('');
-            setArea(null);
+      <Card>
+        <LocationPicker
+          key={editorKey}
+          value={point}
+          initialCityId={initialLocation.cityId}
+          initialAreaId={initialLocation.areaId}
+          disabled={busy}
+          onLocationChange={(city, area) => {
+            setCity(city);
+            setArea(area);
+          }}
+          onChange={(next) => {
+            setPoint(next);
+            setDirty(true);
           }}
         />
-      ))}
-      {cities.data?.items.map((item) => (
-        <Button
-          key={item.id}
-          title={`${cityId === item.id ? '✓ ' : ''}${ar ? item.nameAr : item.nameEn}`}
-          onPress={() => {
-            setCity(item.id);
-            setArea(null);
-          }}
+        <Field
+          label={ar ? 'اسم العنوان' : 'Address label'}
+          value={label}
+          onChangeText={setLabel}
+          editable={!busy}
         />
-      ))}
-      {areas.data?.items.map((item) => (
-        <Button
-          key={item.id}
-          variant="outline"
-          title={(areaId === item.id ? '✓ ' : '') + (ar ? item.nameAr : item.nameEn)}
-          onPress={() => setArea(areaId === item.id ? null : item.id)}
+        <Field
+          label={ar ? 'العنوان بالتفصيل' : 'Address details'}
+          value={details}
+          onChangeText={setDetails}
+          multiline
+          editable={!busy}
         />
-      ))}
-      <Field label={ar ? 'اسم العنوان' : 'Address label'} value={label} onChangeText={setLabel} />
-      <Field
-        label={ar ? 'العنوان بالتفصيل' : 'Address details'}
-        multiline
-        value={details}
-        onChangeText={setDetails}
-      />
-      <Field
-        label={ar ? 'اسم المستلم' : 'Contact name'}
-        value={contactName}
-        onChangeText={setName}
-      />
-      <Field
-        label={ar ? 'رقم الهاتف' : 'Phone'}
-        keyboardType="phone-pad"
-        value={contactPhone}
-        onChangeText={setPhone}
-      />
-      <Copy>{ar ? 'دبوس الوجهة الخاص (اختياري)' : 'Private destination pin (optional)'}</Copy>
-      <LocationMap
-        ar={ar}
-        center={
-          point ??
-          areas.data?.items.find((a) => a.id === areaId)?.center ??
-          cities.data?.items.find((c) => c.id === cityId)?.center
-        }
-        entries={point ? [{ id: 'pin', point, label: ar ? 'الوجهة' : 'Destination' }] : []}
-        select={select}
-      />
-      <Button title={ar ? 'استخدم موقعي' : 'Use my location'} onPress={() => void gps()} />
-      {locationUnavailable && (
-        <View accessible accessibilityRole="alert" accessibilityLiveRegion="polite">
-          <Copy>
-            {ar
-              ? 'تعذّر تحديد الموقع. أدخل النقطة يدويًا.'
-              : 'Location unavailable. Enter the point manually.'}
-          </Copy>
-        </View>
-      )}
-      <Field
-        label={ar ? 'خط العرض' : 'Latitude'}
-        value={lat}
-        onChangeText={(v) => {
-          modify();
-          setLat(v);
-        }}
-        keyboardType="numbers-and-punctuation"
-      />
-      <Field
-        label={ar ? 'خط الطول' : 'Longitude'}
-        value={lon}
-        onChangeText={(v) => {
-          modify();
-          setLon(v);
-        }}
-        keyboardType="numbers-and-punctuation"
-      />
-      <Button
-        title={ar ? 'إزالة الدبوس' : 'Remove pin'}
-        variant="outline"
-        onPress={() => {
-          modify();
-          setRemoved(true);
-          setLat('');
-          setLon('');
-        }}
-      />
-      {!!editing && <Button title={ar ? 'إلغاء التعديل' : 'Cancel edit'} onPress={() => edit()} />}
-      <Button
-        title={ar ? 'حفظ العنوان' : 'Save address'}
-        disabled={busy || !cityId || (dirty && !removed && !point)}
-        onPress={() => void save()}
-      />
+        <Field
+          label={ar ? 'اسم المستلم' : 'Contact name'}
+          value={contactName}
+          onChangeText={setName}
+          editable={!busy}
+        />
+        <Field
+          label={ar ? 'رقم الهاتف' : 'Phone'}
+          value={contactPhone}
+          onChangeText={setPhone}
+          keyboardType="phone-pad"
+          editable={!busy}
+        />
+        {!!editing && (
+          <Button
+            title={ar ? 'إلغاء التعديل' : 'Cancel edit'}
+            variant="outline"
+            disabled={busy}
+            onPress={() => edit()}
+          />
+        )}
+        <Button
+          title={ar ? 'حفظ العنوان' : 'Save address'}
+          disabled={busy || !cityId}
+          onPress={() => void save()}
+        />
+      </Card>
     </Page>
   );
 }

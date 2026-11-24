@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import Link from 'next/link';
+import { Footer } from '../../features/footer';
 import { StoreProvider } from '../../store/provider';
 import { Header } from '../../features/header';
 import { choose, localeOf } from '../../lib/locale';
@@ -52,20 +52,7 @@ export default async function LocaleLayout({
             <main id="content" className="site-container site-main">
               {children}
             </main>
-            <footer className="footer">
-              <div className="site-container footer-inner">
-                <Link className="brand" href={'/' + locale}>
-                  {choose(locale, 'دكّان و حارة', 'Dukkan & Hara')}
-                </Link>
-                <span>
-                  {choose(
-                    locale,
-                    'المدفوعات ضمن هذه المنصة محاكاة.',
-                    'Payments on this marketplace are simulated.',
-                  )}
-                </span>
-              </div>
-            </footer>
+            <Footer locale={locale} />
           </ActorScope>
         </StoreProvider>
       </body>

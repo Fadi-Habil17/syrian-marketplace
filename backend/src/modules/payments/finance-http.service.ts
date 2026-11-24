@@ -40,7 +40,6 @@ export class FinanceHttpService {
           delivery.method,
         );
       }
-      this.access.verified(r.actor);
       const receipt = await this.finance.holdInTransaction(tx, {
         orderId,
         actorId: r.actor.id,

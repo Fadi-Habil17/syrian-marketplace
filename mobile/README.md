@@ -1,5 +1,13 @@
 # Mobile application (partial implementation)
 
+## Web/mobile appearance parity
+
+The mobile shell now uses a fixed header with an initials avatar, a category bar for Freelance / Professionals / Home stores, and a drawer that opens from the physical left in both languages. Language and a persisted light/dark switch live in the drawer; there is no System option. Native bottom tabs remain available. A shared themed bottom-sheet selector is used for registration roles, catalog categories, discovery filters, geographic choices, visit/delivery addresses and delivery methods. A footer supplies marketplace/account links and the project's GitHub link.
+
+Address and public-venue editors use governorate/city/optional-area selectors instead of latitude/longitude inputs. **Show location** places the pin at the known area/city center and recenters the map; the user can then drag it or tap the map. Saving preserves the exact point; editing without changing the pin preserves the saved private pin. Changing an address city clears its old area. A city without a center allows manual map placement. Password-reset emails remain available; email verification was removed from both clients and the API.
+
+The map style is enabled in `.env.example`. Native MapLibre pin dragging requires an SDK 54 development build; Expo Go does not contain this native module. TypeScript, the mobile tests and Android/iOS JavaScript bundle exports are checked locally. On-device rendering, gestures, focus and OS-back behavior still require a connected phone/emulator; bundle exports are not signed APK/IPA builds.
+
 Expo SDK 54 / React Native 0.81 / React 19.1 / TypeScript / Expo Router. Originating branch: `feature/mobile`; reviewed for merge into main. See [coverage and remaining required implementation](../docs/MOBILE_API_ISSUES.md). This is not a complete mobile release.
 
 ## Run on Android or iOS

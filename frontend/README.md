@@ -1,5 +1,7 @@
 # Dukkan & Hara web
 
+Address and public venue editors use governorate/city selectors and a draggable map pin instead of visible coordinate inputs. City choices load from the backend; a known city center positions the initial pin. Cities without center data allow manual placement on the map. Dragging, map clicks and arrow keys update the exact saved point. Existing private pins remain unchanged until edited, and changing an address city clears its old area. Map rendering requires `NEXT_PUBLIC_MAP_STYLE_URL`.
+
 Next.js 15 App Router and React 19 web client. `/ar` is Arabic RTL and the default locale. `/en` is English LTR. Run the shared packages build before starting Next.js.
 
 ```sh
@@ -13,6 +15,8 @@ npm run build --workspace frontend
 ```
 
 Set `NEST_API_URL` to the server-only REST base including `/api/v1`. Set `NEXT_PUBLIC_WS_URL` to the public Socket.IO origin and `/orders` namespace. The backend must allow the web origin. In production, serve the site over HTTPS. Use the root README for backend and seeded review account setup.
+
+The top header stays visible while scrolling. A separate category bar links to the three marketplace workspaces. The menu button opens an accessible side drawer with navigation, language switching and a two-state dark-mode switch. Appearance persists locally; a first visit uses the device's current appearance, without exposing a System option. The drawer supports Escape, backdrop dismissal and keyboard focus containment. Shared select styling and the footer support both Arabic RTL and English LTR.
 
 The web app uses App Router route groups, server components, Server Actions, route handlers, streaming and loading boundaries, metadata, typed shared responses, and Redux Toolkit for the mobile navigation menu. JWTs stay in first-party HttpOnly cookies. The browser receives a one-use order ticket for Socket.IO and fetches authorized private files through the Next.js route handler. Screen actions call server-owned operations with the version and idempotency headers defined in OpenAPI.
 

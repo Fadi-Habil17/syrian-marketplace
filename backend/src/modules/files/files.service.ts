@@ -130,7 +130,6 @@ export class FilesService {
     )
       fail('INVALID_INPUT', 400);
     if (b.accessClass === 'PUBLIC_CATALOG') {
-      this.access.verified(r.actor);
       await this.access.profile(r.actor);
     }
     if (b.accessClass === 'CASE_EVIDENCE') {

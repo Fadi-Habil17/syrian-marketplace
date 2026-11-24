@@ -1,3 +1,4 @@
+import { Select } from '../src/select';
 import * as ImagePicker from 'expo-image-picker';
 import type { ApiSchemas } from '../src/api/contracts';
 import { useState } from 'react';
@@ -120,13 +121,16 @@ export default function Booking() {
     >
       {(error || addresses.error) && <Failure message={error || addresses.error} />}
       {addresses.loading && <Busy />}
-      {addresses.data?.items.map((address) => (
-        <Button
-          key={address.id}
-          title={`${addressId === address.id ? '✓ ' : ''}${address.label} · ${address.details}`}
-          onPress={() => setAddress(address.id)}
-        />
-      ))}
+      <Select
+        label={ar ? 'عنوان الزيارة' : 'Visit address'}
+        value={addressId}
+        loading={addresses.loading}
+        options={(addresses.data?.items ?? []).map((address) => ({
+          value: address.id,
+          label: address.label + ' · ' + address.details,
+        }))}
+        onChange={setAddress}
+      />
       <Button
         title={ar ? 'إدارة العناوين' : 'Manage addresses'}
         onPress={() => router.push('/addresses')}

@@ -224,7 +224,6 @@ const values: Record<string, string> = {
 
 const actions: Record<string, [string, string]> = {
   register: ['إنشاء حساب', 'Create an account'],
-  verifyEmail: ['تأكيد البريد الإلكتروني', 'Verify email'],
   forgotPassword: ['إرسال رمز الاستعادة', 'Send a reset code'],
   resetPassword: ['إعادة تعيين كلمة المرور', 'Reset password'],
   updateMe: ['تعديل الحساب', 'Edit account'],

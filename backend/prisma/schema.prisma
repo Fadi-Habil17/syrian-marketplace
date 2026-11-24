@@ -302,7 +302,6 @@ enum RestrictionKind {
 }
 
 enum VerificationKind {
-  EMAIL
   PASSWORD_RESET
   REALTIME_TICKET
 }
@@ -341,7 +340,6 @@ model User {
   passwordHash                     String                  @db.VarChar(100)
   displayName                      String                  @db.VarChar(120)
   locale                           String                  @default("ar") @db.VarChar(2)
-  verifiedAt                       DateTime?               @db.Timestamptz(3)
   archivedAt                       DateTime?               @db.Timestamptz(3)
   createdAt                        DateTime                @default(now()) @db.Timestamptz(3)
   updatedAt                        DateTime                @updatedAt @db.Timestamptz(3)

@@ -48,7 +48,6 @@ run('Private order chat and notification ownership', () => {
           .expect(201)
       ).body;
     userId = u.id;
-    await db.user.update({ where: { id: u.id }, data: { verifiedAt: new Date() } });
     buyer = (
       await http()
         .post('/api/v1/auth/login')

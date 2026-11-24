@@ -47,7 +47,6 @@ export class AccessStrategy extends PassportStrategy(Strategy) {
           (code) =>
             code !== 'ADMIN' || !s.user.restriction_user.some((r) => r.kind === 'SUSPENSION'),
         ),
-      verified: !!s.user.verifiedAt,
       restrictions: s.user.restriction_user.map((x) => x.kind),
       authTime: p.authTime,
     };

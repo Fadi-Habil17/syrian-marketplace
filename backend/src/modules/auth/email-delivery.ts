@@ -50,7 +50,7 @@ export class EmailDelivery {
     const m = JSON.parse(
       Buffer.concat([decipher.update(bytes.subarray(28)), decipher.final()]).toString(),
     );
-    await this.send(m.id, m.email, m.kind, m.token);
+    if (m.kind === 'PASSWORD_RESET') await this.send(m.id, m.email, m.kind, m.token);
     await this.db.outboxEvent.updateMany({
       where: { id: eventId, publishedAt: null },
       data: { publishedAt: new Date(), claimedUntil: null },

@@ -45,7 +45,6 @@ async function main(): Promise<void> {
             email: `${role.toLowerCase()}@demo.marketplace.test`,
             displayName: `Demo ${role}`,
             passwordHash,
-            verifiedAt: new Date(),
             locale: 'ar',
           },
         });

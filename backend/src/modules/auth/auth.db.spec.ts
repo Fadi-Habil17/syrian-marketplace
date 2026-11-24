@@ -52,22 +52,15 @@ run('Identity HTTP against PostgreSQL', () => {
     expect(user.passwordHash).toBeUndefined();
     expect(await db.wallet.count({ where: { userId: user.id } })).toBe(2);
   });
-  it('consumes the delivered verification token once', async () => {
-    const dir = process.env.LOCAL_MAIL_DIR!;
-    const mails = await Promise.all(
-      (await readdir(dir)).map(async (name) =>
-        JSON.parse(await readFile(resolve(dir, name), 'utf8')),
-      ),
-    );
-    const mail = mails.find((m) => m.email === email && m.kind === 'EMAIL');
+  it('registration creates no verification token or email task', async () => {
+    expect(await db.verificationToken.count({ where: { userId: user.id } })).toBe(0);
+    expect(
+      await db.outboxEvent.count({ where: { aggregateId: user.id, type: 'identity.email' } }),
+    ).toBe(0);
     await request(server())
       .post('/api/v1/auth/verify-email')
-      .send({ token: mail.token })
-      .expect(200);
-    await request(server())
-      .post('/api/v1/auth/verify-email')
-      .send({ token: mail.token })
-      .expect(400);
+      .send({ token: 'obsolete' })
+      .expect(404);
   });
   it('logs in with bcrypt and returns a JWT that authorizes only its own identity', async () => {
     const r = await request(server())

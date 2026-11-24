@@ -102,7 +102,6 @@ export class CommandsService {
                 code !== 'ADMIN' || !live.restriction_user.some((r) => r.kind === 'SUSPENSION'),
             ),
           restrictions: live.restriction_user.map((g) => g.kind),
-          verified: !!live.verifiedAt,
         };
         if (
           r.path.includes('/admin/') &&

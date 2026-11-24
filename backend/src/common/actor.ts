@@ -5,7 +5,6 @@ export interface Actor {
   id: string;
   sessionId: string;
   roles: RoleCode[];
-  verified: boolean;
   restrictions: RestrictionKind[];
   authTime: number;
 }
