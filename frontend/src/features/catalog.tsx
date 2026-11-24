@@ -12,7 +12,6 @@ import { SignInPrompt } from './account/access';
 import {
   Back,
   Card,
-  Data,
   Empty,
   Heading,
   NextPage,
@@ -181,7 +180,11 @@ export async function Detail({
     notFound();
   const title = cardName(locale, item);
   const viewer = await currentUser();
-  const profileId = 'profileId' in item ? item.profileId : null;
+  const productStore =
+    'storeId' in item
+      ? await optional(api('getStore', { params: { storeId: item.storeId } }))
+      : null;
+  const profileId = 'profileId' in item ? item.profileId : productStore?.profileId;
   const back = <Back locale={locale} path={'/' + section} title={sectionTitle(locale, section)} />;
   const files = 'photoIds' in item ? item.photoIds : item.logoId ? [item.logoId] : [];
   const isStore = section === 'stores';
@@ -218,7 +221,15 @@ export async function Detail({
               <StoreProducts locale={locale} id={id} />
             </>
           )}
-          {profileId && <Profile locale={locale} id={profileId} />}
+          {profileId && (
+            <Profile
+              locale={locale}
+              id={profileId}
+              reviewSubject={
+                productStore && localText(locale, productStore.nameAr, productStore.nameEn)
+              }
+            />
+          )}
         </article>
         {!isStore && (
           <aside className="panel detail-aside">
@@ -276,7 +287,15 @@ async function StoreProducts({ locale, id }: { locale: Locale; id: string }) {
   );
 }
 
-async function Profile({ locale, id }: { locale: Locale; id: string }) {
+async function Profile({
+  locale,
+  id,
+  reviewSubject,
+}: {
+  locale: Locale;
+  id: string;
+  reviewSubject?: string | null;
+}) {
   const [profile, reviews] = await Promise.all([
     optional(api('getPublicProfile', { params: { profileId: id } })),
     optional(api('listVerifiedReviews', { params: { profileId: id } })),
@@ -322,17 +341,61 @@ async function Profile({ locale, id }: { locale: Locale; id: string }) {
           </div>
         )}
       </Panel>
-      <Panel title={choose(locale, 'التقييمات الموثّقة', 'Verified reviews')}>
+      <Panel
+        title={
+          reviewSubject
+            ? choose(locale, `تقييمات متجر ${reviewSubject}`, `Reviews for ${reviewSubject}`)
+            : choose(locale, 'التقييمات الموثّقة', 'Verified reviews')
+        }
+      >
         {reviews?.items.length ? (
-          <Data
-            locale={locale}
-            value={reviews.items.map((review) => ({
-              buyerDisplayName: review.buyerDisplayName,
-              stars: review.stars,
-              body: review.body,
-              createdAt: review.createdAt,
-            }))}
-          />
+          <>
+            {profile.ratingAverage !== null && (
+              <p className="review-summary">
+                <span aria-hidden="true">★</span>{' '}
+                <strong>
+                  {new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(
+                    profile.ratingAverage,
+                  )}
+                </strong>{' '}
+                <span>
+                  {choose(locale, 'من ٥', 'out of 5')} ·{' '}
+                  {new Intl.NumberFormat(locale).format(profile.reviewCount)}{' '}
+                  {choose(locale, 'تقييم', 'reviews')}
+                </span>
+              </p>
+            )}
+            <ul className="review-list">
+              {reviews.items.map((review) => (
+                <li key={review.id}>
+                  <div className="review-meta">
+                    <strong>
+                      <bdi>{review.buyerDisplayName}</bdi>
+                    </strong>
+                    <time dateTime={review.createdAt}>
+                      {new Intl.DateTimeFormat(locale, {
+                        dateStyle: 'medium',
+                        timeZone: 'Asia/Damascus',
+                      }).format(new Date(review.createdAt))}
+                    </time>
+                  </div>
+                  <span
+                    className="review-stars"
+                    role="img"
+                    aria-label={choose(
+                      locale,
+                      `${review.stars} من ٥ نجوم`,
+                      `${review.stars} out of 5 stars`,
+                    )}
+                  >
+                    {'★'.repeat(review.stars)}
+                    {'☆'.repeat(5 - review.stars)}
+                  </span>
+                  {review.body && <p dir="auto">{review.body}</p>}
+                </li>
+              ))}
+            </ul>
+          </>
         ) : (
           <Empty locale={locale} />
         )}

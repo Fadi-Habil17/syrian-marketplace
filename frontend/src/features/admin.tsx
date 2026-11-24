@@ -171,7 +171,7 @@ async function Accounts({ locale, token, query }: Props) {
         <CommandForm locale={locale} name="restrictAccount" />
         <CommandForm locale={locale} name="revokeRestriction" />
       </Panel>
-      <Panel title={choose(locale, 'المحافظ التجريبية', 'Simulated wallets')}>
+      <Panel title={choose(locale, 'محافظ المحاكي', 'Simulated wallets')}>
         <CommandForm locale={locale} name="simulateWalletTopUp" />
       </Panel>
       <Panel title={choose(locale, 'إعادة تعيين التوصيل', 'Delivery reassignment')}>

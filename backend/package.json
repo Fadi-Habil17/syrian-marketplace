@@ -16,6 +16,7 @@
     "db:migrate:dev": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
+    "db:seed:showcase": "node --env-file=.env --import tsx prisma/seed-showcase.ts",
     "db:seed:check": "tsc --project prisma/tsconfig.json"
   },
   "prisma": {

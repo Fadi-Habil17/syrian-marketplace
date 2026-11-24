@@ -31,6 +31,7 @@
     "db:generate": "npm run db:generate --workspace backend",
     "db:migrate": "npm run db:migrate:deploy --workspace backend",
     "db:seed": "npm run db:seed --workspace backend",
+    "db:seed:showcase": "npm run db:seed:showcase --workspace backend",
     "db:erd": "node scripts/generate-erd.mjs",
     "db:erd:check": "node scripts/generate-erd.mjs --check",
     "db:test": "node scripts/require-test-database.mjs",

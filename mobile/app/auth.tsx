@@ -399,7 +399,7 @@ export default function Auth() {
       </View>
       <Copy variant="muted" style={s.footnote}>
         {ar
-          ? 'الدفع تجريبي بالمحاكاة. لا تُستخدم أموال حقيقية.'
+          ? 'الدفع عبر المحاكي. لا تُستخدم أموال حقيقية.'
           : 'Payments are simulated. No real money is used.'}
       </Copy>
     </Page>

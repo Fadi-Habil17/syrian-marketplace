@@ -147,7 +147,7 @@ export default function Home() {
       ))}
       {!ready && <Busy />}
       <Copy variant="muted" style={s.simulated}>
-        {ar ? 'مدفوعات تجريبية' : 'Simulated payments'}
+        {ar ? 'مدفوعات بالمحاكاة' : 'Simulated payments'}
       </Copy>
     </MobileShell>
   );
