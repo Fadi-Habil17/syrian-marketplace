@@ -91,6 +91,8 @@ Create the separate test database before running integration tests, for example 
 
 For a presentation on a local seeded database, run `npm run db:seed:showcase`. It adds fictional bilingual catalog records, original illustrative photos, approximate city locations, completed simulator orders and dated buyer reviews. The seed requires `ALLOW_DEMO_SEED=true` and accepts only the local `marketplace_dev` and `marketplace_test` databases. Re-running it preserves the review and financial history. See the [map verification record](docs/MAP_VERIFICATION.md) for geographic attribution.
 
+On 2026-11-24 the existing showcase seed was applied to the shared `marketplace_dev` database behind the Sites preview, after a local database backup. The published API now exposes 7 stores, 14 products and 28 listings, including the earlier base records, plus 178 seed-defined historical reviews. All repository-defined showcase titles/prices, 27 public catalog images and the eight bilingual catalog pages were checked externally; all ledger journals remained balanced. No seed source data or application code was changed. The existing APK reads the same API, so this data update needs no new binary.
+
 For subsequent schema development:
 
 ```powershell
@@ -183,11 +185,15 @@ Seed-defined fictional review accounts below all use **Marketplace123!** (bcrypt
 
 ## Demo URL and mobile APK / Expo link
 
-Repository: [Fadi-Habil17/syrian-marketplace](https://github.com/Fadi-Habil17/syrian-marketplace). No hosted demo, APK or Expo review link has been created. They remain required submission work as applicable; track them in [submission guide](docs/SUBMISSION_GUIDE.md). Do not submit the project with these placeholders.
+Repository: [Fadi-Habil17/syrian-marketplace](https://github.com/Fadi-Habil17/syrian-marketplace). Updated from `main` at `89bebbd` on 2026-11-24. The temporary [Sites demo](https://dukkan-hara-mustafa.mustafa5555885555.chatgpt.site), [Android download page](https://dukkan-hara-mustafa.mustafa5555885555.chatgpt.site/__preview/android) and [standalone APK](https://dukkan-hara-mustafa.mustafa5555885555.chatgpt.site/__preview/android.apk) are available. The signed internal preview supports Android 10+ and uses the same HTTPS API from any network, without Expo Go or Metro. The Android 16 emulator opened the updated Arabic/English catalog, loaded live SYP/USD records, signed in with the seeded customer, displayed Account and signed out. Physical-phone acceptance remains pending; build and artifact details are in the [Android preview record](docs/ANDROID_APK_PREVIEW.md).
+
+Sites proxies the original local Next.js application; the computer, Nest API, background worker, Docker services and HTTPS tunnel must remain running. This is temporary review hosting. Track remaining release and submission work in the [submission guide](docs/SUBMISSION_GUIDE.md).
 
 ## Known limitations and design navigation
 
-Backend business routes, financial transactions, private files/chat/sockets, administrative commands and durable jobs are implemented. Actual validation and limits are in the backend report. Native Expo delivery and a production mail gateway have not been verified with real credentials/devices; remote CI and deployment are not claimed. Web/mobile still show setup screens, and full marketplace/admin/RTL acceptance remains pending. Team details and four bilingual Word deliverables are also pending. See [submission guide](docs/SUBMISSION_GUIDE.md) and [dependency security](docs/DEPENDENCY_SECURITY.md); backend implementation is not production security or B4F submission approval.
+Backend business routes, financial transactions, private files/chat/sockets, administrative commands and durable jobs are implemented. Actual validation and limits are in the backend report. Native push delivery and a production mail gateway have not been verified with real credentials/devices; remote CI and permanent backend deployment remain pending. Both clients implement marketplace screens, but full marketplace/admin/RTL acceptance remains pending. Team details and four bilingual Word deliverables are also pending. See [submission guide](docs/SUBMISSION_GUIDE.md) and [dependency security](docs/DEPENDENCY_SECURITY.md); backend implementation is not production security or B4F submission approval.
+
+Catalog text search currently matches a contiguous substring in the bilingual title/name. The reported query `فحص انارة` does not match the seeded `فحص عطل إنارة`; word-based matching and Arabic letter/diacritic normalization remain pending. The preview/setup changes documented here do not implement that search fix.
 
 - [Requirements checklist](docs/REQUIREMENTS_CHECKLIST.md), [business rules/defaults](docs/BUSINESS_RULES.md), [system design](docs/SYSTEM_DESIGN.md), [module boundaries](docs/MODULE_BOUNDARIES.md)
 - [Data flow](docs/DATA_FLOW.md), [permissions](docs/PERMISSIONS_MATRIX.md), [order transitions](docs/ORDER_STATE_MACHINES.md), [ERD](docs/ERD.md)

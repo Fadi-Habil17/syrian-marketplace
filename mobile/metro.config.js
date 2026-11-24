@@ -4,6 +4,20 @@ const { createRequire } = require('node:module');
 const mobileRequire = createRequire(__filename);
 const config = getDefaultConfig(__dirname);
 
+// Metro watches the workspace for hoisted imports. Next removes temporary build
+// folders during compilation, so exclude its output and local runtime caches.
+const existingBlockList = config.resolver.blockList;
+config.resolver.blockList = [
+  ...(Array.isArray(existingBlockList)
+    ? existingBlockList
+    : existingBlockList
+      ? [existingBlockList]
+      : []),
+  /[\\/]frontend[\\/]\.next(?:[\\/]|$)/,
+  /[\\/]\.local-data(?:[\\/]|$)/,
+  /[\\/]\.npm-cache(?:[\\/]|$)/,
+];
+
 // On Windows the React Native Gradle plugin passes an app-relative entry to
 // Expo's embedded bundler. Keep the monorepo watch folders for hoisted imports.
 if (process.platform === 'win32' && process.argv.includes('export:embed')) {
