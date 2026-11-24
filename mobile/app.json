@@ -10,6 +10,14 @@
     "experiments": {
       "autolinkingModuleResolution": true
     },
+    "locales": {
+      "ar": {
+        "ios": {
+          "NSLocationWhenInUseUsageDescription": "استخدم موقعك مرة واحدة لتحديد دبوس العنوان أو للعثور على أنشطة قريبة.",
+          "NSPhotoLibraryUsageDescription": "اختر صورة لإرفاقها بطلب المعاينة."
+        }
+      }
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.syrianmarketplace.app"
@@ -21,6 +29,28 @@
       "supportsRTL": true
     },
     "scheme": "dukkanhara",
-    "plugins": ["expo-router", "expo-secure-store", "expo-notifications", "expo-font"]
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-notifications",
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Choose a photo to attach to your inspection request.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ],
+      "@maplibre/maplibre-react-native",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": false,
+          "locationAlwaysPermission": false,
+          "locationWhenInUsePermission": "Use your location once to place a pin or find nearby businesses."
+        }
+      ]
+    ]
   }
 }

@@ -125,6 +125,9 @@
     "updateListing",
     "publishListing",
     "deactivateListing",
+    "getPublicVenue",
+    "setPublicVenue",
+    "searchLocal",
     "getMe",
     "updateMe",
     "listOwnBusinessProfiles",
@@ -327,6 +330,9 @@
     {
       "name": "profiles",
       "operations": [
+        "getPublicVenue",
+        "setPublicVenue",
+        "searchLocal",
         "getMe",
         "updateMe",
         "listOwnBusinessProfiles",

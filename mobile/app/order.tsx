@@ -1,3 +1,4 @@
+import { LocationMap } from '../src/location-map';
 import { useRef, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Crypto from 'expo-crypto';
@@ -92,6 +93,25 @@ export default function Order() {
               />
             )}
             <Copy>{order.terms.scope}</Copy>
+            {order.destination && <Copy>{order.destination.details}</Copy>}
+            {order.destination?.pin && (
+              <>
+                <Copy>
+                  {order.destination.pin.latitude}, {order.destination.pin.longitude}
+                </Copy>
+                <LocationMap
+                  ar={ar}
+                  center={order.destination.pin}
+                  entries={[
+                    {
+                      id: 'pin',
+                      point: order.destination.pin,
+                      label: ar ? 'الوجهة' : 'Destination',
+                    },
+                  ]}
+                />
+              </>
+            )}
             <Copy>
               {ar ? 'الإجمالي' : 'Total'}: {money(order.total)}
             </Copy>

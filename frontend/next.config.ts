@@ -3,6 +3,9 @@ import path from 'node:path';
 
 const config: NextConfig = {
   reactStrictMode: true,
+  async headers() {
+    return [{ source: '/:path*', headers: [{ key: 'Referrer-Policy', value: 'no-referrer' }] }];
+  },
   poweredByHeader: false,
   experimental: { serverActions: { bodySizeLimit: '51mb' } },
   outputFileTracingRoot: path.resolve(__dirname, '..'),

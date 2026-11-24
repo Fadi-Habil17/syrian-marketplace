@@ -1,3 +1,4 @@
+import { coverageWhere } from '../geography/public-location';
 import { Injectable, Module } from '@nestjs/common';
 import type { Currency, DeliveryMethod } from '@prisma/client';
 import { UnitOfWork } from '../../infrastructure/database/prisma.service';
@@ -37,8 +38,7 @@ export class ShippingPolicy {
       !(await tx.serviceArea.findFirst({
         where: {
           profileId: s.profileId,
-          cityId,
-          OR: [{ areaId: null }, ...(areaId ? [{ areaId }] : [])],
+          ...coverageWhere(cityId, areaId),
         },
       }))
     )

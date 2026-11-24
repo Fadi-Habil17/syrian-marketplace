@@ -110,10 +110,21 @@ export default function Listing() {
               />
             )}
             {'kind' in item && item.kind === 'PROFESSIONAL_PACKAGE' && (
-              <Button
-                title={ar ? 'احجز الخدمة' : 'Book service'}
-                onPress={() => router.push({ pathname: '/booking', params: { id } })}
-              />
+              <>
+                <Button
+                  title={ar ? 'طلب معاينة وعرض سعر' : 'Request inspection and quote'}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/booking',
+                      params: { id, provider: item.profileId, currency: item.price.currency },
+                    })
+                  }
+                />
+                <Button
+                  title={ar ? 'احجز الخدمة' : 'Book service'}
+                  onPress={() => router.push({ pathname: '/booking', params: { id } })}
+                />
+              </>
             )}
             {isFreelance &&
               (user ? (

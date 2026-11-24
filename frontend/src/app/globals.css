@@ -1818,3 +1818,13 @@ textarea,
 .discovery-search {
   border-color: var(--control-border);
 }
+
+.map-marker {
+  min-width: 28px;
+  min-height: 28px;
+  border: 2px solid white;
+  border-radius: 50%;
+  background: #185343;
+  color: white;
+  cursor: pointer;
+}

@@ -115,6 +115,11 @@ function CatalogPage({
   return (
     <Page title={heading} backLabel={ar ? 'السوق' : 'Marketplace'}>
       <Copy variant="muted">{description}</Copy>
+      <Button
+        variant="link"
+        title={ar ? 'استكشف بالقرب منك' : 'Explore nearby'}
+        onPress={() => router.push('/discover')}
+      />
       <View style={s.filters}>
         <FilterTag
           title={ar ? 'التصفية' : 'Filters'}

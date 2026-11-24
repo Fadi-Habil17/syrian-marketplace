@@ -115,7 +115,7 @@ run('Identity HTTP against PostgreSQL', () => {
       })
       .expect(400);
   });
-  it('registers exactly the 145 canonical REST operations with matching paths and methods', () => {
+  it('registers all canonical REST operations with matching paths and methods', () => {
     const actual = new Map<string, string>();
     for (const module of app.get(ModulesContainer).values())
       for (const wrapper of module.controllers.values()) {
@@ -142,7 +142,7 @@ run('Identity HTTP against PostgreSQL', () => {
     for (const [path, methods] of Object.entries(apiContract.paths))
       for (const [verb, operation] of Object.entries(methods as Record<string, any>))
         if (operation.operationId) expected.set(operation.operationId, verb + ' ' + path);
-    expect(actual.size).toBe(145);
+    expect(actual.size).toBe(expected.size);
     expect([...actual.entries()].sort()).toEqual([...expected.entries()].sort());
   });
   it('logs out a session family and consumes a delivered password-reset token only once', async () => {

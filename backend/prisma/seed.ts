@@ -103,6 +103,8 @@ async function main(): Promise<void> {
           governorateId: demoId('gov:HM'),
           nameAr: 'السلمية',
           nameEn: 'Salamiyah',
+          centerLatitude: 35.01127,
+          centerLongitude: 37.05324,
         },
       });
       await tx.area.upsert({
@@ -124,6 +126,22 @@ async function main(): Promise<void> {
           contactPhone: '+000000000000',
         },
       });
+      await tx.address.upsert({
+        where: { id: demoId('buyer-pinned-address') },
+        update: {},
+        create: {
+          id: demoId('buyer-pinned-address'),
+          userId: userId('CUSTOMER'),
+          cityId: city,
+          areaId: area,
+          label: 'Demo pinned destination',
+          details: 'Fictional delivery entrance',
+          contactName: 'Demo Buyer',
+          contactPhone: '+000000000000',
+          latitude: 35.011,
+          longitude: 37.052,
+        },
+      });
       for (const type of [
         'FREELANCER',
         'PROFESSIONAL',
@@ -141,7 +159,15 @@ async function main(): Promise<void> {
             title: `Demo ${type}`,
             bio: 'ملف تجريبي للمراجعة / Fictional demo profile',
             cityId: city,
-            ...(type === 'PROFESSIONAL' ? { trade: 'Electrician', experienceYears: 5 } : {}),
+            ...(type === 'PROFESSIONAL'
+              ? {
+                  trade: 'Electrician',
+                  experienceYears: 5,
+                  venuePublished: true,
+                  venueLatitude: 35.012,
+                  venueLongitude: 37.055,
+                }
+              : {}),
           },
         });
         if (type !== 'DELIVERY_DRIVER')

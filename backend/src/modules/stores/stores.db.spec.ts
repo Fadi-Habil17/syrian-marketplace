@@ -310,6 +310,46 @@ run('Store and product publication with actual private image storage', () => {
       true,
     );
   });
+  it('shares only confirmed venues, filters coverage and returns to the public center on withdrawal', async () => {
+    const profile = (await db.storefront.findUniqueOrThrow({ where: { id: store } })).profileId;
+    const path = '/api/v1/business-profiles/' + profile + '/public-venue';
+    const point = { latitude: 35.02, longitude: 37.06 };
+    const save = (who: string, body: object) =>
+      http().patch(path).auth(who, { type: 'bearer' }).set('Idempotency-Key', key()).send(body);
+    const search = (body: object) =>
+      http()
+        .post('/api/v1/discovery/local/search')
+        .send({ cityId: city, kind: 'STORE', limit: 100, ...body });
+    await save(other, { point, confirmedPublic: true }).expect(404);
+    await save(token, { point, confirmedPublic: false }).expect(400);
+    await save(token, { point, confirmedPublic: true }).expect(200);
+    const area = (await db.area.findFirstOrThrow({ where: { cityId: city } })).id;
+    const page = await search({
+      origin: { latitude: 35.02, longitude: 37.06 },
+      areaId: area,
+    }).expect(200);
+    expect(page.body.items.find((r: any) => r.id === store)).toMatchObject({
+      precision: 'PUBLIC_VENUE',
+      point,
+      detailId: store,
+    });
+    expect(page.headers['cache-control']).toContain('no-store');
+    await search({ origin: { latitude: 35.023, longitude: 37.06 } }).expect(400);
+    await search({ areaId: key() }).expect(400);
+    const out = await save(token, { point: null, confirmedPublic: false }).expect(200);
+    expect(out.body.point).toBeNull();
+    const result = await search({}).expect(200);
+    expect(result.body.items.find((r: any) => r.id === store)).toMatchObject({
+      precision: 'APPROXIMATE',
+      point: { latitude: 35.01127, longitude: 37.05324 },
+    });
+    const first = await search({ limit: 1 }).expect(200);
+    if (first.body.nextCursor) {
+      const second = await search({ limit: 1, cursor: first.body.nextCursor }).expect(200);
+      expect(second.body.items[0].id).not.toEqual(first.body.items[0].id);
+      await search({ areaId: area, cursor: first.body.nextCursor }).expect(400);
+    }
+  });
   it('allows one concurrent driver acceptance and revokes delivery access on reassignment and completion', async () => {
     const address = (
       await http()
@@ -319,6 +359,7 @@ run('Store and product publication with actual private image storage', () => {
         .send({
           cityId: city,
           label: 'Driver test',
+          pin: { latitude: 35, longitude: 37 },
           details: 'Fictional destination',
           contactName: 'Buyer',
           contactPhone: '+000000',
@@ -409,13 +450,15 @@ run('Store and product publication with actual private image storage', () => {
     await post('orders/' + o.id + '/accept-store', token, { accepted: true });
     await post('orders/' + o.id + '/ready-for-delivery', token, { accepted: true });
     await post('orders/' + o.id + '/delivery/request-driver', token, { accepted: true });
+    const acceptKeys = [key(), key()];
+    const acceptVersion = o.version;
     const delivery = o.store.deliveryId,
       results = await Promise.all(
-        [first, second].map((who) =>
+        [first, second].map((who, index) =>
           http()
             .post('/api/v1/deliveries/' + delivery + '/accept')
             .auth(who, { type: 'bearer' })
-            .set('Idempotency-Key', key())
+            .set('Idempotency-Key', acceptKeys[index]!)
             .set('If-Match', `"${o.version}"`)
             .send({ accepted: true }),
         ),
@@ -448,10 +491,27 @@ run('Store and product publication with actual private image storage', () => {
       await app.get(FilesService).scan(f.id);
       return f.id;
     };
+    const assignedAddress = await http()
+      .get('/api/v1/deliveries/' + delivery)
+      .auth(winner, { type: 'bearer' })
+      .expect(200);
+    expect(assignedAddress.body.address.pin).toEqual({ latitude: 35, longitude: 37 });
+    await http()
+      .get('/api/v1/deliveries/' + delivery)
+      .auth(successor, { type: 'bearer' })
+      .expect(404);
     const oldProof = await proof(winner);
     await post('deliveries/' + delivery + '/release-assignment', winner, {
       reason: 'Before pickup reassignment',
     });
+    const replay = await http()
+      .post('/api/v1/deliveries/' + delivery + '/accept')
+      .auth(winner, { type: 'bearer' })
+      .set('Idempotency-Key', acceptKeys[winner === first ? 0 : 1]!)
+      .set('If-Match', '"' + acceptVersion + '"')
+      .send({ accepted: true })
+      .expect(200);
+    expect(replay.body.address).toBeNull();
     const released = await db.delivery.findUniqueOrThrow({ where: { id: delivery } });
     expect(
       await db.scheduledJob.count({

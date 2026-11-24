@@ -267,6 +267,36 @@
       "requiredQuery": ["cityId"],
       "body": null
     },
+    "searchLocal": {
+      "path": "/discovery/local/search",
+      "method": "POST",
+      "public": true,
+      "route": [],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "LocalSearch" }
+    },
+    "getPublicVenue": {
+      "path": "/business-profiles/{profileId}/public-venue",
+      "method": "GET",
+      "public": false,
+      "route": ["profileId"],
+      "headers": [],
+      "query": {},
+      "requiredQuery": [],
+      "body": null
+    },
+    "setPublicVenue": {
+      "path": "/business-profiles/{profileId}/public-venue",
+      "method": "PATCH",
+      "public": false,
+      "route": ["profileId"],
+      "headers": ["idempotency-key"],
+      "query": {},
+      "requiredQuery": [],
+      "body": { "ref": "VenueInput" }
+    },
     "listAddresses": {
       "path": "/me/addresses",
       "method": "GET",
@@ -1794,10 +1824,65 @@
         "areaId": { "variants": [{ "type": "string", "format": "uuid" }, { "type": "null" }] }
       }
     },
+    "LocalSearch": {
+      "type": "object",
+      "required": ["cityId"],
+      "properties": {
+        "cityId": { "type": "string", "format": "uuid" },
+        "areaId": { "type": "string", "format": "uuid" },
+        "origin": {
+          "type": "object",
+          "required": ["latitude", "longitude"],
+          "properties": {
+            "latitude": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90,
+              "description": "Rounded to two decimal places."
+            },
+            "longitude": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180,
+              "description": "Rounded to two decimal places."
+            }
+          }
+        },
+        "kind": { "type": "string", "enum": ["STORE", "PROFESSIONAL"] },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Defaults to 20."
+        },
+        "cursor": { "type": "string", "minLength": 1, "maxLength": 4096 }
+      }
+    },
+    "VenueInput": {
+      "type": "object",
+      "required": ["point", "confirmedPublic"],
+      "description": "Publishing requires explicit confirmation that customers can visit and the point will be public. Null withdraws.",
+      "properties": {
+        "point": { "variants": [{ "ref": "GeoPoint" }, { "type": "null" }] },
+        "confirmedPublic": { "type": "boolean" }
+      }
+    },
+    "GeoPoint": {
+      "type": "object",
+      "required": ["latitude", "longitude"],
+      "properties": {
+        "latitude": { "type": "number", "minimum": -90, "maximum": 90 },
+        "longitude": { "type": "number", "minimum": -180, "maximum": 180 }
+      }
+    },
     "AddressInput": {
       "type": "object",
       "required": ["label", "cityId", "details", "contactName", "contactPhone"],
       "properties": {
+        "pin": {
+          "description": "Optional private destination. Omit to preserve on edit, or send null to clear.",
+          "variants": [{ "ref": "GeoPoint" }, { "type": "null" }]
+        },
         "label": { "type": "string", "minLength": 1, "maxLength": 80, "pattern": "\\S" },
         "cityId": { "type": "string", "format": "uuid" },
         "areaId": { "variants": [{ "type": "string", "format": "uuid" }, { "type": "null" }] },

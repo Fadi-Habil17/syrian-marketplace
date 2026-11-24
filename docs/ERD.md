@@ -100,6 +100,8 @@ erDiagram
   }
   Governorate ||--o{ City : governorate
   City {
+    float centerLatitude
+    float centerLongitude
     uuid id PK
     string nameAr
     string nameEn
@@ -110,6 +112,8 @@ erDiagram
   }
   City ||--o{ Area : city
   Area {
+    float centerLatitude
+    float centerLongitude
     uuid id PK
     string nameAr
     string nameEn
@@ -121,6 +125,8 @@ erDiagram
   City ||--o{ Address : city
   Area o|--o{ Address : area
   Address {
+    float latitude
+    float longitude
     uuid id PK
     string label
     string details
@@ -136,6 +142,9 @@ erDiagram
   User ||--o{ BusinessProfile : user
   City o|--o{ BusinessProfile : city
   BusinessProfile {
+    float venueLatitude
+    float venueLongitude
+    boolean venuePublished
     uuid id PK
     string type
     string status
@@ -271,6 +280,9 @@ erDiagram
   City ||--o{ Storefront : city
   FileAsset o|--o{ Storefront : logo
   Storefront {
+    float venueLatitude
+    float venueLongitude
+    boolean venuePublished
     uuid id PK
     string nameAr
     string nameEn

@@ -181,10 +181,10 @@ Backend and client evidence is mapped below and in TEST_REPORT.md. PASS is limit
 | B036 | 7,9      | Repeatable demo account seed preferred (project requirement makes all-role/currency seed mandatory) | Actual six-role/two-currency seed; rerun verified in TEST_REPORT          | D/P    |
 | B037 | 8        | README important endpoints grouped by domain with HTTP method/path; Swagger/Postman full detail     | README + API table; update every slice                                    | S      |
 | B038 | 8,9      | @nestjs/swagger at /api/docs                                                                        | Backend bootstrap                                                         | S      |
-| B039 | 8        | Swagger DTO/auth/body/response schemas and main errors                                              | Live OpenAPI 3.1: 145 operations / 188 schemas; TEST_REPORT               | D/P    |
+| B039 | 8        | Swagger DTO/auth/body/response schemas and main errors                                              | Live OpenAPI 3.1: 148 operations / 195 schemas; TEST_REPORT               | D/P    |
 | B040 | 8,9      | Postman Collection v2.1                                                                             | docs/postman/marketplace.postman_collection.json                          | S      |
 | B041 | 8        | Use {{baseUrl}}/{{token}} variables, no hardcoded values/secrets/tokens                             | Collection variable declarations and noauth health                        | S      |
-| B042 | 8        | Postman covers ALL backend endpoints incl. auth/body/examples                                       | All 145 method/path pairs verified; collection execution NOT RUN          | D/P    |
+| B042 | 8        | Postman covers ALL backend endpoints incl. auth/body/examples                                       | All 148 method/path pairs verified; collection execution NOT RUN          | D/P    |
 | B043 | 8        | Collection domain folders match README overview                                                     | All current API domain folders; contract route coverage PASS              | S      |
 | B044 | 9        | Submit four Word docs plus GitHub repository link                                                   | SUB                                                                       | P      |
 | B045 | 9        | Demo URL if available                                                                               | Deployment pending                                                        | P      |
@@ -227,7 +227,7 @@ These are source/contract implementation statuses, not end-to-end release accept
 | API03 | Every source transition actor/guards/effects and per-operation permissions                                            | 75 transition rows linked to canonical state tables                               |
 | API04 | WebSocket event/command/ack and room/push/replay policy                                                               | Documented and typed in canonical contract                                        |
 | API05 | Generated HTTP/WebSocket types shared by web/mobile, drift checks                                                     | Implemented; actual web and mobile transport checks PASS; full mobile parity FAIL |
-| API06 | Matching-domain Postman v2.1 for every target operation                                                               | Generated; 145 implemented routes covered and checked                             |
+| API06 | Matching-domain Postman v2.1 for every target operation                                                               | Generated; 148 implemented routes covered and checked                             |
 
 Historical schema-increment results are in the [database/contract report](DATABASE_CONTRACT_REPORT.md); current backend results are in the [implementation report](BACKEND_IMPLEMENTATION_REPORT.md).
 
@@ -303,3 +303,12 @@ This increment retains the existing green/cream/gold palette and backend busines
 | Landing media                    | Separate marketplace film and product walkthrough                | Original silent app walkthrough with localized captions; film poster fallback without a play control                                | Actual Chrome playback/failure/deferred-transfer checks; approved film footage and Safari/iOS playback outstanding |
 
 **UI acceptance blocker:** **High / FAIL UI-01** remains for Android font/activity recreation followed by appearance selection. Ordinary theme/auth passes and native bundle exports do not close it. See [the current UI verification report](UI_UPGRADE_VERIFICATION.md).
+
+## Maps increment
+
+| Slice | Designed | Implemented | Verified |
+| --- | --- | --- | --- |
+| Optional private destination | Shared nullable point and order snapshot contract | Address book, both store delivery paths, fixed-price booking, inspection and authorized order/delivery views on web and mobile | PostgreSQL and browser checks passed. The standalone Android emulator displayed the map, placed, moved and removed a pin, and verified the visible denial fallback. Expo Go saved and cleared a pin against the real API. Physical-device permission and accessibility checks are pending. |
+| Public venues and local discovery | Independent public point, owner opt-in, signed pagination and coverage rules | Owner publish/withdraw, city and area search, optional coarse origin, map and list on both clients | Backend and bilingual browser checks passed. Android Expo Go verified city selection and discovery during provider fallback. Provider acceptance inside Syria and physical-device acceptance remain pending. |
+
+See the [map verification record](MAP_VERIFICATION.md) for environments, geographic data and reproduction steps.

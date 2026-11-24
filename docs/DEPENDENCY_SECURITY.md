@@ -45,3 +45,7 @@ Before deployment, review the unresolved Nest 10, Prisma/deepmerge and Expo/tool
 The current production audit on 2026-11-23 reports **27 affected dependency nodes: 20 moderate, 7 high, 0 critical**, with a nonzero audit exit. Older counts above describe earlier trees. See [current limitations](KNOWN_LIMITATIONS.md#dependency-disposition) for the Prisma/configuration, Expo Router/decoder, Metro image-size and Nest findings and compatibility limits. No production security approval was issued.
 
 Backend archive validation now directly pins `yauzl` 3.4.0 with its matching TypeScript declarations and uses bounded sequential validation plus Node's CRC-32. Content is still quarantined and scanned; no filesystem extraction was introduced. See [actual tests](TEST_REPORT.md). Both original framework majors and payment policies are preserved.
+
+## Map renderer review, 2026-11-24
+
+The web renderer is pinned to MapLibre GL JS 6.19.0. The earlier candidate was affected by a critical attribution-sanitization advisory. The fixed release also uses a separately bundled, same-origin worker. A fresh production dependency audit returned **20 moderate, 7 high and 0 critical**. It listed no advisory against `maplibre-gl`. The earlier disposition for the remaining findings still applies. [GitHub advisory GHSA-jrc7-96c5-q579](https://github.com/advisories/GHSA-jrc7-96c5-q579)

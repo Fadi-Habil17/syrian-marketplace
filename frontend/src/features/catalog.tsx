@@ -81,6 +81,11 @@ export async function Catalog({
     return (
       <>
         <Heading>{sectionTitle(locale, section)}</Heading>
+        {section !== 'freelance' && (
+          <Link className="pill" href={'/' + locale + '/discover'}>
+            {choose(locale, 'استكشف بالقرب منك', 'Explore nearby')}
+          </Link>
+        )}
         {(section === 'stores' || section === 'home-store') && (
           <ActionBar>
             <Link
@@ -125,6 +130,11 @@ export async function Catalog({
     return (
       <>
         <Heading>{sectionTitle(locale, section)}</Heading>
+        {section !== 'freelance' && (
+          <Link className="pill" href={'/' + locale + '/discover'}>
+            {choose(locale, 'استكشف بالقرب منك', 'Explore nearby')}
+          </Link>
+        )}
         <p role="alert" className="notice">
           {errorLabel(locale, error.code)}
         </p>
@@ -137,9 +147,15 @@ export async function Catalog({
 }
 
 export function geo(locale: Locale) {
-  return (item: { id: string; nameAr: string; nameEn: string }) => ({
+  return (item: {
+    id: string;
+    nameAr: string;
+    nameEn: string;
+    center?: ApiSchemas['GeoPoint'] | null;
+  }) => ({
     value: item.id,
     label: localText(locale, item.nameAr, item.nameEn),
+    center: item.center,
   });
 }
 export function addresses(items: ApiSchemas['Address'][] = []) {

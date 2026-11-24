@@ -90,6 +90,8 @@ export class ContractValidationInterceptor implements NestInterceptor {
       const route = Object.values(apiContract.paths)
         .flatMap((v: any) => Object.values(v))
         .find((v: any) => v.operationId === operation) as any;
+      if (route?.security?.length !== 0 || operation === 'searchLocal')
+        context.switchToHttp().getResponse().setHeader('Cache-Control', 'private, no-store');
       const body = route?.requestBody?.content?.['application/json']?.schema;
       responseSchema =
         route?.responses?.[Object.keys(route?.responses ?? {}).find((x) => x.startsWith('2'))!]

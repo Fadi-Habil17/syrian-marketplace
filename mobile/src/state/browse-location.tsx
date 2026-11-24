@@ -1,6 +1,12 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 
-type NamedPlace = { id: string; nameAr: string; nameEn: string };
+import type { ApiSchemas } from '../api/contracts';
+type NamedPlace = {
+  center?: ApiSchemas['GeoPoint'] | null;
+  id: string;
+  nameAr: string;
+  nameEn: string;
+};
 type BrowseLocation = { governorate: NamedPlace; city: NamedPlace | null };
 const Context = createContext<{
   location: BrowseLocation | null;

@@ -102,7 +102,13 @@ for (const [path, methods] of Object.entries(api.paths))
         headers.push({ key: 'Content-Type', value: 'application/json' });
         req.body = {
           mode: 'raw',
-          raw: JSON.stringify(example(media.schema), null, 2),
+          raw: JSON.stringify(
+            ['createAddress', 'updateAddress'].includes(currentOperation)
+              ? { ...example(media.schema), pin: { latitude: 35.01, longitude: 37.05 } }
+              : example(media.schema),
+            null,
+            2,
+          ),
           options: { raw: { language: 'json' } },
         };
       }

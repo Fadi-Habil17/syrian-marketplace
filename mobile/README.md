@@ -1,4 +1,4 @@
-﻿# Mobile application (partial implementation)
+# Mobile application (partial implementation)
 
 Expo SDK 54 / React Native 0.81 / React 19.1 / TypeScript / Expo Router. Originating branch: `feature/mobile`; reviewed for merge into main. See [coverage and remaining required implementation](../docs/MOBILE_API_ISSUES.md). This is not a complete mobile release.
 
@@ -51,3 +51,9 @@ The [Mobile App Figma page](https://www.figma.com/design/BdSdHj3FUoQVCGK6JLfNgb/
 - Production dependency audit during merge review: 27 affected nodes (20 moderate/seven high), no critical. No force-upgrades or root overrides changed.
 
 Pixel 8 emulator checks with Expo Go SDK 54 covered home at 320, 390, and 411 dp, and exercised the location picker, filtered catalog, service and product details, storefront, and sign-in and registration screens at 390 dp. iOS layout, real-device push delivery, and full device acceptance remain pending. The [merge review](../docs/MOBILE_MERGE_REVIEW.md) records the earlier live transport/checkout check with mocked native storage.
+
+## Maps on Android and iOS
+
+Set `EXPO_PUBLIC_API_URL` to an API reachable from the target device. Leave `EXPO_PUBLIC_MAP_STYLE_URL` empty for text/list review or supply the Liberty URL from the [map verification record](../docs/MAP_VERIFICATION.md) before building. The MapLibre and foreground location plugins are declared in `app.json`. Expo Go supports the fallback UI. Map rendering needs a native application with Expo SDK 54 and the new architecture enabled.
+
+From `mobile/`, `npx expo run:android` builds, installs and starts the local Android app against Metro. On macOS with Xcode and CocoaPods, use `npx expo run:ios`. For team-owned internal distribution, the existing `preview` EAS profile supports `eas build --platform android --profile preview` (APK) or `eas build --platform ios --profile preview` (registered devices, Apple signing and provisioning required). No review build has been uploaded as part of this increment. The [verification record](../docs/MAP_VERIFICATION.md) identifies the native checks actually completed.

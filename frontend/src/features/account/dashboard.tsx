@@ -134,6 +134,7 @@ export async function Account({
                       params={{ addressId: address.id }}
                       initial={{
                         label: address.label,
+                        pin: address.pin ?? null,
                         cityId: address.cityId,
                         areaId: address.areaId,
                         details: address.details,
@@ -142,6 +143,17 @@ export async function Account({
                       }}
                       choices={{
                         ...locations,
+                        areaId:
+                          address.areaId &&
+                          !locations.areaId?.some((area) => area.value === address.areaId)
+                            ? [
+                                {
+                                  value: address.areaId,
+                                  label: choose(locale, 'المنطقة الحالية', 'Current area'),
+                                },
+                                ...(locations.areaId ?? []),
+                              ]
+                            : (locations.areaId ?? []),
                         cityId: locations.cityId.some((city) => city.value === address.cityId)
                           ? locations.cityId
                           : [
